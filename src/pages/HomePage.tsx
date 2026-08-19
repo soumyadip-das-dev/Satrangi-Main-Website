@@ -115,9 +115,9 @@ export default function HomePage({
                         : "lamahatta"
                     )
                   }
-                  className="border border-white/50 hover:bg-white/10 text-white px-8 py-3.5 text-xs font-semibold uppercase tracking-widest transition-all"
+                  className="border border-white/50 hover:bg-white/10 text-white px-8 py-3.5 text-xs font-semibold uppercase tracking-widest transition-all cursor-pointer"
                 >
-                  Book Sanctuary
+                  Book Your Stay
                 </button>
               </div>
             </div>
@@ -393,76 +393,6 @@ export default function HomePage({
             <div className="p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
               <span>Explore Mountain Sanctuary</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#B85A32]" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Suites Section */}
-      <section className="py-20 bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 text-left">
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-[0.4em] text-[#B85A32] font-bold block mb-3">
-              SIGNATURE HIGHLIGHTS
-            </span>
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold italic text-[#1C352D]">
-              Hand-Curated Suites
-            </h2>
-            <div className="w-16 h-0.5 bg-[#B85A32] mx-auto mt-4" />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-3 mb-8 border-b border-gray-200 pb-4">
-              <Sparkles className="text-[#B85A32]" size={20} />
-              <h3 className="font-serif text-2xl font-bold text-[#1C352D]">
-                Highest Rated Suites
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {rooms.slice(0, 4).map((room) => (
-                <div
-                  key={room.id}
-                  className="bg-[#FAF8F5] border border-gray-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row"
-                >
-                  <div className="sm:w-2/5 h-48 sm:h-auto">
-                    <SuitePhotoCarousel
-                      images={room.imageUrls}
-                      altText={room.name}
-                      onImageClick={() => onSelectRoomModal(room)}
-                    />
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <h4
-                          onClick={() => onSelectRoomModal(room)}
-                          className="font-serif text-lg font-bold text-[#1C352D] hover:text-[#B85A32] transition-colors cursor-pointer"
-                        >
-                          {room.name}
-                        </h4>
-                        <span className="bg-[#1C352D] text-[#E6C587] text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
-                          {formatPrice(room.pricePerNight, currency)}/nt
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-gray-500 font-sans line-clamp-2 mb-3">
-                        {room.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-200/60">
-                      <span className="text-[10px] text-gray-500 font-mono uppercase">
-                        {room.sqft} SQFT • {room.capacity} Guests
-                      </span>
-                      <button
-                        onClick={() => onSelectRoomModal(room)}
-                        className="text-xs font-bold text-[#B85A32] hover:underline cursor-pointer"
-                      >
-                        View Details →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
