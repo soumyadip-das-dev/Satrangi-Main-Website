@@ -82,8 +82,14 @@ export default function RoomDetailModal({
   const isAvailable = isRoomAvailable(room.id, checkIn, checkOut, bookings);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in">
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200/80 text-left animate-fade-rise">
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in"
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200/80 text-left animate-fade-rise"
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
