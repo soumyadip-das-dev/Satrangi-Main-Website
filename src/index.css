@@ -1,0 +1,37 @@
+@import "./styles/fonts.css";
+@import "./styles/theme.css";
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-display: "Instrument Serif", serif;
+
+  /* Natural Tones Palette Extensions */
+  --color-primary-green: #1C352D;
+  --color-brand-terracotta: #B85A32;
+  --color-brand-gold: #C5A059;
+  --color-brand-cream: #FAF8F5;
+  --color-charcoal-dark: #141C19;
+}
+
+body {
+  background-color: #FAF8F5;
+  color: #141C19;
+  font-family: var(--font-sans);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
