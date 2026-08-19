@@ -1,0 +1,6 @@
+{
+  "name": "Satrangi Homestay",
+  "description": "A premium boutique travel-experience and direct booking platform across Bengal's premier destinations: Kolkata, Sundarban, and Lamahatta.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
