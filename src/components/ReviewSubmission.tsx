@@ -31,19 +31,18 @@ export default function ReviewSubmission({
 
   const roomPresets: Record<string, { name: string; type: string }[]> = {
     lamahatta: [
-      { name: "The Cloud Suite", type: "Mountain Glass Suite" },
-      { name: "Pine View Cottage", type: "Timber High-Vaulted Cabin" },
-      { name: "Valley Panorama Suite", type: "Cedar Penthouse Suite" },
+      { name: "Room 1", type: "Mountain Glass Suite" },
+      { name: "Room 2", type: "Timber High-Vaulted Cabin" },
+      { name: "Room 3", type: "Cedar Penthouse Suite" },
     ],
     kolkata: [
-      { name: "Courtyard Heritage Suite", type: "1920s Colonial Suite" },
-      { name: "Library Suite", type: "Classic Marble Residence" },
-      { name: "Verandah Room", type: "Terrace Garden Suite" },
+      { name: "Room 1", type: "1920s Colonial Suite" },
+      { name: "Room 2", type: "Classic Marble Residence" },
+      { name: "Room 3", type: "Terrace Garden Suite" },
     ],
     sundarban: [
-      { name: "Gplot Sunset Beach Suite", type: "Stilted Mangrove Villa" },
-      { name: "River Edge Cottage", type: "Waterfront Stilted Cabin" },
-      { name: "Delta Canopy Villa", type: "Eco-Lodge Canopy Suite" },
+      { name: "Room 1", type: "Stilted Mangrove Villa" },
+      { name: "Room 2", type: "Waterfront Stilted Cabin" },
     ],
   };
 
