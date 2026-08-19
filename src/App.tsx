@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import BookingFlow from "./components/BookingFlow";
+import BookingModal from "./components/BookingModal";
 import RoomDetailModal from "./components/RoomDetailModal";
 import { Helmet, getSEOConfig } from "./components/common/Helmet";
 import { Currency } from "./utils/currency";
@@ -21,6 +22,8 @@ export default function App() {
   const [checkInSelect, setCheckInSelect] = useState<string>("2026-07-25");
   const [checkOutSelect, setCheckOutSelect] = useState<string>("2026-07-27");
   const [currency, setCurrency] = useState<Currency>("INR");
+
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
 
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -51,10 +54,14 @@ export default function App() {
   }, []);
 
   const handleNavigate = (view: string, subParam?: any) => {
-    setCurrentView(view);
     if (subParam && typeof subParam === "string") {
       setSelectedDestIdForBooking(subParam);
     }
+    if (view === "booking") {
+      setIsBookingModalOpen(true);
+      return;
+    }
+    setCurrentView(view);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -133,24 +140,6 @@ export default function App() {
 
         {/* VIEW: BLOGS */}
         {currentView === "blogs" && <BlogsPage blogs={blogs} onNavigate={handleNavigate} />}
-
-        {/* VIEW: BOOKING FLOW */}
-        {currentView === "booking" && (
-          <div className="max-w-6xl mx-auto px-6 py-12">
-            <BookingFlow
-              destinations={destinations}
-              rooms={rooms}
-              bookings={bookings}
-              currency={currency}
-              initialDestId={selectedDestIdForBooking}
-              initialCheckIn={checkInSelect}
-              initialCheckOut={checkOutSelect}
-              onBookingComplete={() => {
-                fetchSecondaryData().then(({ bookings }) => setBookings(bookings));
-              }}
-            />
-          </div>
-        )}
       </main>
 
       {/* Site Footer */}
@@ -166,17 +155,17 @@ export default function App() {
           </div>
           <div>
             <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-4">
-              Our 3 Sanctuary Places
+              Our Places
             </h4>
             <ul className="space-y-2 text-xs text-gray-300">
               <li onClick={() => handleNavigate("kolkata")} className="hover:text-white transition cursor-pointer">
-                Kolkata Classical Townhouse
+                Kolkata
               </li>
               <li onClick={() => handleNavigate("sundarban")} className="hover:text-white transition cursor-pointer">
-                Sundarban Eco Safari Lodge
+                Sundarban
               </li>
               <li onClick={() => handleNavigate("lamahatta")} className="hover:text-white transition cursor-pointer">
-                Lamahatta Mountain Suite
+                Lamahatta
               </li>
             </ul>
           </div>
@@ -209,11 +198,11 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400 font-light gap-4">
-          <p>© 2026 Satrangi Homestay. Inspired by the Soil, Water, and Air of Bengal.</p>
+        <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-center items-center text-center text-xs text-gray-400 font-light gap-6">
+          <p>© 2026 Satrangi Homestay.</p>
           <div className="flex gap-8">
-            <span className="hover:text-white transition cursor-pointer">Privacy Charter</span>
-            <span className="hover:text-white transition cursor-pointer">Direct Terms of Use</span>
+            <span className="hover:text-white transition cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-white transition cursor-pointer">Terms & conditions</span>
           </div>
         </div>
       </footer>
@@ -230,6 +219,22 @@ export default function App() {
         </a>
       </div>
 
+      {/* Global Booking Modal Popup */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        destinations={destinations}
+        rooms={rooms}
+        bookings={bookings}
+        currency={currency}
+        initialDestId={selectedDestIdForBooking}
+        initialCheckIn={checkInSelect}
+        initialCheckOut={checkOutSelect}
+        onBookingComplete={() => {
+          fetchSecondaryData().then(({ bookings }) => setBookings(bookings));
+        }}
+      />
+
       {/* Interactive Room Detail Modal */}
       {selectedRoomForModal && (
         <RoomDetailModal
@@ -244,7 +249,7 @@ export default function App() {
             setSelectedDestIdForBooking(destId);
             setCheckInSelect(checkIn);
             setCheckOutSelect(checkOut);
-            handleNavigate("booking", destId);
+            setIsBookingModalOpen(true);
           }}
         />
       )}
