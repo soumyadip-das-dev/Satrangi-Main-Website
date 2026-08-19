@@ -187,54 +187,21 @@ export default function Header({
           })}
         </div>
 
-        {/* Call to Action & Currency Selector */}
+        {/* Call to Action */}
         <div className="hidden lg:flex items-center gap-4">
-          {onCurrencyChange && (
-            <div className="relative flex items-center bg-gray-100/80 rounded-full px-2.5 py-1 border border-gray-200/80 text-xs font-medium text-gray-700">
-              <Globe size={13} className="text-[#1C352D] mr-1.5" />
-              <select
-                value={currency}
-                onChange={(e) => onCurrencyChange(e.target.value as Currency)}
-                className="bg-transparent text-xs font-semibold cursor-pointer focus:outline-none text-[#1C352D]"
-                aria-label="Select currency"
-              >
-                {currencies.map((curr) => (
-                  <option key={curr} value={curr}>
-                    {curr}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <button
             onClick={() => onNavigate("booking")}
-            className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-6 py-2.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none"
+            className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-6 py-2.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none cursor-pointer"
           >
-            Book Stay
+            Book Your Stay
           </button>
         </div>
 
         {/* Mobile controls */}
         <div className="flex xl:hidden items-center gap-2.5">
-          {onCurrencyChange && (
-            <select
-              value={currency}
-              onChange={(e) => onCurrencyChange(e.target.value as Currency)}
-              className="bg-gray-100 text-xs font-bold px-2 py-1 rounded border border-gray-200 text-[#1C352D]"
-              aria-label="Select currency mobile"
-            >
-              {currencies.map((curr) => (
-                <option key={curr} value={curr}>
-                  {curr}
-                </option>
-              ))}
-            </select>
-          )}
-
           <button
             onClick={() => onNavigate("booking")}
-            className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-3.5 py-1.5 rounded-full text-xs uppercase tracking-wider font-bold transition-all"
+            className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-3.5 py-1.5 rounded-full text-xs uppercase tracking-wider font-bold transition-all cursor-pointer"
           >
             Book
           </button>
