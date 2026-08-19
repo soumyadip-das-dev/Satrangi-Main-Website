@@ -156,41 +156,22 @@ export default function DestinationGallery({ destinationId, destinationName }: D
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Header Block */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
-          <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-[#A45D3B] font-bold block mb-2">
-              VISUAL CHRONICLES
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#2D463E] italic font-bold">
-              The {destinationName} Gallery
-            </h2>
-            <p className="text-xs text-gray-500 mt-1 max-w-md">
-              A curated collection of design details, local heritage encounters, and serene vistas.
-            </p>
-          </div>
-
-          {/* Filtering Tabs */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveTab(cat)}
-                className={`px-4 py-1.5 text-[10px] uppercase tracking-widest font-bold transition-all duration-300 border cursor-pointer ${
-                  activeTab === cat
-                    ? "bg-[#2D463E] text-[#FDFBF7] border-[#2D463E]"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-900"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        <div className="mb-12">
+          <span className="text-xs uppercase tracking-[0.3em] text-[#A45D3B] font-bold block mb-2">
+            VISUAL CHRONICLES
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#2D463E] italic font-bold">
+            The {destinationName} Gallery
+          </h2>
+          <p className="text-xs text-gray-500 mt-1 max-w-md">
+            A curated collection of design details, local heritage encounters, and serene vistas.
+          </p>
         </div>
 
         {/* Masonry / Responsive Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
-            {filteredImages.map((img) => (
+            {images.map((img) => (
               <motion.div
                 key={img.url}
                 layout
