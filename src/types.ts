@@ -44,7 +44,7 @@ export interface Booking {
   guestPhone: string;
   guestsCount: number;
   totalPrice: number;
-  paymentStatus: "pending" | "paid";
+  paymentStatus: "pending" | "paid" | "Pay at Property";
   paymentId: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   createdAt: string;
