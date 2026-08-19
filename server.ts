@@ -108,7 +108,7 @@ function initDatabase() {
       {
         id: "kolkata-heritage-suite",
         destinationId: "kolkata",
-        name: "The Heritage Suite",
+        name: "Room 1",
         type: "Suite",
         pricePerNight: 12500,
         capacity: 2,
@@ -120,7 +120,7 @@ function initDatabase() {
       {
         id: "kolkata-colonial-room",
         destinationId: "kolkata",
-        name: "Colonial Room",
+        name: "Room 2",
         type: "Standard",
         pricePerNight: 8000,
         capacity: 2,
@@ -132,7 +132,7 @@ function initDatabase() {
       {
         id: "kolkata-zen-studio",
         destinationId: "kolkata",
-        name: "Modern Zen Studio",
+        name: "Room 3",
         type: "Studio",
         pricePerNight: 6500,
         capacity: 2,
@@ -144,7 +144,7 @@ function initDatabase() {
       {
         id: "sundarban-tiger-suite",
         destinationId: "sundarban",
-        name: "The Tiger Suite",
+        name: "Room 1",
         type: "Suite",
         pricePerNight: 12000,
         capacity: 2,
@@ -156,7 +156,7 @@ function initDatabase() {
       {
         id: "sundarban-river-cottage",
         destinationId: "sundarban",
-        name: "River Edge Cottage",
+        name: "Room 2",
         type: "Cottage",
         pricePerNight: 8500,
         capacity: 2,
@@ -168,7 +168,7 @@ function initDatabase() {
       {
         id: "lamahatta-cloud-suite",
         destinationId: "lamahatta",
-        name: "The Cloud Suite",
+        name: "Room 1",
         type: "Suite",
         pricePerNight: 12500,
         capacity: 2,
@@ -180,7 +180,7 @@ function initDatabase() {
       {
         id: "lamahatta-pine-cottage",
         destinationId: "lamahatta",
-        name: "Pine View Cottage",
+        name: "Room 2",
         type: "Cottage",
         pricePerNight: 9000,
         capacity: 2,
@@ -192,7 +192,7 @@ function initDatabase() {
       {
         id: "lamahatta-valley-villa",
         destinationId: "lamahatta",
-        name: "Valley View Villa",
+        name: "Room 3",
         type: "Villa",
         pricePerNight: 18000,
         capacity: 4,
