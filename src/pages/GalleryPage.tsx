@@ -22,28 +22,9 @@ export default function GalleryPage({ gallery }: GalleryPageProps) {
         <div className="w-16 h-0.5 bg-[#A45D3B] mx-auto mt-4" />
       </div>
 
-      {/* Filter selectors */}
-      <div className="flex justify-center gap-4 mb-12 flex-wrap">
-        {["all", "Scenic", "Interior", "Experience"].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setGalleryFilter(cat)}
-            className={`px-5 py-2 text-xs uppercase tracking-widest font-semibold transition-colors cursor-pointer ${
-              galleryFilter === cat
-                ? "bg-[#2D463E] text-white"
-                : "bg-white text-gray-600 border border-gray-200 hover:border-gray-900"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
       {/* Masonry Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {gallery
-          .filter((item) => galleryFilter === "all" || item.category === galleryFilter)
-          .map((item) => (
+        {gallery.map((item) => (
             <div
               key={item.id}
               onClick={() => setLightboxImg(item.url)}
