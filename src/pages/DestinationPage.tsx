@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Calendar, Sprout, Wifi, Coffee, MapPin } from "lucide-react";
+import { Check, Calendar, Sprout, Wifi, Coffee, MapPin, Sparkles, ShieldCheck, ArrowRight, Compass, TreePine, Landmark } from "lucide-react";
 import { Destination, Room, Experience, Review, Booking } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
 import { isRoomAvailable, getTotalNights } from "../utils/bookingUtils";
@@ -64,43 +64,146 @@ export default function DestinationPage({
     switch (destinationId) {
       case "kolkata":
         return {
-          title: "Kolkata: Culture & Comfort",
-          eyebrow: "URBAN HERITAGE STAY",
+          title: "Kolkata Heritage Townhouse",
+          subtitle: "Where 1920s Colonial Elegance Meets Courtyard Tranquility & Cultural Masterclasses",
+          eyebrow: "1920s COLONIAL RESIDENCE • BENGAL",
           heroImg: "/kolkata_hero.png",
+          location: "Park Street & College Street Precinct",
+          statLabel: "HERITAGE SPEC",
+          statValue: "Conserved 1920s Red-Oxide Manor",
+          icon: Landmark,
+          highlights: ["Courtyard Library", "Chef Thali Workshop", "Solo & Couple Haven"],
         };
       case "sundarban":
         return {
-          title: "Sundarban: Estuary & Wildlife",
-          eyebrow: "DELTA ECO SAFARI LODGE",
+          title: "Sundarban Eco Safari Lodge",
+          subtitle: "Stilted High-Comfort Eco-Villas Where Estuary Rivers Meet Golden Sands",
+          eyebrow: "DELTA ECO SAFARI • G-PLOT ISLAND",
           heroImg: "/sundarban_hero.png",
+          location: "Saptamukhi Estuary Shoreline",
+          statLabel: "ECOSYSTEM",
+          statValue: "Untouched Coastal Mangrove Delta",
+          icon: TreePine,
+          highlights: ["Private River Boat Safaris", "Estuary View Stilts", "Fresh Catch Dining"],
         };
       case "lamahatta":
       default:
         return {
-          title: "Lamahatta: Pine Mist & Kanchenjunga",
-          eyebrow: "5,700 FT ALPINE SANCTUARY",
+          title: "Lamahatta Mountain Sanctuary",
+          subtitle: "Bespoke Mountain Villas Perched Above the Himalayan Mist & Pine Groves",
+          eyebrow: "5,700 FT ALPINE RIDGE • DARJEELING",
           heroImg: "/lamahatta_hero.png",
+          location: "Pine Forest Ridge, Darjeeling Hills",
+          statLabel: "ALTITUDE",
+          statValue: "5,700 FT Above Sea Level",
+          icon: Compass,
+          highlights: ["270° Kanchenjunga Vistas", "Cedar Wood Fireplaces", "Organic Tea Masterclass"],
         };
     }
   };
 
   const heroConfig = getHeroContent();
+  const HeroIcon = heroConfig.icon;
 
   return (
     <div className="animate-fade-in text-left">
-      {/* Destination Hero */}
+      {/* Refined Luxury Hero Section */}
       <section
-        className="bg-cover bg-center h-[55vh] relative flex items-center px-6"
+        className="bg-cover bg-center min-h-[540px] relative flex flex-col justify-between pt-8 sm:pt-10 pb-12 sm:pb-14 px-6 sm:px-12 text-left"
         style={{ backgroundImage: `url('${heroConfig.heroImg}')` }}
       >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 max-w-4xl mx-auto text-white w-full">
-          <span className="text-xs uppercase tracking-[0.4em] text-[#C5A059] font-bold block mb-3">
-            {heroConfig.eyebrow}
-          </span>
-          <h1 className="font-serif text-5xl sm:text-6xl font-bold italic mb-6">
-            {heroConfig.title}
-          </h1>
+        {/* Layered Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C352D] via-black/45 to-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent" />
+
+        {/* Top Breadcrumb & Luxury Pill */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2 text-white/80 text-xs font-sans tracking-widest uppercase">
+            <span
+              onClick={() => onNavigate("home")}
+              className="hover:text-[#C5A059] transition cursor-pointer font-medium"
+            >
+              Satrangi
+            </span>
+            <span className="text-[#C5A059]">•</span>
+            <span className="text-[#C5A059] font-bold">{destination?.name || heroConfig.title}</span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-full text-[11px] text-white font-medium tracking-wider">
+            <ShieldCheck size={13} className="text-[#C5A059]" />
+            <span>Direct Guarantee • 0% Commission</span>
+          </div>
+        </div>
+
+        {/* Center Main Hero Typography */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full my-auto py-4">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-[#C5A059]/20 border border-[#C5A059]/40 backdrop-blur-sm px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.35em] text-[#E6C587] mb-4">
+              <HeroIcon size={12} className="text-[#C5A059]" />
+              <span>{heroConfig.eyebrow}</span>
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-4 tracking-tight">
+              {heroConfig.title}
+            </h1>
+
+            <p className="font-sans text-xs sm:text-base text-gray-200 font-light max-w-2xl leading-relaxed mb-6">
+              {heroConfig.subtitle}
+            </p>
+
+            {/* Quick Feature Badges */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {heroConfig.highlights.map((h, i) => (
+                <span
+                  key={i}
+                  className="bg-black/40 backdrop-blur-md border border-white/15 text-white/90 text-[10px] sm:text-[11px] font-sans px-3 py-1 sm:py-1.5 rounded-xl flex items-center gap-1.5 font-medium"
+                >
+                  <Sparkles size={11} className="text-[#C5A059]" />
+                  {h}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Hero Glass Bar */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full mt-6">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
+            <div className="flex items-center gap-4 text-white text-xs font-sans w-full md:w-auto">
+              <div className="p-2.5 bg-[#C5A059]/20 border border-[#C5A059]/30 rounded-xl text-[#C5A059] shrink-0">
+                <MapPin size={18} />
+              </div>
+              <div className="text-left">
+                <p className="text-[9px] uppercase tracking-widest text-[#E6C587] font-bold">
+                  {heroConfig.statLabel}
+                </p>
+                <p className="font-serif text-sm font-semibold text-white">
+                  {heroConfig.statValue}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+              <a
+                href="#suites-section"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("suites-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex-1 md:flex-initial bg-white/20 hover:bg-white/30 text-white border border-white/30 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 text-center cursor-pointer"
+              >
+                View Suites
+              </a>
+
+              <button
+                onClick={() => onNavigate("booking", destinationId)}
+                className="flex-1 md:flex-initial bg-[#C5A059] hover:bg-[#b08c48] text-[#1C352D] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Reserve Stay</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -136,7 +239,7 @@ export default function DestinationPage({
       </section>
 
       {/* Live Calendar Availability & Room Collection */}
-      <section className="py-16 bg-white border-y border-gray-100">
+      <section id="suites-section" className="py-16 bg-white border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="font-serif text-3xl font-bold text-[#1C352D] mb-6 text-center italic">
             {destination?.name} Suite Collection
@@ -212,11 +315,10 @@ export default function DestinationPage({
 
                     {/* Availability status badge */}
                     <div
-                      className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-sans tracking-wide transition-all ${
-                        available
+                      className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-sans tracking-wide transition-all ${available
                           ? "bg-emerald-50/70 border-emerald-100 text-emerald-800"
                           : "bg-rose-50/70 border-rose-100 text-rose-800"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${available ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
@@ -238,11 +340,10 @@ export default function DestinationPage({
                     <button
                       onClick={() => onNavigate("booking", destinationId)}
                       disabled={!available}
-                      className={`w-full py-3 rounded-xl text-xs uppercase font-sans tracking-widest font-bold transition-all cursor-pointer ${
-                        available
+                      className={`w-full py-3 rounded-xl text-xs uppercase font-sans tracking-widest font-bold transition-all cursor-pointer ${available
                           ? "bg-[#1C352D] hover:bg-[#B85A32] text-white shadow-md"
                           : "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
-                      }`}
+                        }`}
                     >
                       {available ? `Reserve ${room.name}` : "Unavailable (Select Other Dates)"}
                     </button>
