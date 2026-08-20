@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Instagram } from "lucide-react";
 import Header from "./components/Header";
 import BookingModal from "./components/BookingModal";
 import RoomDetailModal from "./components/RoomDetailModal";
@@ -82,7 +83,7 @@ export default function App() {
         onCurrencyChange={(curr) => setCurrency(curr)}
       />
 
-      <main className="pt-20 sm:pt-24 flex-grow">
+      <main className="pt-16 sm:pt-24 flex-grow">
         {/* VIEW: HOME */}
         {currentView === "home" && (
           <HomePage
@@ -147,9 +148,9 @@ export default function App() {
       </main>
 
       {/* Site Footer */}
-      <footer className="bg-[#1C352D] text-white pt-16 pb-12 border-t border-[#2D463E]">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12 text-left">
-          <div className="space-y-4">
+      <footer className="bg-[#1C352D] text-white pt-12 sm:pt-16 pb-12 border-t border-[#2D463E]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12 text-left">
+          <div className="space-y-3 sm:space-y-4">
             <h3 className="font-serif text-2xl font-bold text-[#C5A059] uppercase tracking-wider">
               Satrangi
             </h3>
@@ -158,7 +159,7 @@ export default function App() {
             </p>
           </div>
           <div>
-            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-4">
+            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-3 sm:mb-4">
               Our Places
             </h4>
             <ul className="space-y-2 text-xs text-gray-300">
@@ -174,7 +175,7 @@ export default function App() {
             </ul>
           </div>
           <div>
-            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-4">
+            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-3 sm:mb-4">
               Quick Links
             </h4>
             <ul className="space-y-2 text-xs text-gray-300">
@@ -190,21 +191,32 @@ export default function App() {
             </ul>
           </div>
           <div>
-            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-4">
+            <h4 className="font-serif text-sm font-bold text-white uppercase tracking-widest mb-3 sm:mb-4">
               Direct Host Contact
             </h4>
             <p className="text-xs text-gray-300 leading-relaxed font-light mb-2">
               WhatsApp / Call: +91 98765 43210
             </p>
-            <p className="text-xs text-gray-300 leading-relaxed font-light">
+            <p className="text-xs text-gray-300 leading-relaxed font-light mb-3">
               Email: reservations@satrangihomestay.com
             </p>
+            <div className="pt-2 border-t border-white/10">
+              <a
+                href="https://www.instagram.com/satrangihomestaykolkata/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs text-gray-300 hover:text-[#E6C587] transition-colors"
+              >
+                <Instagram size={14} className="text-[#E1306C]" />
+                <span className="font-medium">Kolkata: @satrangihomestaykolkata</span>
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-center items-center text-center text-xs text-gray-400 font-light gap-6">
-          <p>© 2026 Satrangi Homestay.</p>
-          <div className="flex gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left text-xs text-gray-400 font-light gap-4">
+          <p>© 2026 Satrangi Homestay. All rights reserved.</p>
+          <div className="flex gap-6 sm:gap-8">
             <span className="hover:text-white transition cursor-pointer">Privacy Policy</span>
             <span className="hover:text-white transition cursor-pointer">Terms & conditions</span>
           </div>
@@ -212,12 +224,13 @@ export default function App() {
       </footer>
 
       {/* Floating WhatsApp CTA */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
         <a
           href="https://wa.me/919876543210?text=Hello%20Satrangi%20Host%2C%20I%20have%20a%20question%20about%20staying%20at%20Satrangi."
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-5 py-3.5 rounded-full shadow-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300 transform hover:scale-105"
+          className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-full shadow-2xl text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-300 transform hover:scale-105 active:scale-95"
+          aria-label="Ask a Curator on WhatsApp"
         >
           <span>Ask a Curator</span>
         </a>
