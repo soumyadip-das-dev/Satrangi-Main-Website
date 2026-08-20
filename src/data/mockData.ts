@@ -3,32 +3,34 @@ import { Destination, Room, Experience, GalleryItem, Blog, Review, FAQ } from ".
 export const destinationsData: Destination[] = [
   {
     id: "kolkata",
-    name: "Kolkata",
+    name: "Kolkata - The City of Joy",
     theme: "Heritage & Cultural Haven",
-    tagline: "Where 1920s Colonial Elegance Meets Generational Warmth",
-    propertyStory: "Step through soaring teak doorways into Satrangi Kolkata—a lovingly restored 1920s heritage townhouse crafted for curious solo travelers, romantic couples, and family staycations alike. High ceilings, cool red-oxide floors, quiet courtyard reading alcoves, and home-style Bengali meals create a welcoming sanctuary in the heart of historic Bengal.",
+    tagline: "Discover the Soul of Bengal in The City of Joy",
+    propertyStory: "Welcome to your premier heritage getaway in The City of Joy. Satrangi Kolkata blends the timeless romance of 1920s classical architecture with modern luxury hospitality. Perfectly positioned in the cultural heart of Bengal, our boutique townhouse offers high-ceiling suites, lush private courtyards, chef-curated Bengali dining, and seamless proximity to top city attractions—making it the ultimate high-end choice for leisure travelers, couples, and family holidays.",
     highlights: [
-      "Restored 1920s Heritage Townhouse & Courtyard Library",
-      "Chef-Guided Bengali Thali & Cooking Masterclasses",
-      "Peaceful Sanctuary Ideal for Solo Travelers & Couples",
-      "Minutes from Historic Park Street & Victoria Memorial"
+      "Prime City Location Minutes from Park Street & Victoria Memorial",
+      "Exclusive Chef-Curated Bengali Thali & Private Masterclasses",
+      "Restored 1920s Boutique Heritage Suites with Modern Amenities",
+      "Best Rate Direct Booking Guarantee with Complimentary Breakfast"
     ],
     coordinates: {
       lat: 22.5726,
       lng: 88.3639
-    }
+    },
+    instagramUrl: "https://www.instagram.com/satrangihomestaykolkata/",
+    instagramHandle: "@satrangihomestaykolkata"
   },
   {
     id: "sundarban",
-    name: "Sundarban",
+    name: "Sundarban - The Bengal Delta",
     theme: "Estuarine Eco-Lodge & Wildlife",
-    tagline: "Eco-crafted Lodging where Mangrove Rivers Meet Untouched Shores",
-    propertyStory: "Sculpted directly onto the pristine shoreline of G-Plot Island where the Saptamukhi estuary meets the Bay of Bengal, Satrangi Sundarban offers an unforgettable retreat. Designed for adventurous families, nature-loving couples, and solo explorers, our stilted eco-villas feature private sunset decks, guided river safaris, and organic local meals.",
+    tagline: "Eco-Luxury Expeditions Across The Bengal Delta",
+    propertyStory: "Embark on an extraordinary eco-luxury expedition into The Bengal Delta. Perched directly along the scenic shoreline of G-Plot Island where mangrove estuaries meet the Bay of Bengal, Satrangi Sundarban delivers thrilling wildlife adventures paired with high-comfort hospitality. Enjoy private boat safaris, serene estuary-view decks, pristine red crab beaches, and freshly sourced organic seafood dinners designed for unforgettable holidays.",
     highlights: [
-      "Private Guided Mangrove Safaris & Red Crab Beach Trails",
-      "Stilted High-Comfort Eco-Villas with Estuary Views",
-      "Safe, Kid-Friendly Family Excursions & Bird Watching",
-      "Fresh Local Estuarine Seafood & Organic Homestyle Dining"
+      "Exclusive Private Mangrove Safaris & Dolphin Spotting Trails",
+      "High-Comfort Stilted Eco-Villas with Panoramic Delta Views",
+      "Farm-to-Table Estuarine Seafood & Homestyle Organic Dining",
+      "All-Inclusive Guided Excursions & Family-Friendly Packages"
     ],
     coordinates: {
       lat: 21.9497,
@@ -37,15 +39,15 @@ export const destinationsData: Destination[] = [
   },
   {
     id: "lamahatta",
-    name: "Lamahatta",
+    name: "Lamahatta - Hidden Gem of Darjeeling",
     theme: "Alpine Pine Serenity",
-    tagline: "5,700 FT Mountain Sanctuary Above the Himalayan Mist",
-    propertyStory: "Perched at 5,700 feet amidst whispering pine forests, Satrangi Lamahatta is a tranquil mountain haven for romantic honeymoons, inspiring solo writing retreats, and peaceful family holidays. Unobstructed Kanchenjunga mountain views, cedar wood fireplaces, underfloor heating, and guided Sherpa pine grove walks make every moment magical.",
+    tagline: "5,700 FT Alpine Sanctuary • Hidden Gem of Darjeeling",
+    propertyStory: "Discover the pristine tranquility of the Hidden Gem of Darjeeling. Situated 5,700 feet above sea level amidst towering pine forests, Satrangi Lamahatta is an exclusive alpine retreat designed for luxury escapes, romantic honeymoons, and peaceful mountain getaways. Relax before crackling cedar fireplaces, wake up to unobstructed 270-degree Kanchenjunga views, and savor handcrafted teas with personalized Sherpa hospitality.",
     highlights: [
-      "270-Degree Unobstructed Kanchenjunga Mountain Views",
-      "Private Sunset Hearth Decks & Cedar Wood Fireplaces",
-      "Romantic Couples' Sunset Teas & Fireside Stargazing",
-      "Guided Pine Grove Forest Treks & Sherpa Village Trails"
+      "Unobstructed 270-Degree Kanchenjunga Mountain Panoramas",
+      "Luxury Alpine Chalets with Private Cedar Fireplace Decks",
+      "Curated Tea Estate Tastings & Guided Himalayan Forest Treks",
+      "Romantic Mountain Sunset Experiences with Underfloor Heating"
     ],
     coordinates: {
       lat: 27.0145,
