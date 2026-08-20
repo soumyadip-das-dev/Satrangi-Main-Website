@@ -88,26 +88,30 @@ export default function SuitePhotoCarousel({
         />
       </AnimatePresence>
 
-      {/* Angle caption overlay */}
-      <div className="absolute top-3 left-3 bg-[#1A2421]/60 backdrop-blur-xs px-2.5 py-1 text-[9px] font-mono tracking-widest text-[#FDFBF7] uppercase border border-[#FDFBF7]/20 rounded-xs select-none">
-        Angle {index + 1} / {angles.length}
-      </div>
+      {/* Photo counter overlay */}
+      {angles.length > 1 && (
+        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 text-[10px] font-sans font-medium text-white/90 rounded-full border border-white/10 select-none pointer-events-none">
+          {index + 1} / {angles.length} Photos
+        </div>
+      )}
 
       {angles.length > 1 && (
         <>
           {/* Nav Controls */}
           <button
+            type="button"
             onClick={prevSlide}
-            aria-label="Previous image angle"
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#1A2421]/50 hover:bg-[#1A2421]/80 backdrop-blur-xs border border-white/20 flex items-center justify-center text-[#FDFBF7] opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-1 group-hover:translate-x-0"
+            aria-label="Previous image"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-xs border border-white/20 flex items-center justify-center text-white transition-all cursor-pointer shadow-md"
           >
             <ArrowLeft size={14} />
           </button>
           
           <button
+            type="button"
             onClick={nextSlide}
-            aria-label="Next image angle"
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#1A2421]/50 hover:bg-[#1A2421]/80 backdrop-blur-xs border border-white/20 flex items-center justify-center text-[#FDFBF7] opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0"
+            aria-label="Next image"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-xs border border-white/20 flex items-center justify-center text-white transition-all cursor-pointer shadow-md"
           >
             <ArrowRight size={14} />
           </button>
