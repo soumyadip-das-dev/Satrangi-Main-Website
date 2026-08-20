@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { X } from "lucide-react";
 import BookingFlow from "./BookingFlow";
 import { Destination, Room, Booking } from "../types";
@@ -12,9 +12,12 @@ interface BookingModalProps {
   bookings?: Booking[];
   currency?: Currency;
   initialDestId?: string;
+  initialRoomId?: string;
   initialCheckIn?: string;
   initialCheckOut?: string;
-  onBookingComplete?: () => void;
+  initialGuestsCount?: number;
+  initialStep?: number;
+  onBookingComplete?: (booking: Booking) => void;
 }
 
 export default function BookingModal({
@@ -25,11 +28,13 @@ export default function BookingModal({
   bookings,
   currency = "INR",
   initialDestId,
+  initialRoomId,
   initialCheckIn,
   initialCheckOut,
+  initialGuestsCount,
+  initialStep,
   onBookingComplete,
 }: BookingModalProps) {
-  // Lock background body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -45,7 +50,6 @@ export default function BookingModal({
 
   return (
     <div
-      onClick={onClose}
       className="fixed inset-0 z-[300] bg-[#1C352D]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in"
     >
       {/* Modal Card */}
@@ -86,10 +90,13 @@ export default function BookingModal({
             bookings={bookings}
             currency={currency}
             initialDestId={initialDestId}
+            initialRoomId={initialRoomId}
             initialCheckIn={initialCheckIn}
             initialCheckOut={initialCheckOut}
-            onBookingComplete={() => {
-              if (onBookingComplete) onBookingComplete();
+            initialGuestsCount={initialGuestsCount}
+            initialStep={initialStep}
+            onBookingComplete={(newB) => {
+              if (onBookingComplete) onBookingComplete(newB);
             }}
             onNavigateHome={onClose}
           />
@@ -98,4 +105,3 @@ export default function BookingModal({
     </div>
   );
 }
-
