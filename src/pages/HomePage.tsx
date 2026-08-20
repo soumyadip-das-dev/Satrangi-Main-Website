@@ -3,6 +3,7 @@ import { ArrowRight, MapPin, Calendar, Users, Compass, Sparkles, Star } from "lu
 import { Destination, Room } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
 import SuitePhotoCarousel from "../components/SuitePhotoCarousel";
+import { getFormattedDateString } from "../utils/bookingUtils";
 
 interface HomePageProps {
   destinations: Destination[];
@@ -14,6 +15,8 @@ interface HomePageProps {
   setCheckInSelect: (d: string) => void;
   checkOutSelect: string;
   setCheckOutSelect: (d: string) => void;
+  guestsCountSelect?: number;
+  setGuestsCountSelect?: (g: number) => void;
   onNavigate: (view: string, subParam?: any) => void;
   onSelectRoomModal: (room: Room) => void;
 }
@@ -28,6 +31,8 @@ export default function HomePage({
   setCheckInSelect,
   checkOutSelect,
   setCheckOutSelect,
+  guestsCountSelect = 2,
+  setGuestsCountSelect,
   onNavigate,
   onSelectRoomModal,
 }: HomePageProps) {
@@ -163,8 +168,15 @@ export default function HomePage({
             </label>
             <input
               type="date"
+              min={getFormattedDateString(0)}
               value={checkInSelect}
-              onChange={(e) => setCheckInSelect(e.target.value)}
+              onChange={(e) => {
+                const newIn = e.target.value;
+                setCheckInSelect(newIn);
+                if (checkOutSelect <= newIn) {
+                  setCheckOutSelect(getFormattedDateString(1, newIn));
+                }
+              }}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl text-xs py-2 px-3 text-gray-800 outline-none focus:border-[#B85A32] font-medium"
             />
           </div>
@@ -175,6 +187,7 @@ export default function HomePage({
             </label>
             <input
               type="date"
+              min={getFormattedDateString(1, checkInSelect)}
               value={checkOutSelect}
               onChange={(e) => setCheckOutSelect(e.target.value)}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl text-xs py-2 px-3 text-gray-800 outline-none focus:border-[#B85A32] font-medium"
@@ -186,14 +199,18 @@ export default function HomePage({
               <Users size={12} /> Guests
             </label>
             <select
-              value={2}
-              onChange={() => {}}
+              value={guestsCountSelect}
+              onChange={(e) => {
+                if (setGuestsCountSelect) setGuestsCountSelect(Number(e.target.value));
+              }}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl text-xs py-2.5 px-3 text-gray-800 outline-none focus:border-[#B85A32] font-semibold"
             >
-              <option value={1}>1 Guest</option>
-              <option value={2}>2 Guests</option>
-              <option value={3}>3 Guests</option>
-              <option value={4}>4 Guests</option>
+              <option value={1}>1 Guest (Solo)</option>
+              <option value={2}>2 Guests (Couple)</option>
+              <option value={3}>3 Guests (Family)</option>
+              <option value={4}>4 Guests (Suite)</option>
+              <option value={5}>5 Guests (Group)</option>
+              <option value={6}>6 Guests (Large)</option>
             </select>
           </div>
 
@@ -201,104 +218,114 @@ export default function HomePage({
             onClick={() => onNavigate("booking", selectedDestIdForBooking)}
             className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer mt-2 sm:mt-0"
           >
-            <span>Check Suites</span>
+            <span>Check Availability</span>
             <ArrowRight size={14} />
           </button>
         </div>
       </section>
 
-      {/* Tailored Escapes Section */}
-      <section className="py-16 bg-[#FAF8F5] border-y border-gray-200/60 my-6">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="text-[10px] text-[#B85A32] font-sans font-bold uppercase tracking-[0.3em] block mb-2">
-              Tailored Hospitality
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1C352D]">
+      {/* Tailored Escapes Section - Vertical Alternating Layout */}
+      <section className="py-20 bg-[#FAF8F5] border-y border-gray-200/60 my-6">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#1C352D] tracking-tight">
               Crafted For Every Traveler's Journey
             </h2>
-            <p className="text-xs text-gray-500 font-sans max-w-xl mx-auto mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 font-sans max-w-2xl mx-auto mt-3 leading-relaxed">
               Whether you are traveling solo, reconnecting as a couple, vacationing with family, or seeking deep cultural immersion.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            {/* Solo */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all">
-              <div className="w-10 h-10 rounded-xl bg-[#1C352D]/10 text-[#1C352D] flex items-center justify-center mb-4">
-                <Compass size={20} />
-              </div>
-              <span className="text-[9px] uppercase font-bold text-[#B85A32] tracking-widest block mb-1">
-                Solo Explorers & Writers
-              </span>
-              <h3 className="font-serif text-lg font-bold text-[#1C352D] mb-2">
-                Quiet Sanctuaries & Safe Immersion
-              </h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-sans">
-                Restful reading nooks, ultra-fast Starlink Wi-Fi, peaceful garden alcoves, and genuine family-style Bengali warmth where you are always treated like kin.
-              </p>
-            </div>
+          <div className="space-y-16 lg:space-y-24">
+            {[
+              {
+                category: "Solo Explorers & Writers",
+                title: "Finding Stillness in the Quiet Sanctuaries",
+                story: "For the solitary wanderer and the creative mind, our retreats are designed as peaceful havens. Spend uninterrupted mornings writing beside sunlit verandahs, recharge in leafy courtyard alcoves with freshly pressed Darjeeling teas, and enjoy fast, reliable connectivity whenever inspiration strikes. Here, you are wrapped in gentle, unobtrusive Bengali hospitality—cherished and safe, yet entirely free to reflect and create.",
+                vignette: "“A quiet desk, a view of whispering casuarinas, and time that slows down just for you.”",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He"
+              },
+              {
+                category: "Couples & Romantic Getaways",
+                title: "Moments of Pure Connection & Mountain Mist",
+                story: "Celebrate love where the mountains meet the clouds and rivers murmur beneath stilted wooden balconies. Watch the sunrise paint the snowfields of Kanchenjunga in gold from your private cedar deck, share quiet conversations by glowing wood fires, and drift along tranquil estuary waters on a private sundown boat ride. Every detail is curated to nurture presence, warmth, and timeless romance.",
+                vignette: "“Starlit dinners, hearthside warmth, and sunrises you will remember forever.”",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBmLnwLvvmBMo_LEn4HXapXrg4o3CzJ0u_sAQxzu0Mspt-tAeH3n3JYdR4wdMYVuPKJzAhesuhz-p_MuPD6cOkTy9vMnpdGGFhye89muEOb2xfVy_8miZMwKyymfLB6Ku_lf1LnBabW_hMROSUOvHqh9zR0Vnh1YC_6kT5T67zhLwMgugbDlY_yO-PabasywOHuYivaAlvT4n1Dejvbkiv_larDzmnh8eFcKO7HeGRQPz0M7wM8AHct1rXpR4b9bYPAO0lWcIDsvq5wdgY"
+              },
+              {
+                category: "Families & Multi-Generational Stays",
+                title: "Joyful Spaces Where Generations Gather",
+                story: "Family vacations are about shared laughter over wholesome meals and discoveries across untamed trails. Our interconnected suites and generous heritage living rooms provide ample space for grandparents to relax while children safely explore organic gardens and guided nature walks. Enjoy mild, comforting Bengali culinary feasts prepared with fresh harvest ingredients that bring everyone happily together.",
+                vignette: "“Spacious heritage suites, family-style feasting, and stories told under the stars.”",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac"
+              },
+              {
+                category: "Cultural Enthusiasts & Heritage Seekers",
+                title: "Living Bengal’s Living Heritage & Artistry",
+                story: "Step beyond the tourist trail and enter the living rhythm of Bengal. Sleep beneath classical high-vaulted ceilings on polished red-oxide floors, meet generational clay sculptors in historic potters' quarters, and savor heirloom recipes slow-cooked on traditional earthen hearths. This is not just a place to stay—it is an authentic cultural dialogue rooted in craft, poetry, and architectural heritage.",
+                vignette: "“Centennial architecture, heirloom flavors, and the soul of Bengal’s artisan traditions.”",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48p"
+              },
+              {
+                category: "Culinary & Soulful Gastronomy",
+                title: "Heirloom Flavors & Farm-to-Table Dining",
+                story: "Every meal at Satrangi is an authentic culinary journey rooted in ancestral recipes and fertile regional harvests. Wake up to fragrant Darjeeling teas and fluffy luchi with spiced alur dom, savor freshly caught coastal bhetki and coconut prawns in Sundarban, and enjoy slow-simmered mountain broths in Lamahatta. Prepared with freshly stone-ground spices and organic produce, each dish is served with the warmth of a home kitchen.",
+                vignette: "“Heirloom recipes, stone-ground spices, and feasts prepared with genuine home warmth.”",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4"
+              }
+            ].map((journey, index) => {
+              const isEven = index % 2 === 0;
+              return (
+                <div
+                  key={journey.category}
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center text-left"
+                >
+                  {/* Image Column */}
+                  <div className={`lg:col-span-6 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
+                    <div className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 group">
+                      <div className="aspect-[4/3] w-full overflow-hidden">
+                        <img
+                          src={journey.image}
+                          alt={journey.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
+                    </div>
+                  </div>
 
-            {/* Couples */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all">
-              <div className="w-10 h-10 rounded-xl bg-[#B85A32]/10 text-[#B85A32] flex items-center justify-center mb-4">
-                <Sparkles size={20} />
-              </div>
-              <span className="text-[9px] uppercase font-bold text-[#B85A32] tracking-widest block mb-1">
-                Couples & Romantic Getaways
-              </span>
-              <h3 className="font-serif text-lg font-bold text-[#1C352D] mb-2">
-                Intimate Views & Fireside Hearths
-              </h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-sans">
-                Private sunset decks overlooking Kanchenjunga, stilted estuarine cabins, fireside rhododendron teas, and moonlit river boat cruises.
-              </p>
-            </div>
+                  {/* Story Text Column */}
+                  <div className={`lg:col-span-6 ${isEven ? "lg:order-2" : "lg:order-1"}`}>
+                    <div className="lg:max-w-xl">
+                      <h3 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#1C352D] mb-5 leading-[1.2] tracking-tight">
+                        {journey.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-sans mb-6 font-normal">
+                        {journey.story}
+                      </p>
 
-            {/* Families */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all">
-              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 text-[#C5A059] flex items-center justify-center mb-4">
-                <Users size={20} />
-              </div>
-              <span className="text-[9px] uppercase font-bold text-[#B85A32] tracking-widest block mb-1">
-                Families & Small Groups
-              </span>
-              <h3 className="font-serif text-lg font-bold text-[#1C352D] mb-2">
-                Spacious Suites & Shared Memories
-              </h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-sans">
-                Connected family rooms, extra rollaway beds, kid-friendly mild Bengali meals, and safe guided nature walks in Lamahatta and Sundarban.
-              </p>
-            </div>
-
-            {/* Cultural Enthusiasts */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all">
-              <div className="w-10 h-10 rounded-xl bg-emerald-800/10 text-emerald-800 flex items-center justify-center mb-4">
-                <Star size={20} />
-              </div>
-              <span className="text-[9px] uppercase font-bold text-[#B85A32] tracking-widest block mb-1">
-                Cultural Enthusiasts
-              </span>
-              <h3 className="font-serif text-lg font-bold text-[#1C352D] mb-2">
-                Authentic Heritage & Local Crafts
-              </h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-sans">
-                Restored 1920s red oxide floor suites, artisan clay workshops in Kolkata, and organic farm-to-table dining prepared by local generational cooks.
-              </p>
-            </div>
+                      {/* Lyrical Vignette Quote */}
+                      <div className="border-l-2 border-[#B85A32] pl-4 py-1.5 italic font-serif text-sm sm:text-base text-gray-600">
+                        {journey.vignette}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Destinations Portfolio Grid */}
       <section className="py-20 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <span className="text-xs uppercase tracking-[0.4em] text-[#B85A32] font-bold block mb-3">
-            CURATED PORTFOLIO
-          </span>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold italic text-[#1C352D]">
-            Three Distinct Ecosystems
+        <div className="text-center mb-16 max-w-2xl mx-auto">
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold italic text-[#1C352D] mb-3">
+            Our Stays: Where Stories Unfold
           </h2>
+          <p className="text-xs sm:text-sm text-gray-600 font-sans leading-relaxed">
+            Three distinct landscapes across Bengal, each thoughtfully curated for timeless comfort, heritage charm, and warm homestyle hospitality.
+          </p>
           <div className="w-16 h-0.5 bg-[#B85A32] mx-auto mt-4" />
         </div>
 
