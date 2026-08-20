@@ -69,7 +69,7 @@ export default function HomePage({
   return (
     <div className="animate-fade-in">
       {/* Hero Carousel Slider */}
-      <section className="relative h-[85vh] min-h-[500px] w-full overflow-hidden bg-[#2D463E]">
+      <section className="relative h-[80vh] sm:h-[85vh] min-h-[520px] sm:min-h-[580px] w-full overflow-hidden bg-[#2D463E]">
         {heroSlides.map((slide, idx) => (
           <div
             key={idx}
@@ -81,20 +81,20 @@ export default function HomePage({
               className="absolute inset-0 bg-cover bg-center bg-no-referrer scale-105 transition-transform duration-[6s]"
               style={{ backgroundImage: `url(${slide.img})` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-[#faf9f6]/95" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#faf9f6]/95" />
 
             {/* Hero Content Overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20">
-              <span className="text-white mb-4 text-xs font-semibold tracking-[0.4em] uppercase opacity-95">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-20">
+              <span className="text-[#E6C587] mb-2 sm:mb-4 text-[10px] sm:text-xs font-semibold tracking-[0.25em] sm:tracking-[0.4em] uppercase opacity-95">
                 {slide.tagline}
               </span>
-              <h1 className="font-serif text-white text-5xl sm:text-7xl font-bold max-w-4xl mb-6 italic leading-tight">
+              <h1 className="font-serif text-white text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold max-w-4xl mb-4 sm:mb-6 italic leading-tight">
                 {slide.title}
               </h1>
-              <p className="text-white/80 font-sans text-sm sm:text-base max-w-xl mb-8 leading-relaxed font-light">
+              <p className="text-white/85 font-sans text-xs sm:text-sm md:text-base max-w-xl mb-6 sm:mb-8 leading-relaxed font-light px-2">
                 {slide.desc}
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-xs sm:max-w-none">
                 <button
                   onClick={() =>
                     onNavigate(
@@ -105,7 +105,7 @@ export default function HomePage({
                         : "lamahatta"
                     )
                   }
-                  className="bg-white hover:bg-[#A45D3B] hover:text-white text-[#2D463E] px-8 py-3.5 text-xs font-semibold uppercase tracking-widest transition-all duration-300 shadow-lg cursor-pointer"
+                  className="w-full sm:w-auto bg-white hover:bg-[#A45D3B] hover:text-white text-[#2D463E] px-6 sm:px-8 py-3 sm:py-3.5 text-xs font-semibold uppercase tracking-widest transition-all duration-300 shadow-lg cursor-pointer text-center"
                 >
                   Explore Escape
                 </button>
@@ -120,7 +120,7 @@ export default function HomePage({
                         : "lamahatta"
                     )
                   }
-                  className="border border-white/50 hover:bg-white/10 text-white px-8 py-3.5 text-xs font-semibold uppercase tracking-widest transition-all cursor-pointer"
+                  className="w-full sm:w-auto border border-white/60 hover:bg-white/10 text-white px-6 sm:px-8 py-3 sm:py-3.5 text-xs font-semibold uppercase tracking-widest transition-all cursor-pointer text-center"
                 >
                   Book Your Stay
                 </button>
@@ -130,13 +130,13 @@ export default function HomePage({
         ))}
 
         {/* Slider Dots */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+        <div className="absolute bottom-16 sm:bottom-12 left-1/2 -translate-x-1/2 flex gap-2.5 sm:gap-3 z-30">
           {heroSlides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setHeroIndex(idx)}
-              className={`w-10 h-1 transition-all ${
-                idx === heroIndex ? "bg-[#A45D3B]" : "bg-white/40 hover:bg-white"
+              className={`h-1.5 sm:h-1 rounded-full transition-all ${
+                idx === heroIndex ? "w-8 sm:w-10 bg-[#C5A059]" : "w-4 sm:w-6 bg-white/40 hover:bg-white"
               }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
@@ -145,10 +145,10 @@ export default function HomePage({
       </section>
 
       {/* Floating Glassmorphic Quick Booking Search Bar */}
-      <section className="relative z-30 -mt-12 max-w-5xl mx-auto px-6">
-        <div className="bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl border border-gray-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-center">
+      <section className="relative z-30 -mt-10 sm:-mt-12 max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white/95 backdrop-blur-xl p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 items-center">
           <div>
-            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1.5 font-bold flex items-center gap-1">
+            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1 font-bold flex items-center gap-1">
               <MapPin size={12} /> Select Retreat
             </label>
             <select
@@ -163,7 +163,7 @@ export default function HomePage({
           </div>
 
           <div>
-            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1.5 font-bold flex items-center gap-1">
+            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1 font-bold flex items-center gap-1">
               <Calendar size={12} /> Check-In
             </label>
             <input
@@ -182,7 +182,7 @@ export default function HomePage({
           </div>
 
           <div>
-            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1.5 font-bold flex items-center gap-1">
+            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1 font-bold flex items-center gap-1">
               <Calendar size={12} /> Check-Out
             </label>
             <input
@@ -195,7 +195,7 @@ export default function HomePage({
           </div>
 
           <div>
-            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1.5 font-bold flex items-center gap-1">
+            <label className="block text-[10px] text-[#B85A32] uppercase tracking-widest mb-1 font-bold flex items-center gap-1">
               <Users size={12} /> Guests
             </label>
             <select
@@ -214,21 +214,23 @@ export default function HomePage({
             </select>
           </div>
 
-          <button
-            onClick={() => onNavigate("booking", selectedDestIdForBooking)}
-            className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer mt-2 sm:mt-0"
-          >
-            <span>Check Availability</span>
-            <ArrowRight size={14} />
-          </button>
+          <div className="sm:col-span-2 lg:col-span-1">
+            <button
+              onClick={() => onNavigate("booking", selectedDestIdForBooking)}
+              className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer mt-1 sm:mt-0"
+            >
+              <span>Check Availability</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* Tailored Escapes Section - Vertical Alternating Layout */}
-      <section className="py-20 bg-[#FAF8F5] border-y border-gray-200/60 my-6">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#1C352D] tracking-tight">
+      <section className="py-12 sm:py-20 bg-[#FAF8F5] border-y border-gray-200/60 my-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-[#1C352D] tracking-tight">
               Crafted For Every Traveler's Journey
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 font-sans max-w-2xl mx-auto mt-3 leading-relaxed">
@@ -318,9 +320,9 @@ export default function HomePage({
       </section>
 
       {/* Destinations Portfolio Grid */}
-      <section className="py-20 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold italic text-[#1C352D] mb-3">
+      <section className="py-12 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10 sm:mb-16 max-w-2xl mx-auto">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold italic text-[#1C352D] mb-3">
             Our Stays: Where Stories Unfold
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 font-sans leading-relaxed">
@@ -329,34 +331,31 @@ export default function HomePage({
           <div className="w-16 h-0.5 bg-[#B85A32] mx-auto mt-4" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left mb-12 sm:mb-20">
           {/* Kolkata */}
           <div
             onClick={() => onNavigate("kolkata")}
             className="group cursor-pointer bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col justify-between"
           >
             <div>
-              <div className="h-64 overflow-hidden relative">
+              <div className="h-56 sm:h-64 overflow-hidden relative">
                 <img
                   src="/kolkata_hero.png"
                   alt="Kolkata Heritage Residence"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#1C352D] text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">
-                  Urban Heritage
-                </span>
               </div>
-              <div className="p-6">
-                <h3 className="font-serif text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
-                  Kolkata Heritage
+              <div className="p-5 sm:p-6">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
+                  Kolkata - The City of Joy
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-light mb-4">
-                  A lovingly conserved 1920s classical townhouse in central Kolkata with courtyard reading alcoves and regional libraries.
+                  Immerse yourself in the soulful charm of The City of Joy. Experience luxury heritage living in our restored 1920s townhouse with courtyard dining and central city convenience.
                 </p>
               </div>
             </div>
-            <div className="p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
-              <span>Explore Residence</span>
+            <div className="p-5 sm:p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
+              <span>Explore</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#B85A32]" />
             </div>
           </div>
@@ -367,27 +366,24 @@ export default function HomePage({
             className="group cursor-pointer bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col justify-between"
           >
             <div>
-              <div className="h-64 overflow-hidden relative">
+              <div className="h-56 sm:h-64 overflow-hidden relative">
                 <img
                   src="/sundarban_hero.png"
                   alt="Sundarban Estuarine Sanctuary"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#1C352D] text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">
-                  Delta Eco Safari
-                </span>
               </div>
-              <div className="p-6">
-                <h3 className="font-serif text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
-                  Sundarban Delta
+              <div className="p-5 sm:p-6">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
+                  Sundarban - The Bengal Delta
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-light mb-4">
-                  High-comfort stilted cabins perched on G-Plot island shoreline with electric mangrove boat safaris and fresh estuarine feasts.
+                  Unlock the untamed beauty of The Bengal Delta. Stay in eco-luxury stilted villas on pristine island shores, complete with private river safaris and fresh coastal feasts.
                 </p>
               </div>
             </div>
-            <div className="p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
-              <span>Explore Eco Lodge</span>
+            <div className="p-5 sm:p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
+              <span>Explore</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#B85A32]" />
             </div>
           </div>
@@ -398,27 +394,24 @@ export default function HomePage({
             className="group cursor-pointer bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col justify-between"
           >
             <div>
-              <div className="h-64 overflow-hidden relative">
+              <div className="h-56 sm:h-64 overflow-hidden relative">
                 <img
                   src="/lamahatta_hero.png"
                   alt="Lamahatta Mountain Sanctuary"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#1C352D] text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">
-                  5,700 FT Alpine Retreat
-                </span>
               </div>
-              <div className="p-6">
-                <h3 className="font-serif text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
-                  Lamahatta Alpine
+              <div className="p-5 sm:p-6">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C352D] mb-2 group-hover:text-[#B85A32] transition-colors">
+                  Lamahatta - Hidden Gem of Darjeeling
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-light mb-4">
-                  Himalayan mountain villas above pine cloud lines featuring private hearth fire decks and stargazing roof windows.
+                  Escape to the Hidden Gem of Darjeeling at 5,700 FT. Indulge in private alpine chalets featuring sweeping Kanchenjunga mountain panoramas and cozy hearth fireplaces.
                 </p>
               </div>
             </div>
-            <div className="p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
-              <span>Explore Mountain Sanctuary</span>
+            <div className="p-5 sm:p-6 pt-0 flex justify-between items-center text-xs font-semibold text-[#1C352D] border-t border-gray-100 mt-4">
+              <span>Explore</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#B85A32]" />
             </div>
           </div>
