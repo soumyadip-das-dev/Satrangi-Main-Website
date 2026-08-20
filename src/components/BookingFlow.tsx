@@ -1,22 +1,30 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Check, Calendar, Users, MapPin, ChevronRight, ChevronLeft, ShieldCheck, Mail, Phone, Info, Send, Eye, X, CheckCircle2, RefreshCw } from "lucide-react";
-import { Destination, Room, Booking, SentEmail } from "../types";
+import { useState, useEffect } from "react";
+import { 
+  Check, 
+  Calendar, 
+  Users, 
+  ChevronRight, 
+  ChevronLeft, 
+  ShieldCheck, 
+  Mail, 
+  Info, 
+  Eye, 
+  X, 
+  CheckCircle2, 
+  RefreshCw, 
+  CreditCard, 
+  QrCode, 
+  Building2, 
+  Copy, 
+  Printer, 
+  Clock, 
+  HeartHandshake
+} from "lucide-react";
+import { Destination, Room, Booking } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
-
-const isRoomAvailable = (roomId: string, checkIn: string, checkOut: string, bookings: any[]) => {
-  if (!checkIn || !checkOut) return true;
-  const start = new Date(checkIn);
-  const end = new Date(checkOut);
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
-    return true;
-  }
-  return !bookings.some((b: any) => {
-    if (b.roomId !== roomId || b.status === "cancelled") return false;
-    const bStart = new Date(b.checkIn);
-    const bEnd = new Date(b.checkOut);
-    return start < bEnd && end > bStart;
-  });
-};
+import { destinationsData, roomsData } from "../data/mockData";
+import { getFormattedDateString, isRoomAvailable, getAmenityEmoji } from "../utils/bookingUtils";
+import SuitePhotoCarousel from "./SuitePhotoCarousel";
 
 interface BookingProps {
   destinations?: Destination[];
@@ -25,132 +33,153 @@ interface BookingProps {
   currency?: Currency;
   initialDestId?: string;
   initialDestinationId?: string;
+  initialRoomId?: string;
   initialCheckIn?: string;
   initialCheckOut?: string;
-  onBookingComplete?: () => void;
+  initialGuestsCount?: number;
+  initialStep?: number;
+  onBookingComplete?: (newBooking: Booking) => void;
   onNavigateHome?: () => void;
 }
 
 export default function BookingFlow({ 
+  destinations = destinationsData,
+  rooms = roomsData,
+  bookings: initialBookings = [],
   initialDestId,
-  initialDestinationId, 
+  initialDestinationId,
+  initialRoomId,
   initialCheckIn, 
   initialCheckOut, 
+  initialGuestsCount,
+  initialStep,
   onBookingComplete, 
   onNavigateHome,
   currency = "INR"
 }: BookingProps) {
-  const effectiveDestId = initialDestId || initialDestinationId;
-  const [step, setStep] = useState<number>(1);
-  const [destinations, setDestinations] = useState<Destination[]>([]);
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [bookingsList, setBookingsList] = useState<any[]>([]);
+  const effectiveDestId = initialDestId || initialDestinationId || "lamahatta";
+  const [step, setStep] = useState<number>(() => initialStep || (initialRoomId ? 3 : 1));
+  const [bookingsList, setBookingsList] = useState<any[]>(() => {
+    const saved = localStorage.getItem("satrangi_bookings");
+    if (saved) {
+      try { return JSON.parse(saved); } catch {}
+    }
+    return initialBookings;
+  });
   
-  // Ref to track current step — prevents stale closures in async callbacks
-  const stepRef = useRef<number>(1);
-  // Ref to abort in-flight room fetches when step changes
-  const roomFetchAbortRef = useRef<AbortController | null>(null);
+  // Selection state with dynamic current date defaults
+  const todayStr = getFormattedDateString(0);
+  const defaultCheckIn = initialCheckIn || todayStr;
+  const defaultCheckOut = initialCheckOut || getFormattedDateString(3, defaultCheckIn);
+
+  const [selectedDestination, setSelectedDestination] = useState<string>(effectiveDestId);
+  const [checkIn, setCheckIn] = useState<string>(defaultCheckIn);
+  const [checkOut, setCheckOut] = useState<string>(defaultCheckOut);
+  const [guestsCount, setGuestsCount] = useState<number>(initialGuestsCount || 2);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(() => {
+    if (initialRoomId) {
+      const match = rooms.find(r => r.id === initialRoomId);
+      if (match) return match;
+    }
+    const destRooms = rooms.filter(r => r.destinationId === effectiveDestId);
+    return destRooms.length > 0 ? destRooms[0] : null;
+  });
+
+  useEffect(() => {
+    if (initialDestId || initialDestinationId) {
+      setSelectedDestination(initialDestId || initialDestinationId || "lamahatta");
+    }
+    if (initialRoomId) {
+      const match = rooms.find(r => r.id === initialRoomId);
+      if (match) setSelectedRoom(match);
+    }
+    if (initialCheckIn) setCheckIn(initialCheckIn);
+    if (initialCheckOut) setCheckOut(initialCheckOut);
+    if (initialGuestsCount) setGuestsCount(initialGuestsCount);
+    if (initialStep) {
+      setStep(initialStep);
+    } else if (initialRoomId) {
+      setStep(3);
+    }
+  }, [initialDestId, initialDestinationId, initialRoomId, initialCheckIn, initialCheckOut, initialGuestsCount, initialStep]);
   
-  // Form selections state
-  const [selectedDestination, setSelectedDestination] = useState<string>(effectiveDestId || "lamahatta");
-  const [checkIn, setCheckIn] = useState<string>(initialCheckIn || "2026-06-25");
-  const [checkOut, setCheckOut] = useState<string>(initialCheckOut || "2026-06-28");
-  const [guestsCount, setGuestsCount] = useState<number>(2);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  
-  // Guest personal state
+  // Guest personal & request details
   const [guestName, setGuestName] = useState<string>("");
   const [guestEmail, setGuestEmail] = useState<string>("");
   const [guestPhone, setGuestPhone] = useState<string>("");
+  const [specialRequests, setSpecialRequests] = useState<string>("");
+
+  // Payment method state
+  const [paymentMethod, setPaymentMethod] = useState<"pay_at_property" | "online_upi" | "online_card" | "advance_deposit">("pay_at_property");
+  const [upiId, setUpiId] = useState<string>("");
+  const [cardNumber, setCardNumber] = useState<string>("");
+  const [cardExpiry, setCardExpiry] = useState<string>("");
+  const [cardCvv, setCardCvv] = useState<string>("");
   
-  // Submission outcome state
+  // Submission & confirmed outcome state
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
-  const [currentSentEmail, setCurrentSentEmail] = useState<SentEmail | null>(null);
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
-  const [resendingEmail, setResendingEmail] = useState<boolean>(false);
-  const [emailStatusMsg, setEmailStatusMsg] = useState<string | null>(null);
 
-  // Frozen snapshot of Step 7 display data — once set, never changes
-  const [frozenDisplayData, setFrozenDisplayData] = useState<{
-    destName: string;
-    roomName: string;
-    totalPrice: number;
-  } | null>(null);
+  // Handle smart check-in date change
+  const handleCheckInChange = (newDate: string) => {
+    setCheckIn(newDate);
+    if (checkOut <= newDate) {
+      setCheckOut(getFormattedDateString(1, newDate));
+    }
+  };
 
-  // Keep stepRef in sync with state and scroll container to top on step change
+  // Available rooms for currently selected destination
+  const availableDestinationRooms = rooms.filter((r) => r.destinationId === selectedDestination);
+
+  // Update room selection if destination changes
   useEffect(() => {
-    stepRef.current = step;
+    if (step === 5) return;
+    const destRooms = rooms.filter(r => r.destinationId === selectedDestination);
+    if (initialRoomId) {
+      const match = destRooms.find(r => r.id === initialRoomId);
+      if (match) {
+        setSelectedRoom(match);
+        return;
+      }
+    }
+    const firstAvail = destRooms.find(r => isRoomAvailable(r.id, checkIn, checkOut, bookingsList));
+    if (firstAvail) {
+      setSelectedRoom(firstAvail);
+    } else if (destRooms.length > 0) {
+      setSelectedRoom(destRooms[0]);
+    }
+  }, [selectedDestination]);
+
+  // Scroll to top on step changes
+  useEffect(() => {
     const scrollContainer = document.getElementById("booking-modal-scroll-container");
     if (scrollContainer) {
       scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [step]);
 
-  // Load destinations & live bookings
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/destinations").then(res => res.json()),
-      fetch("/api/bookings").then(res => res.json())
-    ])
-    .then(([dests, bookingsData]) => {
-      setDestinations(dests);
-      setBookingsList(bookingsData || []);
-    })
-    .catch((e) => console.error("Error loading destinations and live bookings", e));
-  }, []);
+  // Helper calculations
+  const getNightsCount = () => {
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diff = Math.abs(end.getTime() - start.getTime());
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)) || 1;
+  };
 
-  // Fetch rooms only when NOT on the confirmation step.
-  // Uses AbortController to cancel stale requests and stepRef to prevent
-  // async callbacks from mutating state after the user has moved to Step 7.
-  useEffect(() => {
-    if (!selectedDestination || step >= 7) return;
+  const currentDestinationObj = destinations.find((d) => d.id === selectedDestination);
+  const totalNights = getNightsCount();
+  const totalPrice = selectedRoom ? selectedRoom.pricePerNight * totalNights : 0;
+  const depositAmount = Math.round(totalPrice * 0.3);
 
-    // Abort any prior in-flight room fetch
-    if (roomFetchAbortRef.current) {
-      roomFetchAbortRef.current.abort();
-    }
-    const controller = new AbortController();
-    roomFetchAbortRef.current = controller;
-
-    fetch(`/api/rooms?destinationId=${selectedDestination}`, { signal: controller.signal })
-      .then((res) => res.json())
-      .then((data) => {
-        // Double-check step AFTER async resolution — if user already moved
-        // to Step 7, do NOT overwrite rooms/selectedRoom state
-        if (stepRef.current >= 7) return;
-        
-        setRooms(data);
-        const firstAvailable = data.find((r: Room) => isRoomAvailable(r.id, checkIn, checkOut, bookingsList));
-        if (firstAvailable) {
-          setSelectedRoom(firstAvailable);
-        } else if (data.length > 0) {
-          setSelectedRoom(data[0]);
-        } else {
-          setSelectedRoom(null);
-        }
-      })
-      .catch((e) => {
-        if (e.name !== "AbortError") {
-          console.error("Error loading destination rooms", e);
-        }
-      });
-
-    return () => {
-      controller.abort();
-    };
-  // NOTE: `step` is intentionally excluded from dependencies to prevent
-  // re-fetching rooms when we transition to Step 7. The guard `step >= 7`
-  // at the top and `stepRef.current >= 7` in the callback handle this.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDestination, bookingsList, checkIn, checkOut]);
-
-  // Handle step increments with local validation
+  // Step navigation & validation
   const goToStep = (targetStep: number) => {
     setErrorMsg(null);
-    if (targetStep === 3) {
-      // Validate dates
+
+    // Validate dates when moving past Step 1
+    if (targetStep > 1 && step === 1) {
       const start = new Date(checkIn);
       const end = new Date(checkOut);
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
@@ -162,361 +191,348 @@ export default function BookingFlow({
         return;
       }
     }
+
+    // Validate room selection when moving past Step 2
+    if (targetStep > 2 && step === 2) {
+      if (!selectedRoom) {
+        setErrorMsg("Please select an available suite to continue.");
+        return;
+      }
+      if (!isRoomAvailable(selectedRoom.id, checkIn, checkOut, bookingsList)) {
+        setErrorMsg("The selected suite is already reserved for these dates. Please choose another suite.");
+        return;
+      }
+    }
+
+    // Validate guest details when moving past Step 3
+    if (targetStep > 3 && step === 3) {
+      if (!guestName.trim()) {
+        setErrorMsg("Please enter your full name.");
+        return;
+      }
+      if (!guestEmail.trim() || !guestEmail.includes("@")) {
+        setErrorMsg("Please enter a valid email address for your confirmation voucher.");
+        return;
+      }
+      if (!guestPhone.trim() || guestPhone.trim().length < 8) {
+        setErrorMsg("Please enter a valid mobile number for check-in coordination.");
+        return;
+      }
+    }
+
     setStep(targetStep);
   };
 
-  // Compute calculated values
-  const getNightsCount = () => {
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const diff = Math.abs(end.getTime() - start.getTime());
-    return Math.ceil(diff / (1000 * 60 * 60 * 24)) || 1;
+  // Special request helper tags
+  const specialRequestPresets = [
+    "Quiet corner room",
+    "Late arrival (after 6 PM)",
+    "Pure vegetarian Bengali food",
+    "Airport / Station pickup transfer",
+    "Anniversary / Celebration decor",
+    "Extra bed / linen requested"
+  ];
+
+  const handleTogglePreset = (preset: string) => {
+    if (specialRequests.includes(preset)) {
+      setSpecialRequests(prev => prev.replace(preset, "").replace(/,\s*,/g, ",").replace(/^,\s*|,\s*$/g, "").trim());
+    } else {
+      setSpecialRequests(prev => prev.trim() ? `${prev.trim()}, ${preset}` : preset);
+    }
   };
 
-  const currentDestinationObj = destinations.find((d) => d.id === selectedDestination);
-  const totalNights = getNightsCount();
-  const totalPrice = selectedRoom ? selectedRoom.pricePerNight * totalNights : 0;
-
   // Submit Reservation
-  const handleCreateBooking = () => {
+  const handleConfirmReservation = () => {
     if (!selectedRoom) return;
+
+    if (paymentMethod === "online_upi" && !upiId.trim()) {
+      setErrorMsg("Please enter a UPI ID (e.g., yourname@okaxis) or select Pay at Property.");
+      return;
+    }
+    if (paymentMethod === "online_card" && (!cardNumber.trim() || cardNumber.replace(/\s/g, "").length < 12)) {
+      setErrorMsg("Please enter a valid 16-digit card number or choose another payment method.");
+      return;
+    }
+
     setLoading(true);
     setErrorMsg(null);
 
-    // Abort any in-flight room fetches — we're done with room selection
-    if (roomFetchAbortRef.current) {
-      roomFetchAbortRef.current.abort();
-      roomFetchAbortRef.current = null;
-    }
+    const effectivePaymentStatus = paymentMethod === "pay_at_property" 
+      ? "Pay at Property" 
+      : paymentMethod === "advance_deposit" 
+      ? "partial_paid" 
+      : "paid";
 
-    // Snapshot display data BEFORE the async call so it's frozen for Step 7
-    const snapshotDisplayData = {
-      destName: currentDestinationObj?.name || "Satrangi Retreat",
-      roomName: selectedRoom.name || "Room 1",
-      totalPrice: totalPrice,
-    };
+    const customPaymentId = paymentMethod === "pay_at_property"
+      ? `pay_property_${Math.random().toString(36).substring(2, 9)}`
+      : paymentMethod === "online_upi"
+      ? `upi_${Math.random().toString(36).substring(2, 9)}`
+      : paymentMethod === "online_card"
+      ? `card_${Math.random().toString(36).substring(2, 9)}`
+      : `dep_${Math.random().toString(36).substring(2, 9)}`;
 
-    const payload = {
+    const destName = currentDestinationObj?.name || "Satrangi Sanctuary";
+    const newBookingId = `SR-${Math.floor(1000 + Math.random() * 9000)}-B${bookingsList.length + 1}`;
+
+    const newBooking: Booking = {
+      id: newBookingId,
       destinationId: selectedDestination,
       roomId: selectedRoom.id,
       checkIn,
       checkOut,
-      guestsCount,
       guestName,
       guestEmail,
       guestPhone,
-      paymentStatus: "Pay at Property"
+      guestsCount: Number(guestsCount) || 2,
+      specialRequests: specialRequests.trim() || undefined,
+      paymentMethod,
+      totalPrice: totalPrice,
+      paymentStatus: effectivePaymentStatus,
+      paymentId: customPaymentId,
+      status: "confirmed",
+      createdAt: new Date().toISOString(),
+      confirmationEmail: {
+        id: `email-${Date.now()}`,
+        bookingId: newBookingId,
+        to: guestEmail,
+        subject: `Booking Confirmation - Satrangi Homestay (${destName}) #${newBookingId}`,
+        bodyHtml: `
+          <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #FAF9F6; border: 1px solid #E5E7EB; border-radius: 8px;">
+            <div style="background-color: #1C352D; color: #ffffff; padding: 24px; text-align: center; border-radius: 6px;">
+              <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">SATRANGI HOMESTAY</h1>
+              <p style="margin: 6px 0 0 0; font-size: 11px; text-transform: uppercase; color: #C5A059;">Official Confirmation Voucher</p>
+            </div>
+            <div style="padding: 20px 10px;">
+              <h2 style="color: #1C352D; font-size: 20px;">Namaste ${guestName},</h2>
+              <p style="color: #4B5563; font-size: 14px; line-height: 1.6;">Your reservation at <strong>Satrangi Homestay (${destName})</strong> is confirmed for <strong>${selectedRoom.name}</strong> from <strong>${checkIn}</strong> to <strong>${checkOut}</strong> (${totalNights} night${totalNights > 1 ? "s" : ""}).</p>
+              <div style="background: #ffffff; border: 1px solid #E5E7EB; border-radius: 6px; padding: 16px; margin: 16px 0;">
+                <p style="margin: 4px 0; font-size: 13px;"><strong>Booking Reference:</strong> <span style="color: #B85A32; font-family: monospace;">${newBookingId}</span></p>
+                <p style="margin: 4px 0; font-size: 13px;"><strong>Suite:</strong> ${selectedRoom.name} (${selectedRoom.type})</p>
+                <p style="margin: 4px 0; font-size: 13px;"><strong>Payment Method:</strong> ${paymentMethod === "pay_at_property" ? "Pay at Property Upon Check-in" : paymentMethod === "advance_deposit" ? "30% Advance Deposit Paid" : "Full Online Payment"}</p>
+                <p style="margin: 4px 0; font-size: 14px; font-weight: bold; color: #B85A32;">Total Amount: ${formatPrice(totalPrice, currency)}</p>
+              </div>
+              <p style="font-size: 12px; color: #6B7280;">Complimentary breakfast, 0% platform fee, and 24/7 host concierge assistance are included in your reservation.</p>
+            </div>
+          </div>
+        `,
+        sentAt: new Date().toISOString()
+      }
     };
 
-    fetch("/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-      .then(async (res) => {
-        let data: any = {};
-        try {
-          data = await res.json();
-        } catch (err) {
-          data = {};
-        }
-        if (!res.ok) {
-          return null;
-        }
-        return data;
-      })
-      .then((booking: Booking | null) => {
-        if (!booking) {
-          const fallbackBooking: Booking = {
-            id: `SR-${Math.floor(1000 + Math.random() * 9000)}-B${bookingsList.length + 1}`,
-            destinationId: selectedDestination,
-            roomId: selectedRoom.id,
-            checkIn,
-            checkOut,
-            guestName,
-            guestEmail,
-            guestPhone,
-            guestsCount: Number(guestsCount) || 2,
-            totalPrice: snapshotDisplayData.totalPrice,
-            paymentStatus: "Pay at Property",
-            paymentId: `pay_property_${Math.random().toString(36).substring(2, 9)}`,
-            status: "confirmed",
-            createdAt: new Date().toISOString(),
-            confirmationEmail: {
-              id: `email-${Date.now()}`,
-              bookingId: `SR-${Math.floor(1000 + Math.random() * 9000)}`,
-              to: guestEmail,
-              subject: `Booking Confirmation - Satrangi Homestay (${snapshotDisplayData.destName})`,
-              bodyHtml: `<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #FAF9F6; border: 1px solid #E5E7EB;"><h2 style="color: #1C352D;">Namaste ${guestName},</h2><p>Your direct reservation at <strong>Satrangi Homestay (${snapshotDisplayData.destName})</strong> is confirmed for <strong>${snapshotDisplayData.roomName}</strong> from <strong>${checkIn}</strong> to <strong>${checkOut}</strong>.</p><p style="color: #B85A32; font-weight: bold;">Total Payable Upon Check-In (Pay at Property): ${formatPrice(snapshotDisplayData.totalPrice, currency)}</p></div>`,
-              sentAt: new Date().toISOString()
-            }
-          };
-          booking = fallbackBooking;
-        }
+    // Save to local storage
+    const updatedBookings = [newBooking, ...bookingsList];
+    setBookingsList(updatedBookings);
+    try {
+      localStorage.setItem("satrangi_bookings", JSON.stringify(updatedBookings));
+    } catch {}
 
-        // Freeze display data and set confirmed booking atomically
-        setFrozenDisplayData(snapshotDisplayData);
-        setConfirmedBooking(booking);
-        if (booking.confirmationEmail) {
-          setCurrentSentEmail(booking.confirmationEmail);
-        }
-        setLoading(false);
-        setStep(7);
-      })
-      .catch(() => {
-        const fallbackBooking: Booking = {
-          id: `SR-${Math.floor(1000 + Math.random() * 9000)}-B${bookingsList.length + 1}`,
-          destinationId: selectedDestination,
-          roomId: selectedRoom.id,
-          checkIn,
-          checkOut,
-          guestName,
-          guestEmail,
-          guestPhone,
-          guestsCount: Number(guestsCount) || 2,
-          totalPrice: snapshotDisplayData.totalPrice,
-          paymentStatus: "Pay at Property",
-          paymentId: `pay_property_${Math.random().toString(36).substring(2, 9)}`,
-          status: "confirmed",
-          createdAt: new Date().toISOString(),
-          confirmationEmail: {
-            id: `email-${Date.now()}`,
-            bookingId: `SR-${Math.floor(1000 + Math.random() * 9000)}`,
-            to: guestEmail,
-            subject: `Booking Confirmation - Satrangi Homestay (${snapshotDisplayData.destName})`,
-            bodyHtml: `<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #FAF9F6; border: 1px solid #E5E7EB;"><h2 style="color: #1C352D;">Namaste ${guestName},</h2><p>Your direct reservation at <strong>Satrangi Homestay (${snapshotDisplayData.destName})</strong> is confirmed for <strong>${snapshotDisplayData.roomName}</strong> from <strong>${checkIn}</strong> to <strong>${checkOut}</strong>.</p><p style="color: #B85A32; font-weight: bold;">Total Payable Upon Check-In (Pay at Property): ${formatPrice(snapshotDisplayData.totalPrice, currency)}</p></div>`,
-            sentAt: new Date().toISOString()
-          }
-        };
-
-        setFrozenDisplayData(snapshotDisplayData);
-        setConfirmedBooking(fallbackBooking);
-        if (fallbackBooking.confirmationEmail) {
-          setCurrentSentEmail(fallbackBooking.confirmationEmail);
-        }
-        setLoading(false);
-        setStep(7);
-      });
+    setTimeout(() => {
+      setConfirmedBooking(newBooking);
+      setLoading(false);
+      setStep(5);
+    }, 600);
   };
 
-  // Re-send simulated booking email
-  const handleResendEmail = () => {
-    const bookingToUse = confirmedBooking;
-    if (!bookingToUse) return;
-    setResendingEmail(true);
-    setEmailStatusMsg(null);
-
-    fetch("/api/send-confirmation-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingId: bookingToUse.id })
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to dispatch email.");
-        return data;
-      })
-      .then((data) => {
-        if (data.confirmationEmail) {
-          setCurrentSentEmail(data.confirmationEmail);
-        }
-        setEmailStatusMsg(`Simulated confirmation email dispatched to ${bookingToUse.guestEmail}!`);
-      })
-      .catch((e) => {
-        setEmailStatusMsg(`Failed: ${e.message}`);
-      })
-      .finally(() => {
-        setResendingEmail(false);
-      });
+  const copyBookingId = (id: string) => {
+    navigator.clipboard?.writeText(id);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2500);
   };
 
-  // Stable fallback for Step 7 display — uses useMemo to avoid creating
-  // new objects with Math.random() on every render
-  const activeBooking = useMemo(() => {
-    if (confirmedBooking) return confirmedBooking;
-    return {
-      id: "SR-0000-DIRECT",
-      destinationId: selectedDestination,
-      roomId: selectedRoom?.id || "room-1",
-      checkIn: checkIn || "2026-06-25",
-      checkOut: checkOut || "2026-06-28",
-      guestName: guestName || "Guest",
-      guestEmail: guestEmail || "guest@email.com",
-      guestPhone: guestPhone || "+91 00000 00000",
-      guestsCount: guestsCount || 2,
-      totalPrice: totalPrice || 0,
-      paymentStatus: "Pay at Property" as const,
-      paymentId: "pay_property_direct",
-      status: "confirmed" as const,
-      createdAt: new Date().toISOString()
-    };
-  }, [confirmedBooking, selectedDestination, selectedRoom, checkIn, checkOut, guestName, guestEmail, guestPhone, guestsCount, totalPrice]);
+  const activeBooking = confirmedBooking || {
+    id: "SR-7734-DIRECT",
+    destinationId: selectedDestination,
+    roomId: selectedRoom?.id || "room-1",
+    checkIn: checkIn || todayStr,
+    checkOut: checkOut || getFormattedDateString(3),
+    guestName: guestName || "Guest",
+    guestEmail: guestEmail || "guest@email.com",
+    guestPhone: guestPhone || "+91 98765 43210",
+    guestsCount: guestsCount || 2,
+    specialRequests: specialRequests || undefined,
+    paymentMethod: paymentMethod,
+    totalPrice: totalPrice || 0,
+    paymentStatus: paymentMethod === "pay_at_property" ? "Pay at Property" : "paid" as const,
+    paymentId: "pay_direct_guarantee",
+    status: "confirmed" as const,
+    createdAt: new Date().toISOString()
+  };
 
-  const activeSentEmail = useMemo(() => {
-    if (currentSentEmail) return currentSentEmail;
-    return {
-      id: "email-fallback",
-      bookingId: activeBooking.id,
-      to: activeBooking.guestEmail,
-      subject: `Booking Confirmation - Satrangi Homestay (${currentDestinationObj?.name || 'Retreat'})`,
-      bodyHtml: `<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #FAF9F6; border: 1px solid #E5E7EB;"><h2 style="color: #1C352D;">Namaste ${activeBooking.guestName},</h2><p>Your direct reservation at <strong>Satrangi Homestay (${currentDestinationObj?.name || 'Retreat'})</strong> is confirmed.</p></div>`,
-      sentAt: new Date().toISOString()
-    };
-  }, [currentSentEmail, activeBooking, currentDestinationObj]);
+  const displayDestName = destinations.find((d) => d.id === activeBooking.destinationId)?.name || currentDestinationObj?.name || "Satrangi Retreat";
+  const displayRoomName = rooms.find((r) => r.id === activeBooking.roomId)?.name || selectedRoom?.name || "Luxury Suite";
+  const finalTotalPrice = activeBooking.totalPrice || totalPrice || 0;
 
-  // Use frozen display data for Step 7, with fallbacks
-  const displayDestName = frozenDisplayData?.destName || destinations.find((d) => d.id === activeBooking.destinationId)?.name || currentDestinationObj?.name || "Satrangi Retreat";
-  const displayRoomName = frozenDisplayData?.roomName || rooms.find((r) => r.id === activeBooking.roomId)?.name || selectedRoom?.name || "Room 1";
-  const finalTotalPrice = frozenDisplayData?.totalPrice || activeBooking.totalPrice || totalPrice || 0;
+  const paymentMethodTitles: Record<string, string> = {
+    pay_at_property: "Pay at Property (Upon Check-In)",
+    online_upi: "Instant UPI / QR Code",
+    online_card: "Credit / Debit Card",
+    advance_deposit: "30% Advance Online Deposit"
+  };
 
   return (
-    <div className="max-w-4xl mx-auto py-2 sm:py-4 px-2 sm:px-4">
-      {/* Editorial Progress Bar */}
-      {step < 7 && (
-        <div className="mb-10">
-          <div className="flex justify-between text-[10px] font-sans uppercase tracking-[0.2em] text-gray-500 mb-3 font-semibold">
-            <span className={step >= 1 ? "text-[#B85A32] font-bold" : ""}>01. Destination & Dates</span>
-            <span className={step >= 3 ? "text-[#B85A32] font-bold" : ""}>02. Choose Suite</span>
-            <span className={step >= 4 ? "text-[#B85A32] font-bold" : ""}>03. Guest Details</span>
+    <div className="max-w-4xl mx-auto py-2 sm:py-4 px-2 sm:px-4 text-left">
+      {/* 4-Stage Stepper Bar */}
+      {step < 5 && (
+        <div className="mb-8">
+          <div className="grid grid-cols-4 text-[10px] font-sans uppercase tracking-[0.15em] text-gray-400 mb-3 font-semibold text-center">
+            <span className={step >= 1 ? "text-[#B85A32] font-bold" : ""}>1. Dates & Guests</span>
+            <span className={step >= 2 ? "text-[#B85A32] font-bold" : ""}>2. Choose Suite</span>
+            <span className={step >= 3 ? "text-[#B85A32] font-bold" : ""}>3. Guest Details</span>
+            <span className={step >= 4 ? "text-[#B85A32] font-bold" : ""}>4. Payment</span>
           </div>
           <div className="w-full h-1.5 bg-gray-200 rounded-full relative overflow-hidden">
             <div
               className="absolute left-0 top-0 h-full bg-[#B85A32] transition-all duration-500 rounded-full"
-              style={{ width: `${step === 1 ? 33 : step === 3 ? 66 : 100}%` }}
+              style={{ 
+                width: step === 1 ? "25%" : step === 2 ? "50%" : step === 3 ? "75%" : "100%" 
+              }}
             />
           </div>
         </div>
       )}
 
-      {/* Main Error Hub */}
+      {/* Error Message */}
       {errorMsg && (
-        <div className="mb-8 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 text-sm flex items-center gap-3 rounded-r-lg">
+        <div className="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 text-xs sm:text-sm flex items-center gap-3 rounded-r-xl">
           <Info size={18} className="shrink-0 text-rose-600" />
           <span className="font-sans font-medium">{errorMsg}</span>
         </div>
       )}
 
-      {/* STEP 1 & 2: Escape and Date details */}
+      {/* STEP 1: DATES, DESTINATION & GUEST COUNT */}
       {step === 1 && (
         <div className="animate-fade-in">
-          <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-2">
-            Direct Reservations
+          <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-1">
+            Step 01 of 04
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] mb-8 italic">
-            Where shall we welcome you?
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] mb-2 italic">
+            Where & when shall we welcome you?
           </h2>
+          <p className="text-xs text-gray-500 mb-6 font-sans">
+            Choose your preferred Bengal retreat, select your stay dates and number of travelers.
+          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {destinations.map((dest) => (
               <button
                 key={dest.id}
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedDestination(dest.id);
-                }}
-                className={`p-6 border text-left cursor-pointer transition-all rounded-2xl ${
+                onClick={() => setSelectedDestination(dest.id)}
+                className={`p-5 border text-left cursor-pointer transition-all rounded-2xl ${
                   selectedDestination === dest.id
                     ? "border-[#B85A32] bg-white shadow-xl ring-2 ring-[#B85A32]/20"
-                    : "border-gray-200 bg-white/60 hover:bg-white"
+                    : "border-gray-200 bg-white/70 hover:bg-white hover:border-gray-300"
                 }`}
               >
-                <span className="text-[10px] font-sans uppercase tracking-widest text-[#B85A32] font-bold block mb-1">
+                <span className="text-[9px] font-sans uppercase tracking-widest text-[#B85A32] font-bold block mb-1">
                   {dest.tagline}
                 </span>
-                <h3 className="font-serif text-xl font-bold text-[#1C352D] mb-2">
+                <h3 className="font-serif text-lg font-bold text-[#1C352D] mb-1">
                   {dest.name}
                 </h3>
-                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed font-sans">
-                  {dest.description}
+                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed font-sans font-light">
+                  {dest.propertyStory || dest.theme}
                 </p>
               </button>
             ))}
           </div>
 
           <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-md mb-8">
-            <h3 className="font-serif font-bold text-lg text-[#1C352D] mb-4">
-              Select Stay Duration & Guest Count
+            <h3 className="font-serif font-bold text-base text-[#1C352D] mb-4 flex items-center gap-2">
+              <Calendar size={16} className="text-[#B85A32]" />
+              <span>Select Stay Duration & Number of Guests</span>
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div>
-                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-500 mb-2 font-semibold">
+                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
                   Check-in Date
                 </label>
                 <input
                   type="date"
+                  min={todayStr}
                   value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] font-medium"
+                  onChange={(e) => handleCheckInChange(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-500 mb-2 font-semibold">
+                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
                   Check-out Date
                 </label>
                 <input
                   type="date"
+                  min={getFormattedDateString(1, checkIn)}
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-500 mb-2 font-semibold">
-                  Guests Count
+                <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
+                  Number of Guests
                 </label>
                 <select
                   value={guestsCount}
                   onChange={(e) => setGuestsCount(Number(e.target.value))}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
                 >
-                  <option value={1}>1 Guest</option>
-                  <option value={2}>2 Guests</option>
-                  <option value={3}>3 Guests</option>
-                  <option value={4}>4 Guests</option>
+                  <option value={1}>1 Guest (Solo Traveler)</option>
+                  <option value={2}>2 Guests (Couple / Pair)</option>
+                  <option value={3}>3 Guests (Small Group / Family)</option>
+                  <option value={4}>4 Guests (Family Suite)</option>
+                  <option value={5}>5 Guests (Extended Family)</option>
+                  <option value={6}>6 Guests (Group)</option>
                 </select>
               </div>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
+              <span className="flex items-center gap-1.5 font-sans">
+                <Clock size={14} className="text-[#B85A32]" />
+                Calculated stay duration: <strong className="text-gray-900 font-semibold">{totalNights} night{totalNights > 1 ? "s" : ""}</strong>
+              </span>
+              <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+                <ShieldCheck size={13} /> Direct Host Rates & Zero Commission
+              </span>
             </div>
           </div>
 
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToStep(3);
-              }}
-              className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-lg cursor-pointer"
+              onClick={() => goToStep(2)}
+              className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-lg hover:shadow-xl cursor-pointer"
             >
-              <span>Next: Choose Suite</span>
+              <span>Next: View Suites & Availability</span>
               <ChevronRight size={15} />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 3: Suite Selection */}
-      {step === 3 && (
+      {/* STEP 2: VIEW SUITES, AVAILABILITY & RATES */}
+      {step === 2 && (
         <div className="animate-fade-in">
           <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-1">
-            Step 02 of 03
+            Step 02 of 04
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] italic mb-2">
             Select Your Private Suite
           </h2>
-          <p className="text-gray-600 text-sm mb-8 font-sans">
-            Curated room inventory for <strong className="text-gray-900 capitalize">{currentDestinationObj?.name}</strong> for {totalNights} night(s).
+          <p className="text-gray-600 text-xs sm:text-sm mb-6 font-sans">
+            Showing room inventory for <strong className="text-gray-900 capitalize">{currentDestinationObj?.name}</strong> for {totalNights} night(s) ({checkIn} to {checkOut}).
           </p>
 
-          <div className="space-y-6">
-            {rooms.length === 0 ? (
+          <div className="space-y-5 mb-8">
+            {availableDestinationRooms.length === 0 ? (
               <div className="bg-white border border-gray-200/80 rounded-2xl p-12 text-center">
-                <p className="text-gray-500 text-sm">Loading available room inventory...</p>
+                <p className="text-gray-500 text-sm">No suites found for this destination.</p>
               </div>
             ) : (
-              rooms.map((room) => {
+              availableDestinationRooms.map((room) => {
                 const available = isRoomAvailable(room.id, checkIn, checkOut, bookingsList);
                 const isSelected = selectedRoom?.id === room.id;
 
@@ -526,24 +542,31 @@ export default function BookingFlow({
                     onClick={() => {
                       if (available) setSelectedRoom(room);
                     }}
-                    className={`bg-white border rounded-2xl p-6 transition-all cursor-pointer flex flex-col md:flex-row gap-6 ${
+                    className={`bg-white border rounded-2xl p-5 sm:p-6 transition-all cursor-pointer flex flex-col md:flex-row gap-5 ${
                       isSelected
                         ? "border-[#B85A32] shadow-xl ring-2 ring-[#B85A32]/20"
                         : available
-                        ? "border-gray-200/80 hover:border-gray-300"
-                        : "border-gray-200/50 opacity-60 bg-gray-50/50 cursor-not-allowed"
+                        ? "border-gray-200/80 hover:border-gray-300 hover:shadow-md"
+                        : "border-gray-200/50 opacity-60 bg-gray-50/60 cursor-not-allowed"
                     }`}
                   >
                     <div className="md:w-1/3 aspect-[4/3] rounded-xl overflow-hidden relative shrink-0">
-                      <img
-                        src={room.imageUrls[0]}
-                        alt={room.name}
-                        className="w-full h-full object-cover"
+                      <SuitePhotoCarousel
+                        suiteId={room.id}
+                        images={room.imageUrls}
+                        altText={room.name}
+                        heightClass="h-full min-h-[160px]"
                       />
-                      {!available && (
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
+                      {!available ? (
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 text-center pointer-events-none">
                           <span className="bg-rose-600 text-white px-3 py-1 rounded-full text-[10px] font-sans uppercase tracking-widest font-bold">
                             Reserved for dates
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="absolute top-2 left-2 pointer-events-none">
+                          <span className="bg-emerald-600/90 backdrop-blur-xs text-white px-2.5 py-0.5 rounded-full text-[9px] font-sans uppercase tracking-wider font-bold flex items-center gap-1">
+                            <CheckCircle2 size={10} /> Available
                           </span>
                         </div>
                       )}
@@ -556,37 +579,38 @@ export default function BookingFlow({
                             <span className="text-[10px] font-sans uppercase tracking-widest text-[#B85A32] font-bold">
                               {room.type} Suite
                             </span>
-                            <h3 className="font-serif text-2xl font-bold text-[#1C352D]">
+                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C352D]">
                               {room.name}
                             </h3>
                           </div>
                           <div className="text-right">
-                            <span className="font-serif text-2xl font-bold text-[#B85A32]">
+                            <span className="font-serif text-xl sm:text-2xl font-bold text-[#B85A32] block">
                               {formatPrice(room.pricePerNight * totalNights, currency)}
                             </span>
-                            <span className="block text-[10px] font-sans text-gray-400">
-                              {formatPrice(room.pricePerNight, currency)} / night
+                            <span className="text-[10px] font-sans text-gray-400">
+                              {formatPrice(room.pricePerNight, currency)} / night × {totalNights} night{totalNights > 1 ? "s" : ""}
                             </span>
                           </div>
                         </div>
 
-                        <p className="text-xs text-gray-600 line-clamp-2 mb-4 font-sans leading-relaxed">
+                        <p className="text-xs text-gray-600 line-clamp-2 mb-3 font-sans leading-relaxed">
                           {room.description}
                         </p>
 
-                        <div className="flex flex-wrap gap-2 mb-4">
+                        <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-3">
                           {room.amenities.map((amenity, i) => (
                             <span
                               key={i}
-                              className="bg-gray-50 border border-gray-200/80 text-gray-600 text-[10px] font-sans px-2.5 py-1 rounded-full"
+                              className="text-gray-700 text-xs font-sans flex items-center gap-1.5"
                             >
-                              {amenity}
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#B85A32]/80 shrink-0" />
+                              <span>{amenity}</span>
                             </span>
                           ))}
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-xs font-sans text-gray-500">
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-xs font-sans text-gray-500">
                         <span>Capacity: Up to {room.capacity} Guests • {room.sqft} sq.ft</span>
                         {isSelected && (
                           <span className="text-[#B85A32] font-bold flex items-center gap-1 uppercase tracking-wider text-[10px]">
@@ -601,13 +625,10 @@ export default function BookingFlow({
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-200/60">
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200/60">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToStep(1);
-              }}
+              onClick={() => goToStep(1)}
               className="border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all flex items-center gap-2 cursor-pointer"
             >
               <ChevronLeft size={15} />
@@ -616,10 +637,7 @@ export default function BookingFlow({
             <button
               type="button"
               disabled={!selectedRoom}
-              onClick={(e) => {
-                e.stopPropagation();
-                goToStep(4);
-              }}
+              onClick={() => goToStep(3)}
               className="bg-[#1C352D] disabled:bg-gray-300 hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-lg cursor-pointer"
             >
               <span>Next: Guest Details</span>
@@ -629,21 +647,24 @@ export default function BookingFlow({
         </div>
       )}
 
-      {/* STEP 4: Guest Details & Pay at Property Confirmation */}
-      {step === 4 && (
+      {/* STEP 3: GUEST INFORMATION & SPECIAL REQUESTS */}
+      {step === 3 && (
         <div className="animate-fade-in">
           <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-1">
-            Step 03 of 03
+            Step 03 of 04
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] italic mb-8">
-            Guest Details & Reservation Guarantee
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] italic mb-2">
+            Guest Details & Special Requests
           </h2>
+          <p className="text-gray-600 text-xs sm:text-sm mb-6 font-sans">
+            Please enter contact coordinates for your reservation voucher and note any personal preferences.
+          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="md:col-span-2 space-y-6">
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-8 shadow-md space-y-6">
+              <div className="bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-7 shadow-md space-y-5">
                 <div>
-                  <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
+                  <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-1.5 font-bold">
                     Guest Full Name *
                   </label>
                   <input
@@ -656,94 +677,137 @@ export default function BookingFlow({
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
-                      Email Address *
+                    <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-1.5 font-bold">
+                      Mobile Number *
                     </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        required
-                        value={guestEmail}
-                        onChange={(e) => setGuestEmail(e.target.value)}
-                        placeholder="priyanshi@yahoo.com"
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
-                      />
-                    </div>
+                    <input
+                      type="tel"
+                      required
+                      value={guestPhone}
+                      onChange={(e) => setGuestPhone(e.target.value)}
+                      placeholder="+91 91234 56789"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-2 font-bold">
-                      Mobile Number *
+                    <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-1.5 font-bold">
+                      Email Address *
                     </label>
-                    <div className="relative">
-                      <input
-                        type="tel"
-                        required
-                        value={guestPhone}
-                        onChange={(e) => setGuestPhone(e.target.value)}
-                        placeholder="+91 91234 56789"
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
-                      />
+                    <input
+                      type="email"
+                      required
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      placeholder="priyanshi@yahoo.com"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-1.5 font-bold">
+                    Guest Count
+                  </label>
+                  <select
+                    value={guestsCount}
+                    onChange={(e) => setGuestsCount(Number(e.target.value))}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
+                  >
+                    <option value={1}>1 Guest</option>
+                    <option value={2}>2 Guests</option>
+                    <option value={3}>3 Guests</option>
+                    <option value={4}>4 Guests</option>
+                    <option value={5}>5 Guests</option>
+                    <option value={6}>6 Guests</option>
+                  </select>
+                </div>
+
+                <div className="pt-4 border-t border-gray-100">
+                  <label className="block text-[10px] font-sans uppercase tracking-widest text-gray-600 mb-1.5 font-bold flex items-center justify-between">
+                    <span>Optional Special Requests</span>
+                    <span className="text-gray-400 font-normal lowercase">(optional)</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={specialRequests}
+                    onChange={(e) => setSpecialRequests(e.target.value)}
+                    placeholder="E.g., early check-in requested, dietary preferences, vegetarian meals, airport transfer coordination..."
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs sm:text-sm focus:outline-none focus:border-[#B85A32] focus:bg-white font-medium"
+                  />
+
+                  <div className="mt-2.5">
+                    <span className="text-[10px] text-gray-400 font-sans block mb-1.5 font-medium">Quick Suggestions (Click to add):</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {specialRequestPresets.map((preset, idx) => {
+                        const isSelected = specialRequests.includes(preset);
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => handleTogglePreset(preset)}
+                            className={`text-[10px] font-sans px-2.5 py-1 rounded-full border transition cursor-pointer ${
+                              isSelected
+                                ? "bg-[#B85A32] text-white border-[#B85A32]"
+                                : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+                            }`}
+                          >
+                            + {preset}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Sidebar Invoice Calculation summary */}
             <div className="md:col-span-1 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-md flex flex-col justify-between">
               <div>
-                <h3 className="font-serif font-bold text-xl text-[#1C352D] mb-4 pb-3 border-b border-gray-100">
+                <h3 className="font-serif font-bold text-lg text-[#1C352D] mb-4 pb-3 border-b border-gray-100">
                   Reservation Summary
                 </h3>
-                <div className="space-y-3.5 text-xs font-sans text-gray-600">
+                <div className="space-y-3 text-xs font-sans text-gray-600">
                   <div className="flex justify-between">
                     <span>Destination:</span>
                     <span className="font-semibold text-gray-900 capitalize">{currentDestinationObj?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Suite:</span>
+                    <span>Selected Suite:</span>
                     <span className="font-semibold text-gray-900 line-clamp-1 text-right">{selectedRoom?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Nights Count:</span>
-                    <span className="font-semibold text-gray-900">{totalNights} night(s)</span>
+                    <span>Dates:</span>
+                    <span className="font-semibold text-gray-900">{checkIn.slice(5)} to {checkOut.slice(5)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Guests count:</span>
-                    <span className="font-semibold text-gray-900">{guestsCount} adult(s)</span>
+                    <span>Nights Count:</span>
+                    <span className="font-semibold text-gray-900">{totalNights} night{totalNights > 1 ? "s" : ""}</span>
                   </div>
-                  <div className="pt-3 border-t border-gray-100 flex justify-between font-serif text-lg font-bold text-[#B85A32]">
-                    <span>Pay at Check-In:</span>
+                  <div className="flex justify-between">
+                    <span>Travelers:</span>
+                    <span className="font-semibold text-gray-900">{guestsCount} guest{guestsCount > 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="pt-3 border-t border-gray-100 flex justify-between font-serif text-base font-bold text-[#B85A32]">
+                    <span>Total Amount:</span>
                     <span>{formatPrice(totalPrice, currency)}</span>
                   </div>
                 </div>
               </div>
-              <div className="mt-6 text-[11px] text-gray-500 font-sans flex items-start gap-2 bg-gray-50 p-3 rounded-xl">
-                <ShieldCheck size={16} className="text-[#B85A32] shrink-0" />
-                <span>Direct host rate guarantee. Pay 100% of balance upon check-in at property.</span>
+
+              <div className="mt-6 text-[11px] text-gray-500 font-sans flex items-start gap-2 bg-[#FAF8F5] p-3 rounded-xl border border-gray-100">
+                <ShieldCheck size={16} className="text-[#B85A32] shrink-0 mt-0.5" />
+                <span>Zero reservation processing fee. Direct host rate guarantee.</span>
               </div>
             </div>
           </div>
 
-          {/* Pay at Property Guarantee Notice */}
-          <div className="mt-8 p-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl flex items-center gap-3.5 text-xs text-emerald-950 font-sans">
-            <ShieldCheck size={22} className="text-emerald-700 shrink-0" />
-            <div>
-              <span className="font-bold text-emerald-950 block mb-0.5">Pay at Property — No Advance Card Payment Needed</span>
-              <span>Your reservation will be instantly secured. You pay the balance of <strong>{formatPrice(totalPrice, currency)}</strong> directly at the homestay when you arrive.</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-200/60">
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200/60">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToStep(3);
-              }}
+              onClick={() => goToStep(2)}
               className="border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all flex items-center gap-2 cursor-pointer"
             >
               <ChevronLeft size={15} />
@@ -751,47 +815,319 @@ export default function BookingFlow({
             </button>
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()) {
-                  setErrorMsg("Please complete all personal and contact coordinate fields.");
-                  return;
-                }
-                if (!guestEmail.includes("@")) {
-                  setErrorMsg("Please enter a valid email address.");
-                  return;
-                }
-                handleCreateBooking();
-              }}
-              disabled={loading}
-              className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-lg cursor-pointer disabled:opacity-50"
+              onClick={() => goToStep(4)}
+              className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-lg cursor-pointer"
             >
-              <span>{loading ? "Confirming Booking..." : "Confirm Booking (Pay at Property)"}</span>
+              <span>Next: Choose Payment Method</span>
               <ChevronRight size={15} />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 7: GORGEOUS SUCCESS CONFIRMATION SLIP */}
-      {step === 7 && (
-        <div className="animate-fade-in text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 mb-6">
-            <ShieldCheck size={36} />
-          </div>
-
-          <span className="text-xs uppercase tracking-[0.3em] text-emerald-700 font-bold block mb-2">
-            Direct Booking Confirmed
+      {/* STEP 4: MAKE PAYMENT / CHOOSE PAYMENT METHOD */}
+      {step === 4 && (
+        <div className="animate-fade-in">
+          <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-1">
+            Step 04 of 04
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] mb-4 italic">
-            Your Bengal Story Awaits
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] italic mb-2">
+            Payment & Reservation Guarantee
           </h2>
-          <p className="text-gray-600 text-sm max-w-md mx-auto mb-8 leading-relaxed">
-            Congratulations! Your private sanctuary has been logged under direct rates. Details have been dispatched.
+          <p className="text-gray-600 text-xs sm:text-sm mb-6 font-sans">
+            Choose how you wish to settle your stay. Direct bookings offer flexible settlement options.
           </p>
 
-          {/* SIMULATED EMAIL CONFIRMATION DISPATCH BANNER */}
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-8 text-left shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="md:col-span-2 space-y-4">
+              {/* Option 1: Pay at Property */}
+              <div
+                onClick={() => setPaymentMethod("pay_at_property")}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                  paymentMethod === "pay_at_property"
+                    ? "bg-white border-[#B85A32] shadow-lg ring-2 ring-[#B85A32]/20"
+                    : "bg-white/80 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-xl ${paymentMethod === "pay_at_property" ? "bg-[#B85A32] text-white" : "bg-gray-100 text-gray-700"}`}>
+                      <Building2 size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base text-[#1C352D]">
+                        Pay at Property (Check-In)
+                      </h4>
+                      <span className="text-[10px] font-sans text-emerald-700 font-bold uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded-full">
+                        Recommended • 0% Advance Required
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "pay_at_property" ? "border-[#B85A32] bg-[#B85A32]" : "border-gray-300"}`}>
+                    {paymentMethod === "pay_at_property" && <Check size={12} className="text-white" />}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-2 font-sans pl-11">
+                  Your reservation is immediately locked in. Pay the full balance of <strong>{formatPrice(totalPrice, currency)}</strong> upon arrival at the homestay via Cash, UPI, or Card.
+                </p>
+              </div>
+
+              {/* Option 2: Instant Online UPI */}
+              <div
+                onClick={() => setPaymentMethod("online_upi")}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                  paymentMethod === "online_upi"
+                    ? "bg-white border-[#B85A32] shadow-lg ring-2 ring-[#B85A32]/20"
+                    : "bg-white/80 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-xl ${paymentMethod === "online_upi" ? "bg-[#B85A32] text-white" : "bg-gray-100 text-gray-700"}`}>
+                      <QrCode size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base text-[#1C352D]">
+                        Instant Online UPI / QR Code
+                      </h4>
+                      <span className="text-[10px] font-sans text-gray-500 font-medium">
+                        Google Pay, PhonePe, Paytm, BHIM
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "online_upi" ? "border-[#B85A32] bg-[#B85A32]" : "border-gray-300"}`}>
+                    {paymentMethod === "online_upi" && <Check size={12} className="text-white" />}
+                  </span>
+                </div>
+
+                {paymentMethod === "online_upi" && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 pl-11 animate-fade-in space-y-3">
+                    <p className="text-xs text-gray-600 font-sans">
+                      Enter your UPI ID or proceed to pay {formatPrice(totalPrice, currency)} directly:
+                    </p>
+                    <input
+                      type="text"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      placeholder="e.g. mobile@upi or username@okhdfcbank"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-mono outline-none focus:border-[#B85A32] focus:bg-white"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Option 3: Credit / Debit Card */}
+              <div
+                onClick={() => setPaymentMethod("online_card")}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                  paymentMethod === "online_card"
+                    ? "bg-white border-[#B85A32] shadow-lg ring-2 ring-[#B85A32]/20"
+                    : "bg-white/80 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-xl ${paymentMethod === "online_card" ? "bg-[#B85A32] text-white" : "bg-gray-100 text-gray-700"}`}>
+                      <CreditCard size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base text-[#1C352D]">
+                        Credit / Debit Card
+                      </h4>
+                      <span className="text-[10px] font-sans text-gray-500 font-medium">
+                        Visa, Mastercard, RuPay, Amex
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "online_card" ? "border-[#B85A32] bg-[#B85A32]" : "border-gray-300"}`}>
+                    {paymentMethod === "online_card" && <Check size={12} className="text-white" />}
+                  </span>
+                </div>
+
+                {paymentMethod === "online_card" && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 pl-11 animate-fade-in space-y-3">
+                    <input
+                      type="text"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      placeholder="Card Number (e.g. 4532 •••• •••• 8891)"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-mono outline-none focus:border-[#B85A32] focus:bg-white"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        value={cardExpiry}
+                        onChange={(e) => setCardExpiry(e.target.value)}
+                        placeholder="MM / YY"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono outline-none focus:border-[#B85A32] focus:bg-white"
+                      />
+                      <input
+                        type="password"
+                        value={cardCvv}
+                        maxLength={4}
+                        onChange={(e) => setCardCvv(e.target.value)}
+                        placeholder="CVV"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono outline-none focus:border-[#B85A32] focus:bg-white"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Option 4: 30% Advance Deposit */}
+              <div
+                onClick={() => setPaymentMethod("advance_deposit")}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                  paymentMethod === "advance_deposit"
+                    ? "bg-white border-[#B85A32] shadow-lg ring-2 ring-[#B85A32]/20"
+                    : "bg-white/80 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-xl ${paymentMethod === "advance_deposit" ? "bg-[#B85A32] text-white" : "bg-gray-100 text-gray-700"}`}>
+                      <HeartHandshake size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base text-[#1C352D]">
+                        30% Advance Deposit
+                      </h4>
+                      <span className="text-[10px] font-sans text-gray-500 font-medium">
+                        Pay {formatPrice(depositAmount, currency)} now, balance at check-in
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "advance_deposit" ? "border-[#B85A32] bg-[#B85A32]" : "border-gray-300"}`}>
+                    {paymentMethod === "advance_deposit" && <Check size={12} className="text-white" />}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-1 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-[#1C352D] mb-4 pb-3 border-b border-gray-100">
+                  Bill Breakdown
+                </h3>
+                <div className="space-y-3 text-xs font-sans text-gray-600">
+                  <div className="flex justify-between">
+                    <span>Suite Rate ({totalNights} night{totalNights > 1 ? "s" : ""}):</span>
+                    <span className="font-semibold text-gray-900">{formatPrice(totalPrice, currency)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>GST & Local Taxes:</span>
+                    <span className="text-emerald-700 font-medium">Included</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Direct Booking Discount:</span>
+                    <span className="text-emerald-700 font-medium">Applied</span>
+                  </div>
+                  <div className="pt-3 border-t border-gray-100 flex justify-between font-serif text-base font-bold text-[#1C352D]">
+                    <span>Total Bill:</span>
+                    <span>{formatPrice(totalPrice, currency)}</span>
+                  </div>
+                  <div className="pt-2 border-t border-gray-100 flex justify-between font-sans text-sm font-bold text-[#B85A32]">
+                    <span>Payable Now:</span>
+                    <span>
+                      {paymentMethod === "pay_at_property" 
+                        ? formatPrice(0, currency) 
+                        : paymentMethod === "advance_deposit" 
+                        ? formatPrice(depositAmount, currency) 
+                        : formatPrice(totalPrice, currency)}
+                    </span>
+                  </div>
+                  {paymentMethod !== "online_upi" && paymentMethod !== "online_card" && (
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Due at Check-in:</span>
+                      <span>
+                        {paymentMethod === "pay_at_property" 
+                          ? formatPrice(totalPrice, currency) 
+                          : formatPrice(totalPrice - depositAmount, currency)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 text-[11px] text-gray-500 font-sans flex items-start gap-2 bg-[#FAF8F5] p-3 rounded-xl border border-gray-100">
+                <ShieldCheck size={16} className="text-[#B85A32] shrink-0 mt-0.5" />
+                <span>Instant confirmation guarantee. Official voucher generated immediately.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200/60">
+            <button
+              type="button"
+              onClick={() => goToStep(3)}
+              className="border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <ChevronLeft size={15} />
+              <span>Back to Details</span>
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleConfirmReservation}
+              className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-9 py-4 rounded-full font-sans text-xs uppercase tracking-widest font-bold flex items-center gap-2 transition-all shadow-xl hover:shadow-2xl cursor-pointer disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <RefreshCw size={15} className="animate-spin" />
+                  <span>Confirming Reservation...</span>
+                </>
+              ) : (
+                <>
+                  <span>
+                    {paymentMethod === "pay_at_property" 
+                      ? "Confirm Booking (Pay at Property)" 
+                      : paymentMethod === "advance_deposit"
+                      ? `Pay ${formatPrice(depositAmount, currency)} Deposit & Confirm`
+                      : `Pay ${formatPrice(totalPrice, currency)} & Confirm`}
+                  </span>
+                  <CheckCircle2 size={16} />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 5: BOOKING CONFIRMED SCREEN */}
+      {step === 5 && (
+        <div className="animate-fade-in text-center max-w-2xl mx-auto py-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 mb-4 animate-bounce">
+            <CheckCircle2 size={36} />
+          </div>
+
+          <span className="text-xs uppercase tracking-[0.3em] text-emerald-700 font-bold block mb-1">
+            Reservation Confirmed & Guaranteed
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#1C352D] mb-3 italic">
+            Your Bengal Sanctuary Awaits
+          </h2>
+          <p className="text-gray-600 text-xs sm:text-sm max-w-md mx-auto mb-6 leading-relaxed">
+            Namaste <strong>{activeBooking.guestName}</strong>! Your stay at <strong>{displayDestName}</strong> is officially booked.
+          </p>
+
+          {/* Booking ID Highlight Pill */}
+          <div className="inline-flex items-center gap-3 bg-white border border-[#B85A32]/30 rounded-2xl px-5 py-3 shadow-md mb-6">
+            <div className="text-left">
+              <span className="text-[9px] uppercase tracking-widest text-gray-400 font-bold block">Official Booking ID</span>
+              <span className="font-mono text-base sm:text-lg font-bold text-[#B85A32] tracking-wider">{activeBooking.id}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => copyBookingId(activeBooking.id)}
+              className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition cursor-pointer"
+              title="Copy Booking ID"
+            >
+              {copiedId ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+            </button>
+          </div>
+
+          {/* Confirmation Email Voucher Banner */}
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 mb-8 text-left shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="p-2.5 bg-emerald-100 text-emerald-800 rounded-full mt-0.5 shrink-0">
@@ -799,15 +1135,15 @@ export default function BookingFlow({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-serif font-bold text-[#1C352D] text-base">
-                      Simulated Confirmation Sent
+                    <h4 className="font-serif font-bold text-[#1C352D] text-sm sm:text-base">
+                      Confirmation Voucher Generated
                     </h4>
                     <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      <CheckCircle2 size={10} /> Dispatched
+                      <CheckCircle2 size={10} /> Confirmed
                     </span>
                   </div>
                   <p className="text-xs text-emerald-900 mt-1 font-sans">
-                    A confirmation voucher was sent to <strong className="font-mono">{activeBooking.guestEmail}</strong>.
+                    A confirmation record has been created for <strong className="font-mono">{activeBooking.guestEmail}</strong>.
                   </p>
                 </div>
               </div>
@@ -815,150 +1151,139 @@ export default function BookingFlow({
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowEmailModal(true);
-                  }}
-                  className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-4 py-2 rounded-full text-xs font-sans uppercase tracking-wider font-bold flex items-center gap-2 transition cursor-pointer"
+                  onClick={() => setShowEmailModal(true)}
+                  className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-4 py-2 rounded-full text-xs font-sans uppercase tracking-wider font-bold flex items-center gap-1.5 transition cursor-pointer"
                 >
                   <Eye size={13} /> View Voucher
                 </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleResendEmail();
-                  }}
-                  disabled={resendingEmail}
-                  className="bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-900 px-3 py-2 rounded-full text-xs font-sans font-semibold flex items-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
-                >
-                  <RefreshCw size={12} className={resendingEmail ? "animate-spin" : ""} />
-                  {resendingEmail ? "Sending..." : "Resend"}
-                </button>
               </div>
             </div>
-
-            {emailStatusMsg && (
-              <div className="mt-3 text-xs font-semibold text-emerald-800 pt-2 border-t border-emerald-200/60 flex items-center gap-1.5">
-                <CheckCircle2 size={12} className="text-emerald-600" /> {emailStatusMsg}
-              </div>
-            )}
           </div>
 
-          {/* Printable Ticket Coupon Layout */}
-          <div className="bg-white border border-gray-200/80 text-left rounded-2xl overflow-hidden shadow-xl mb-10">
-            <div className="bg-[#1C352D] text-white p-6 flex justify-between items-baseline">
+          {/* Printable Ticket Voucher Slip */}
+          <div className="bg-white border border-gray-200 text-left rounded-2xl overflow-hidden shadow-xl mb-8">
+            <div className="bg-[#1C352D] text-white p-5 sm:p-6 flex justify-between items-baseline">
               <div>
-                <h3 className="font-serif text-lg font-bold">SATRANGI RESERVATION VOUCHER</h3>
-                <p className="text-[10px] uppercase opacity-70 tracking-widest mt-1">Luxury Eco-Retreats Bengal</p>
+                <h3 className="font-serif text-lg sm:text-xl font-bold tracking-wide">SATRANGI HOMESTAY VOUCHER</h3>
+                <p className="text-[10px] uppercase opacity-70 tracking-widest mt-0.5">Bengal Heritage & Eco-Retreats</p>
               </div>
               <div className="text-right">
-                <span className="font-mono text-xs block opacity-60">Voucher Order No:</span>
+                <span className="font-mono text-[10px] block opacity-60">BOOKING REFERENCE:</span>
                 <span className="font-mono text-sm font-semibold tracking-wider text-[#C5A059]">{activeBooking.id}</span>
               </div>
             </div>
 
-            <div className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12 text-sm font-sans">
+            <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-10 text-sm font-sans">
               <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Primary Guest Name</span>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Primary Guest</span>
                 <span className="font-serif text-base font-bold text-gray-900">{activeBooking.guestName}</span>
+                <span className="block text-xs text-gray-500 font-mono mt-0.5">{activeBooking.guestPhone} • {activeBooking.guestEmail}</span>
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Location Destination</span>
-                <span className="font-semibold text-gray-900 uppercase tracking-widest text-[#B85A32]">{displayDestName}</span>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Destination & Suite</span>
+                <span className="font-semibold text-gray-900 uppercase tracking-wider text-[#B85A32] block">{displayDestName}</span>
+                <span className="text-xs text-gray-600">{displayRoomName}</span>
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Selected Suite Option</span>
-                <span className="font-semibold text-gray-900">{displayRoomName}</span>
-              </div>
-
-              <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Travelers Capacity</span>
-                <span className="font-semibold text-gray-900">{activeBooking.guestsCount} Adult(s)</span>
-              </div>
-
-              <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Check-In Arrival (14:00)</span>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Check-In Arrival (14:00)</span>
                 <span className="font-mono font-semibold text-gray-900">{activeBooking.checkIn}</span>
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Check-Out Departure (11:00)</span>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Check-Out Departure (11:00)</span>
                 <span className="font-mono font-semibold text-gray-900">{activeBooking.checkOut}</span>
               </div>
 
-              <div className="sm:col-span-2 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-baseline gap-4">
+              <div>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Travelers</span>
+                <span className="font-semibold text-gray-900">{activeBooking.guestsCount} Guest(s)</span>
+              </div>
+
+              <div>
+                <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Payment Method</span>
+                <span className="font-semibold text-gray-900">{paymentMethodTitles[activeBooking.paymentMethod || "pay_at_property"] || activeBooking.paymentMethod}</span>
+              </div>
+
+              {activeBooking.specialRequests && (
+                <div className="sm:col-span-2 bg-[#FAF8F5] p-3 rounded-xl border border-gray-100">
+                  <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Special Requests</span>
+                  <span className="text-xs text-gray-700 italic">"{activeBooking.specialRequests}"</span>
+                </div>
+              )}
+
+              <div className="sm:col-span-2 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-baseline gap-3">
                 <div>
-                  <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Payment Method</span>
-                  <span className="font-sans text-xs text-emerald-800 font-bold bg-emerald-100/80 px-2.5 py-1 rounded-md">Pay at Property (Check-In)</span>
+                  <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Payment Status</span>
+                  <span className={`font-sans text-xs font-bold px-2.5 py-1 rounded-md ${
+                    activeBooking.paymentStatus === "paid" 
+                      ? "text-emerald-800 bg-emerald-100/80" 
+                      : activeBooking.paymentStatus === "partial_paid"
+                      ? "text-amber-800 bg-amber-100/80"
+                      : "text-blue-800 bg-blue-100/80"
+                  }`}>
+                    {activeBooking.paymentStatus === "paid" ? "PAID IN FULL" : activeBooking.paymentStatus === "partial_paid" ? "PARTIAL DEPOSIT PAID" : "PAY AT PROPERTY UPON CHECK-IN"}
+                  </span>
                 </div>
                 <div className="text-right">
-                  <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">Total Balance Payable</span>
+                  <span className="block text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Total Amount</span>
                   <span className="font-serif text-2xl font-bold text-[#B85A32]">{formatPrice(finalTotalPrice, currency)}</span>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="flex flex-wrap justify-center gap-4">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onBookingComplete) onBookingComplete();
+              onClick={() => {
+                if (onBookingComplete) onBookingComplete(activeBooking);
                 if (onNavigateHome) onNavigateHome();
               }}
               className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all shadow-lg cursor-pointer"
             >
-              Return to Homepage
+              Done & Return Home
             </button>
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.print();
-              }}
-              className="border border-gray-300 text-gray-700 hover:text-[#1C352D] hover:bg-gray-100 px-8 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all cursor-pointer"
+              onClick={() => window.print()}
+              className="border border-gray-300 text-gray-700 hover:text-[#1C352D] hover:bg-gray-100 px-7 py-3.5 rounded-full font-sans text-xs uppercase tracking-widest font-bold transition-all flex items-center gap-2 cursor-pointer"
             >
-              Print Receipt Voucher
+              <Printer size={15} />
+              <span>Print Voucher</span>
             </button>
           </div>
 
           {/* SIMULATED EMAIL PREVIEW MODAL */}
-          {showEmailModal && (
+          {showEmailModal && activeBooking.confirmationEmail && (
             <div
-              onClick={(e) => e.stopPropagation()}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setShowEmailModal(false)}
+              className="fixed inset-0 z-[400] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             >
               <div
                 onClick={(e) => e.stopPropagation()}
                 className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 animate-fade-in text-left"
               >
-                {/* Email Client Top Bar */}
                 <div className="bg-[#1C352D] text-white p-4 px-6 flex justify-between items-center border-b border-gray-800">
                   <div className="flex items-center gap-2">
                     <Mail size={18} className="text-[#C5A059]" />
-                    <span className="font-serif font-bold text-sm tracking-wide">Simulated Email Client</span>
+                    <span className="font-serif font-bold text-sm tracking-wide">Official Booking Email Voucher</span>
                   </div>
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowEmailModal(false);
-                    }}
+                    onClick={() => setShowEmailModal(false)}
                     className="text-gray-300 hover:text-white p-1 rounded transition cursor-pointer"
                   >
                     <X size={18} />
                   </button>
                 </div>
 
-                {/* Email Metadata Header */}
                 <div className="bg-gray-50 p-4 px-6 border-b border-gray-200 text-xs font-sans space-y-1.5">
                   <div className="flex gap-2">
                     <span className="text-gray-400 font-bold w-16">Subject:</span>
-                    <span className="font-semibold text-gray-900">{activeSentEmail.subject}</span>
+                    <span className="font-semibold text-gray-900">{activeBooking.confirmationEmail.subject}</span>
                   </div>
                   <div className="flex gap-2">
                     <span className="text-gray-400 font-bold w-16">From:</span>
@@ -966,36 +1291,27 @@ export default function BookingFlow({
                   </div>
                   <div className="flex gap-2">
                     <span className="text-gray-400 font-bold w-16">To:</span>
-                    <span className="text-gray-900 font-medium">{activeSentEmail.to}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-gray-400 font-bold w-16">Sent At:</span>
-                    <span className="text-gray-500 font-mono">{new Date(activeSentEmail.sentAt).toLocaleString()}</span>
+                    <span className="text-gray-900 font-medium">{activeBooking.confirmationEmail.to}</span>
                   </div>
                 </div>
 
-                {/* Email Body Content */}
                 <div className="p-6 overflow-y-auto flex-1 bg-[#FAF8F5]">
                   <div
                     className="prose prose-sm max-w-none rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white"
-                    dangerouslySetInnerHTML={{ __html: activeSentEmail.bodyHtml }}
+                    dangerouslySetInnerHTML={{ __html: activeBooking.confirmationEmail.bodyHtml }}
                   />
                 </div>
 
-                {/* Email Modal Footer */}
                 <div className="p-4 px-6 bg-white border-t border-gray-200 flex justify-between items-center text-xs font-sans">
                   <span className="text-gray-500 italic">
-                    Simulated voucher sent upon reservation completion.
+                    Official booking confirmation voucher
                   </span>
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowEmailModal(false);
-                    }}
+                    onClick={() => setShowEmailModal(false)}
                     className="bg-[#1C352D] hover:bg-[#B85A32] text-white px-5 py-2.5 rounded-full font-semibold uppercase tracking-wider text-[11px] transition shadow cursor-pointer"
                   >
-                    Close Preview
+                    Close Voucher
                   </button>
                 </div>
               </div>
