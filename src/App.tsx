@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import BookingFlow from "./components/BookingFlow";
 import BookingModal from "./components/BookingModal";
 import RoomDetailModal from "./components/RoomDetailModal";
 import { Helmet, getSEOConfig } from "./components/common/Helmet";
@@ -16,14 +15,19 @@ import ReviewsPage from "./pages/ReviewsPage";
 import BlogsPage from "./pages/BlogsPage";
 import GalleryPage from "./pages/GalleryPage";
 
+import { getFormattedDateString } from "./utils/bookingUtils";
+
 export default function App() {
   const [currentView, setCurrentView] = useState<string>("home");
   const [selectedDestIdForBooking, setSelectedDestIdForBooking] = useState<string>("lamahatta");
-  const [checkInSelect, setCheckInSelect] = useState<string>("2026-07-25");
-  const [checkOutSelect, setCheckOutSelect] = useState<string>("2026-07-27");
+  const [selectedRoomIdForBooking, setSelectedRoomIdForBooking] = useState<string | undefined>(undefined);
+  const [checkInSelect, setCheckInSelect] = useState<string>(() => getFormattedDateString(0));
+  const [checkOutSelect, setCheckOutSelect] = useState<string>(() => getFormattedDateString(3));
+  const [guestsCountSelect, setGuestsCountSelect] = useState<number>(2);
   const [currency, setCurrency] = useState<Currency>("INR");
 
   const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
+  const [bookingModalInitialStep, setBookingModalInitialStep] = useState<number>(1);
 
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -31,7 +35,6 @@ export default function App() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsSortBy, setReviewsSortBy] = useState<string>("latest");
 
@@ -44,20 +47,20 @@ export default function App() {
       if (experiences.length) setExperiences(experiences);
     });
 
-    fetchSecondaryData().then(({ blogs, gallery, faqs, bookings, reviews }) => {
+    fetchSecondaryData().then(({ blogs, gallery, faqs, reviews }) => {
       if (blogs.length) setBlogs(blogs);
       if (gallery.length) setGallery(gallery);
       if (faqs.length) setFaqs(faqs);
-      if (bookings.length) setBookings(bookings);
       if (reviews.length) setReviews(reviews);
     });
   }, []);
 
-  const handleNavigate = (view: string, subParam?: any) => {
+  const handleNavigate = (view: string, subParam?: any, stepParam?: number) => {
     if (subParam && typeof subParam === "string") {
       setSelectedDestIdForBooking(subParam);
     }
     if (view === "booking") {
+      setBookingModalInitialStep(stepParam || 1);
       setIsBookingModalOpen(true);
       return;
     }
@@ -92,6 +95,8 @@ export default function App() {
             setCheckInSelect={setCheckInSelect}
             checkOutSelect={checkOutSelect}
             setCheckOutSelect={setCheckOutSelect}
+            guestsCountSelect={guestsCountSelect}
+            setGuestsCountSelect={setGuestsCountSelect}
             onNavigate={handleNavigate}
             onSelectRoomModal={(room) => setSelectedRoomForModal(room)}
           />
@@ -105,7 +110,6 @@ export default function App() {
             rooms={rooms}
             experiences={experiences}
             reviews={reviews}
-            bookings={bookings}
             currency={currency}
             checkInSelect={checkInSelect}
             setCheckInSelect={setCheckInSelect}
@@ -115,9 +119,9 @@ export default function App() {
             setReviewsSortBy={setReviewsSortBy}
             onNavigate={handleNavigate}
             onReviewSubmitted={(newRev) => setReviews((prev) => [newRev, ...prev])}
+            onSelectRoomModal={(room) => setSelectedRoomForModal(room)}
           />
         )}
-
 
         {/* VIEW: GALLERY */}
         {currentView === "gallery" && <GalleryPage gallery={gallery} />}
@@ -210,7 +214,7 @@ export default function App() {
       {/* Floating WhatsApp CTA */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
-          href="https://wa.me/919876543210?text=Hello%20Satrangi%20Host%2C%20I%20have%20a%20question%20about%20booking."
+          href="https://wa.me/919876543210?text=Hello%20Satrangi%20Host%2C%20I%20have%20a%20question%20about%20staying%20at%20Satrangi."
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-5 py-3.5 rounded-full shadow-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300 transform hover:scale-105"
@@ -222,17 +226,20 @@ export default function App() {
       {/* Global Booking Modal Popup */}
       <BookingModal
         isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
+        onClose={() => {
+          setIsBookingModalOpen(false);
+          setSelectedRoomIdForBooking(undefined);
+          setBookingModalInitialStep(1);
+        }}
         destinations={destinations}
         rooms={rooms}
-        bookings={bookings}
         currency={currency}
         initialDestId={selectedDestIdForBooking}
+        initialRoomId={selectedRoomIdForBooking}
         initialCheckIn={checkInSelect}
         initialCheckOut={checkOutSelect}
-        onBookingComplete={() => {
-          fetchSecondaryData().then(({ bookings }) => setBookings(bookings));
-        }}
+        initialGuestsCount={guestsCountSelect}
+        initialStep={bookingModalInitialStep}
       />
 
       {/* Interactive Room Detail Modal */}
@@ -243,12 +250,16 @@ export default function App() {
           currency={currency}
           checkIn={checkInSelect}
           checkOut={checkOutSelect}
-          bookings={bookings}
+          initialGuestsCount={guestsCountSelect}
           onClose={() => setSelectedRoomForModal(null)}
-          onBookNow={(destId, roomId, checkIn, checkOut) => {
+          onBookNow={(destId, roomId, checkIn, checkOut, guestsCount) => {
             setSelectedDestIdForBooking(destId);
+            setSelectedRoomIdForBooking(roomId);
             setCheckInSelect(checkIn);
             setCheckOutSelect(checkOut);
+            setGuestsCountSelect(guestsCount);
+            setSelectedRoomForModal(null);
+            setBookingModalInitialStep(3);
             setIsBookingModalOpen(true);
           }}
         />
