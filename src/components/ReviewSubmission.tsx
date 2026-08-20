@@ -150,13 +150,13 @@ export default function ReviewSubmission({
   };
 
   return (
-    <div className="bg-white border border-gray-200/80 p-6 sm:p-8 rounded-3xl shadow-xl text-left max-w-xl mx-auto">
+    <div className="bg-white border border-gray-200/80 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl text-left max-w-xl mx-auto">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-5 sm:mb-6">
         <span className="text-[10px] text-[#B85A32] font-sans font-bold uppercase tracking-widest block mb-1">
           Guest Feedback
         </span>
-        <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C352D]">
+        <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-[#1C352D]">
           Share Your Experience
         </h3>
       </div>
