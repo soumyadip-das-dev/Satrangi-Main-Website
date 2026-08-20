@@ -43,8 +43,10 @@ export interface Booking {
   guestEmail: string;
   guestPhone: string;
   guestsCount: number;
+  specialRequests?: string;
+  paymentMethod?: "pay_at_property" | "online_upi" | "online_card" | "advance_deposit" | string;
   totalPrice: number;
-  paymentStatus: "pending" | "paid" | "Pay at Property";
+  paymentStatus: "pending" | "paid" | "Pay at Property" | "partial_paid";
   paymentId: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   createdAt: string;
