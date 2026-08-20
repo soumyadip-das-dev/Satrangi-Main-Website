@@ -1,0 +1,461 @@
+import { Destination, Room, Experience, GalleryItem, Blog, Review, FAQ } from "../types";
+
+export const destinationsData: Destination[] = [
+  {
+    id: "kolkata",
+    name: "Kolkata",
+    theme: "Heritage & Cultural Haven",
+    tagline: "Where 1920s Colonial Elegance Meets Generational Warmth",
+    propertyStory: "Step through soaring teak doorways into Satrangi Kolkata—a lovingly restored 1920s heritage townhouse crafted for curious solo travelers, romantic couples, and family staycations alike. High ceilings, cool red-oxide floors, quiet courtyard reading alcoves, and home-style Bengali meals create a welcoming sanctuary in the heart of historic Bengal.",
+    highlights: [
+      "Restored 1920s Heritage Townhouse & Courtyard Library",
+      "Chef-Guided Bengali Thali & Cooking Masterclasses",
+      "Peaceful Sanctuary Ideal for Solo Travelers & Couples",
+      "Minutes from Historic Park Street & Victoria Memorial"
+    ],
+    coordinates: {
+      lat: 22.5726,
+      lng: 88.3639
+    }
+  },
+  {
+    id: "sundarban",
+    name: "Sundarban",
+    theme: "Estuarine Eco-Lodge & Wildlife",
+    tagline: "Eco-crafted Lodging where Mangrove Rivers Meet Untouched Shores",
+    propertyStory: "Sculpted directly onto the pristine shoreline of G-Plot Island where the Saptamukhi estuary meets the Bay of Bengal, Satrangi Sundarban offers an unforgettable retreat. Designed for adventurous families, nature-loving couples, and solo explorers, our stilted eco-villas feature private sunset decks, guided river safaris, and organic local meals.",
+    highlights: [
+      "Private Guided Mangrove Safaris & Red Crab Beach Trails",
+      "Stilted High-Comfort Eco-Villas with Estuary Views",
+      "Safe, Kid-Friendly Family Excursions & Bird Watching",
+      "Fresh Local Estuarine Seafood & Organic Homestyle Dining"
+    ],
+    coordinates: {
+      lat: 21.9497,
+      lng: 89.1833
+    }
+  },
+  {
+    id: "lamahatta",
+    name: "Lamahatta",
+    theme: "Alpine Pine Serenity",
+    tagline: "5,700 FT Mountain Sanctuary Above the Himalayan Mist",
+    propertyStory: "Perched at 5,700 feet amidst whispering pine forests, Satrangi Lamahatta is a tranquil mountain haven for romantic honeymoons, inspiring solo writing retreats, and peaceful family holidays. Unobstructed Kanchenjunga mountain views, cedar wood fireplaces, underfloor heating, and guided Sherpa pine grove walks make every moment magical.",
+    highlights: [
+      "270-Degree Unobstructed Kanchenjunga Mountain Views",
+      "Private Sunset Hearth Decks & Cedar Wood Fireplaces",
+      "Romantic Couples' Sunset Teas & Fireside Stargazing",
+      "Guided Pine Grove Forest Treks & Sherpa Village Trails"
+    ],
+    coordinates: {
+      lat: 27.0145,
+      lng: 88.3571
+    }
+  }
+];
+
+export const roomsData: Room[] = [
+  {
+    id: "kolkata-heritage-suite",
+    destinationId: "kolkata",
+    name: "Room 1",
+    type: "Suite",
+    pricePerNight: 12500,
+    capacity: 2,
+    sqft: 600,
+    description: "A grand space featuring a signature four-poster teak wood king bed, high ceilings, classical brass fans, and a spacious private balcony overlooking our internal tropical courtyard.",
+    amenities: [
+      "California King Bed",
+      "Private Balcony",
+      "Courtyard View",
+      "Writing Desk",
+      "Premium Bath Kit",
+      "High Speed WiFi"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJeq_vj0KDUtJPIB7PTq-tylX6gWOLzTqaJlBtt9LK8HAh8VHrmqx-pnWFv14J_CNJLOXtWy6cgt5RHFfW4QWSYO1gtxXajpLH0quglHZTNI3a4rY7bCvtBBD_6GOuMPYDa024ftNuqGx5x6W0zM8p72QNgPOOu1SHRonQY2RCwC7Qv5v1RLyXVPh_k3eOCm8qNFoB1pgjLAOoYIDrBN6H5YjbsJ3DYVuwXqXepWn0bs2EZb8JNtvHk-OZaXxbcdj2Yb54ovIGO3RIA",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB-8jCUPK8lA8yx8afT_wUFH5VPn4vpihGsNM1SKzQLTjlpiOYnYq7z9qStjMDydKZKnZ0pM9jPCY4d3WPXAnSC5HkuOKweYszO_thhFFQps9gbkr3VXIijTjt8XbKurZzOvW7xZH-oXBrAgafvx0fjDVr5Pk0sRqJVsvZod4FLE7XmuPmSpqTj5pJUfxzukPLAPQkGDOlWGxM4b9j0-CcBMwMxXJSwkg1JCMeJqn5BB40QgZuXf3KLGp9tSnN86tEjfJJ1UqVUuOxw",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDj444XOzjH9AM-9irTf46WXsmEwmRpctkVYqvk7O2fsKFsdu71suPcdSw2Cn2AJ6HJ3aZ6qhJKtDoUjr8rUNCzszeSCzFIH2MI348s-Y1HED2PWBGpDpTTg3-2dnIieUeuSLZyzO_dqkCNrISQH5Bj41MZ_o_WJO3dUvKLVuC-Zx-zNpanUTF3qH3cLUU1m6YBCFfvub5m4hVSPdbUtuIDwEFkHcFE-ra_Jj139Vo7GyrJonarS_vNVg5nOT9inR4ZUMrvVCiXzLrj"
+    ]
+  },
+  {
+    id: "kolkata-colonial-room",
+    destinationId: "kolkata",
+    name: "Room 2",
+    type: "Standard",
+    pricePerNight: 8000,
+    capacity: 2,
+    sqft: 400,
+    description: "Timeless refinement featuring original red oxide flooring, restored colonial arches, antique side tables, and integrated modern amenities.",
+    amenities: [
+      "Queen Bed",
+      "Writing Desk",
+      "Rain Shower",
+      "Tea Maker",
+      "Smart Thermostat"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48p",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDUMH2y7aYU5D-wIlejxtRNuVkjKP3DMWu46MYLQm1iEp8vNb9zDNyynqdhBt18OkspDhnUjobekeUtH8X9ZHO201vhKvoe9PKUBQXQWPFU8zncaWxoV6TQgpWtZnUfTlI48ZFHEDt5cOd6JXnu1ti_G4Aa9mfxn0DPiG2XixqVyc18ki8VfSWvmKycXF94j1Bi1AAlcxVMaR7sNQ8zAncl4Vu5Yxt5u2vLTEH5qkq9M1yNeNuzwrfd_-s-uG7VffMb1wkdRtkv6lcDysA",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuA_sK9ldKlz2J4A8BAmXZZpCEpARMvPX5QzXapH-nHi4PlYh-Sv3mDD3b3j8_nVQVrK_XXHbU7rJsP8yrNPC2tiy5w_XwTwFs2jGgHvmVlSXeTAzKP13EWgRY8fhlo_WyNrV60-0lPV-BHWSGF3mvcdVMBfkxRVHsnQQqF7tUF9E42oaZNlpq13GggJL6yVsFVP3erfBJO5IgWgBkIsIxBl1rY-Y_t8dAE_ZlDEim8nuEW_H4x5dbGKuI3L6XpwOyF3cyqKf_YgstJJrio"
+    ]
+  },
+  {
+    id: "kolkata-zen-studio",
+    destinationId: "kolkata",
+    name: "Room 3",
+    type: "Studio",
+    pricePerNight: 6500,
+    capacity: 2,
+    sqft: 350,
+    description: "A compact urban oasis with clean lines, minimalist layout, soft natural wood aesthetics, and direct access to our roof-garden.",
+    amenities: [
+      "Double Bed",
+      "Roof-garden Access",
+      "Kitchenette",
+      "Smart TV",
+      "Organic Linens"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB-8jCUPK8lA8yx8afT_wUFH5VPn4vpihGsNM1SKzQLTjlpiOYnYq7z9qStjMDydKZKnZ0pM9jPCY4d3WPXAnSC5HkuOKweYszO_thhFFQps9gbkr3VXIijTjt8XbKurZzOvW7xZH-oXBrAgafvx0fjDVr5Pk0sRqJVsvZod4FLE7XmuPmSpqTj5pJUfxzukPLAPQkGDOlWGxM4b9j0-CcBMwMxXJSwkg1JCMeJqn5BB40QgZuXf3KLGp9tSnN86tEjfJJ1UqVUuOxw",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJeq_vj0KDUtJPIB7PTq-tylX6gWOLzTqaJlBtt9LK8HAh8VHrmqx-pnWFv14J_CNJLOXtWy6cgt5RHFfW4QWSYO1gtxXajpLH0quglHZTNI3a4rY7bCvtBBD_6GOuMPYDa024ftNuqGx5x6W0zM8p72QNgPOOu1SHRonQY2RCwC7Qv5v1RLyXVPh_k3eOCm8qNFoB1pgjLAOoYIDrBN6H5YjbsJ3DYVuwXqXepWn0bs2EZb8JNtvHk-OZaXxbcdj2Yb54ovIGO3RIA",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He"
+    ]
+  },
+  {
+    id: "sundarban-tiger-suite",
+    destinationId: "sundarban",
+    name: "Room 1",
+    type: "Suite",
+    pricePerNight: 12000,
+    capacity: 2,
+    sqft: 580,
+    description: "An elegant stilted wooden suite designed in harmony with coastal weather, featuring floor-to-ceiling glass paneling looking directly onto G-Plot Beach. Witness spectacular sunrises over mudflats and whispering casuarina trees from your private bamboo balcony.",
+    amenities: [
+      "King Size Canopy Bed",
+      "Private Mud-flat Deck",
+      "Outdoor Rain Shower",
+      "Coffee Bar",
+      "Plush Daybeds"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY"
+    ]
+  },
+  {
+    id: "sundarban-river-cottage",
+    destinationId: "sundarban",
+    name: "Room 2",
+    type: "Cottage",
+    pricePerNight: 8500,
+    capacity: 2,
+    sqft: 420,
+    description: "A cozy cottage perched on strong timber stilts above the high-tide marks of the Saptamukhi river estuary. Perfect for observing red crabs crawling on quiet sands and listening to active marine life.",
+    amenities: [
+      "Queen Bed",
+      "River View Porch",
+      "Eco Air Conditioning",
+      "Starlink WiFi",
+      "Writing Bureau"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAsO-sTzou4Xlz-ymI800L2QQntaM1hpNvJXG0dut7_cNOqU_kLuKrxYUQ63L7h0mXVf8RYiTK6HdM4V0EjbalPn2K9BiBXPzEc-QvVbrA9hLamSIBEQQfes4J6LE5uQ4eOOZDungRqkJkvAg0CrqdpAanR3LM3LZvBDRHlI_5d_SOjPUANPDAqw8ETULWSsQiruY4-rn6oCQgQDZf8KF-_jXbk3BRnOERIg680fZP7juW2B8ZbJzMlrSRp7u8-LhxNihDwRjT1TlfF",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCoustqL1tEEtYmNh0CMBCDP2Cnz6L55i1uNsPB70IvKiz1RM4606YphO_ly5IaOmzabV3MP1OUWsgGyxuR9vsoY-U6xgbl2_kI8ppgXRfVwS77PbbBeGbBvZIsHPYqdaDkyGkaHUxaDLyAX9qt0HPgpc1EUCVQvHzDU0zq9OcDXZATa5P6ImUbCgW3rzEW_kT4FBsl1f6k44x80bvgb0e5jS2BIz3yhBNGUjPvsZzTibhhLGlXpsj_6iGExNs6gu1uclR-EFvtln2ET8k",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCEJV4sZuLSjd7dODAg4Xpz0tkCTY6VTi1r7g4CAtUiaIMCRMRSAqOSU50Go35fHs9ydmw-6mas1q8ogTi5OQv_N06gUDWG6rBUrE80LXK3QXwu05XllxVEA7t6txV0OT1pthX9ffPC1Zf46aichtO7KHD-MnwDolmmYgugM0XUWxhzKFuxsO6C9tONovyPWyaQTy-6yi2ezA1m4UIlohN6YxXzPWuSxfssIxn94QERavAIZOgNTLi_yT8Qy7WpCufhrTpoQRWuqCYj"
+    ]
+  },
+  {
+    id: "lamahatta-cloud-suite",
+    destinationId: "lamahatta",
+    name: "Room 1",
+    type: "Suite",
+    pricePerNight: 12500,
+    capacity: 2,
+    sqft: 450,
+    description: "Perched at the highest crown of our hillside retreat. A cedar-lined room with a private sunset deck and ceiling skylights for star-gazing.",
+    amenities: [
+      "California King Bed",
+      "Glass Skylight",
+      "Sunset Terrace",
+      "Cedar Wood Hearth",
+      "Mini Espresso Bar",
+      "Sonos Sound System"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBmLnwLvvmBMo_LEn4HXapXrg4o3CzJ0u_sAQxzu0Mspt-tAeH3n3JYdR4wdMYVuPKJzAhesuhz-p_MuPD6cOkTy9vMnpdGGFhye89muEOb2xfVy_8miZMwKyymfLB6Ku_lf1LnBabW_hMROSUOvHqh9zR0Vnh1YC_6kT5T67zhLwMgugbDlY_yO-PabasywOHuYivaAlvT4n1Dejvbkiv_larDzmnh8eFcKO7HeGRQPz0M7wM8AHct1rXpR4b9bYPAO0lWcIDsvq5wdgY",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAte6SOFbSFkWTjz_KIGB56z3MardGLApjqH6JnOuzSHMVRPLbquOWZuK38PcfGcholgWvYz0z0uA6qJdxfgkn04VeB3cBn6Xl1CNFeq6WQ4Ax7K9ACWkw8FAMZ794rYo-vLcZK3OGvVQq3BwZV80a2PUOBeTVV9XXqE_WF58Ld4y7l7liuaF7NG-Z9GR--EPEBtT_sL9LG1kfe-h_ztZoVHJ_yLSSv0XJkCXUDEiTpMfTOJAGHSqTRjO34s2H9KklZYyCa-atnnj79",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0"
+    ]
+  },
+  {
+    id: "lamahatta-pine-cottage",
+    destinationId: "lamahatta",
+    name: "Room 2",
+    type: "Cottage",
+    pricePerNight: 9000,
+    capacity: 2,
+    sqft: 380,
+    description: "An intimate cabin with triangular high-vaulted roof trusses, completely encircled by whispering pines and morning mist.",
+    amenities: [
+      "Queen Bed",
+      "Forest View Deck",
+      "Underfloor Heating",
+      "Tea Selection Bar",
+      "Organic Linens"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDNxu5fjp3EpBL0-wxfTnuJnjcZ29umAwQkZEFgLZQHOZ713GhPT4qw5yhndGcj41KOG55vs8fC72yKiifHdpOGoBlsDw5jTjfR9KG1tOwfJWGfJIHvqq6ZKUAwr8fvHmQaXul2P1I_x1QrduMesKUCvGgKdTrmJrWiKc_yP26Du7T1L6Njv9vkA1kukK_mwzl4iZKSSC7u9uxBeCEk7Msy3N5rWA0Y0eSwI_CG8lDyY1supnelM_IRdIpFvXw51sEXEwlvYPIcKqXd2w4",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAQaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8"
+    ]
+  },
+  {
+    id: "lamahatta-valley-villa",
+    destinationId: "lamahatta",
+    name: "Room 3",
+    type: "Villa",
+    pricePerNight: 18000,
+    capacity: 4,
+    sqft: 820,
+    description: "A sprawling two-bedroom mountain sanctuary. Features a generous fireplace, local hand-woven rugs, and panoramic glass vistas overlooking Darjeeling valley.",
+    amenities: [
+      "2 King Beds",
+      "Central Fireplace",
+      "Valley Balcony",
+      "Kitchenette",
+      "Premium Bath Kit",
+      "Custom Audio Setup"
+    ],
+    imageUrls: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCl1Ad2B8af1S63zU9w336ggC4LQ4FK0-SpaR5bpJBnLPiJdZvVdJL8R3qUML5hJOGgxAfD9rXjNtIGwAtTFW3_AGADm0s_Sen0KOhklv4K7iCK54gzfGHSRaCWaKEYGLZcPVcG4CNBmZHnNJqpRVT8taDKlQBgGMhYCvUP9FaOF8Z4GK0lZgSd2aeSxecNqYQ0RZDy-fBXuLlU8tqm8xJwtMbvguB3EFZ3hu-qIVnElWsdD_yKLQ6vRKVMWVkfnz439MYL4o_dqcGzC00",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJeq_vj0KDUtJPIB7PTq-tylX6gWOLzTqaJlBtt9LK8HAh8VHrmqx-pnWFv14J_CNJLOXtWy6cgt5RHFfW4QWSYO1gtxXajpLH0quglHZTNI3a4rY7bCvtBBD_6GOuMPYDa024ftNuqGx5x6W0zM8p72QNgPOOu1SHRonQY2RCwC7Qv5v1RLyXVPh_k3eOCm8qNFoB1pgjLAOoYIDrBN6H5YjbsJ3DYVuwXqXepWn0bs2EZb8JNtvHk-OZaXxbcdj2Yb54ovIGO3RIA"
+    ]
+  }
+];
+
+export const experiencesData: Experience[] = [
+  {
+    id: "ex-mangrove-safari",
+    title: "Saptamukhi Estuary Cruise",
+    category: "Excursion",
+    destinationId: "sundarban",
+    description: "Board a traditional, silent non-mechanized wooden country boat to explore the winding, mangrove-lined estuaries of the Saptamukhi River around G-Plot Island. Spot playful Gangetic river dolphins, rare migratory sea-birds, and learn artisanal local netting.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY"
+  },
+  {
+    id: "ex-forest-bonfire",
+    title: "Himalayan Bonfire & Infusions",
+    category: "Nature",
+    destinationId: "lamahatta",
+    description: "Unwind on stone patios surrounded by towering blue pines under a crystalline starlit sky, enjoying hand-roasted snacks and indigenous rhododendron teas.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCoustqL1tEEtYmNh0CMBCDP2Cnz6L55i1uNsPB70IvKiz1RM4606YphO_ly5IaOmzabV3MP1OUWsgGyxuR9vsoY-U6xgbl2_kI8ppgXRfVwS77PbbBeGbBvZIsHPYqdaDkyGkaHUxaDLyAX9qt0HPgpc1EUCVQvHzDU0zq9OcDXZATa5P6ImUbCgW3rzEW_kT4FBsl1f6k44x80bvgb0e5jS2BIz3yhBNGUjPvsZzTibhhLGlXpsj_6iGExNs6gu1uclR-EFvtln2ET8k"
+  },
+  {
+    id: "ex-tea-making",
+    title: "Tea Estate Picking & Tasters",
+    category: "Food",
+    destinationId: "lamahatta",
+    description: "A private stroll through adjacent organic fields, learning plucking with estate team members followed by a custom brewing masterclass.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCEJV4sZuLSjd7dODAg4Xpz0tkCTY6VTi1r7g4CAtUiaIMCRMRSAqOSU50Go35fHs9ydmw-6mas1q8ogTi5OQv_N06gUDWG6rBUrE80LXK3QXwu05XllxVEA7t6txV0OT1pthX9ffPC1Zf46aichtO7KHD-MnwDolmmYgugM0XUWxhzKFuxsO6C9tONovyPWyaQTy-6yi2ezA1m4UIlohN6YxXzPWuSxfssIxn94QERavAIZOgNTLi_yT8Qy7WpCufhrTpoQRWuqCYj"
+  },
+  {
+    id: "ex-heritage-walk",
+    title: "Colonial Core & Bookstores Walk",
+    category: "Culture",
+    destinationId: "kolkata",
+    description: "A quiet walking exploration focusing on College Street's old library townhouses, traditional coffee houses, and architectural remains of early Bengal.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAte6SOFbSFkWTjz_KIGB56z3MardGLApjqH6JnOuzSHMVRPLbquOWZuK38PcfGcholgWvYz0z0uA6qJdxfgkn04VeB3cBn6Xl1CNFeq6WQ4Ax7K9ACWkw8FAMZ794rYo-vLcZK3OGvVQq3BwZV80a2PUOBeTVV9XXqE_WF58Ld4y7l7liuaF7NG-Z9GR--EPEBtT_sL9LG1kfe-h_ztZoVHJ_yLSSv0XJkCXUDEiTpMfTOJAGHSqTRjO34s2H9KklZYyCa-atnnj79"
+  },
+  {
+    id: "ex-bengali-thali",
+    title: "Classical Bengali Thali Workshop",
+    category: "Food",
+    destinationId: "kolkata",
+    description: "An intimate workshop inside our courtyard kitchen learning the secrets behind mustard-steamed fish (bhetki paturi) and custom spices.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4"
+  },
+  {
+    id: "ex-kumartuli-pottery",
+    title: "Kumartuli Clay Craft & Artisans",
+    category: "Village Life",
+    destinationId: "kolkata",
+    description: "Wander through Kolkata's famous clay artisan district with our gallery curators, watching clay idols being brought to life entirely by hand.",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDZpsNwwhu5Vc-haO1iWVIKL3RaDKJUYjfPmXsChme8pJNj3z05J9uS1sZIXYkQgpiIkY0UTm0CQasX_ESgIkxawWBDHisNQIACypQyp4z9KAQTtsZlkCq8t-DO-7pt4aYKTcAM4mt30DJBnXJGwq1486CbAtq7JH4mb72Ue5yOnAtJjSvmxBGp-M-PxpyLVHsO-_tDPeFL-oEMGhizMCefOeyNm1MD6LseWC2hUkFQoI30BQBRfuccIfETaeMmjNFxFQ091ZkZk2Kqn34"
+  }
+];
+
+export const galleryData: GalleryItem[] = [
+  {
+    id: "g1",
+    url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0",
+    category: "Scenic",
+    alt: "Himalayan Sunrise with Hot Darjeeling Tea"
+  },
+  {
+    id: "g2",
+    url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8",
+    category: "Experience",
+    alt: "Silent Delta Roots of the Mangroves"
+  },
+  {
+    id: "g3",
+    url: "https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJeq_vj0KDUtJPIB7PTq-tylX6gWOLzTqaJlBtt9LK8HAh8VHrmqx-pnWFv14J_CNJLOXtWy6cgt5RHFfW4QWSYO1gtxXajpLH0quglHZTNI3a4rY7bCvtBBD_6GOuMPYDa024ftNuqGx5x6W0zM8p72QNgPOOu1SHRonQY2RCwC7Qv5v1RLyXVPh_k3eOCm8qNFoB1pgjLAOoYIDrBN6H5YjbsJ3DYVuwXqXepWn0bs2EZb8JNtvHk-OZaXxbcdj2Yb54ovIGO3RIA",
+    category: "Interior",
+    alt: "Boutique library reading space"
+  },
+  {
+    id: "g4",
+    url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUMH2y7aYU5D-wIlejxtRNuVkjKP3DMWu46MYLQm1iEp8vNb9zDNyynqdhBt18OkspDhnUjobekeUtH8X9ZHO201vhKvoe9PKUBQXQWPFU8zncaWxoV6TQgpWtZnUfTlI48ZFHEDt5cOd6JXnu1ti_G4Aa9mfxn0DPiG2XixqVyc18ki8VfSWvmKycXF94j1Bi1AAlcxVMaR7sNQ8zAncl4Vu5Yxt5u2vLTEH5qkq9M1yNeNuzwrfd_-s-uG7VffMb1wkdRtkv6lcDysA",
+    category: "Experience",
+    alt: "Artisanal handloom fabric draping details"
+  },
+  {
+    id: "g5",
+    url: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_sK9ldKlz2J4A8BAmXZZpCEpARMvPX5QzXapH-nHi4PlYh-Sv3mDD3b3j8_nVQVrK_XXHbU7rJsP8yrNPC2tiy5w_XwTwFs2jGgHvmVlSXeTAzKP13EWgRY8fhlo_WyNrV60-0lPV-BHWSGF3mvcdVMBfkxRVHsnQQqF7tUF9E42oaZNlpq13GggJL6yVsFVP3erfBJO5IgWgBkIsIxBl1rY-Y_t8dAE_ZlDEim8nuEW_H4x5dbGKuI3L6XpwOyF3cyqKf_YgstJJrio",
+    category: "Experience",
+    alt: "Travelers gathered around a community dinner table"
+  }
+];
+
+export const blogsData: Blog[] = [
+  {
+    id: "blog-1",
+    title: "Chasing Darjeeling Dews in Lamahatta",
+    excerpt: "An intimate record of spending cold Himalayan mornings in pine groves watching the Kanchenjunga transform from pink to dynamic gold.",
+    content: "High altitude living carries a silent signature. In Lamahatta, the morning mist isn't merely weather; it's a breathing entity that winds gracefully around deep blue pine thickets and private balconies. Under our underfloor heating, we sat cradling hot Darjeeling tea as we watched the first light wash the snow-cap of Kanchenjunga into a glorious, dynamic gold slate. We spent the day cataloging local orchids along high ridges with our Sherpa guide, finishing with an ancestral organic bonfire experience as twilight turned into deep indigo.",
+    date: "2026-06-15",
+    author: "Ananya Roy",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0"
+  },
+  {
+    id: "blog-2",
+    title: "The Architecture of Restoring Kolkata's Heritage",
+    excerpt: "Exploring the delicate balance of preserving historical red-oxide floors and shuttered colonial windows while integrating true luxury utilities.",
+    content: "To touch North Kolkata's townhouses is to feel the heartbeat of direct heritage. When rebuilding our Kolkata residence—a 1920s classic—our chief challenge was the preservation of the material soul. The brilliant crimson red oxide floors, created via natural iron ores, were carefully cataloged and repolished by local generational craftsmen. Alongside these classic layouts, we installed high-efficiency modern climate networks and silent underfloor water lines so guests experience pristine luxury while enveloped in the architectural romance of early Bengal.",
+    date: "2026-06-10",
+    author: "Elena Rossi",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDj444XOzjH9AM-9irTf46WXsmEwmRpctkVYqvk7O2fsKFsdu71suPcdSw2Cn2AJ6HJ3aZ6qhJKtDoUjr8rUNCzszeSCzFIH2MI348s-Y1HED2PWBGpDpTTg3-2dnIieUeuSLZyzO_dqkCNrISQH5Bj41MZ_o_WJO3dUvKLVuC-Zx-zNpanUTF3qH3cLUU1m6YBCFfvub5m4hVSPdbUtuIDwEFkHcFE-ra_Jj139Vo7GyrJonarS_vNVg5nOT9inR4ZUMrvVCiXzLrj"
+  }
+];
+
+export const reviewsData: Review[] = [
+  {
+    id: "rev-1",
+    authorName: "Sarah Jenkins",
+    rating: 5,
+    text: "The Cloud Suite is arguably the best stay in the Eastern Himalayas. The high-timber architecture, the warm Sherpa hospitality, and those morning Kanchenjunga vistas are life-changing. We will return every winter.",
+    date: "2026-06-14",
+    destinationId: "lamahatta",
+    roomName: "The Cloud Suite",
+    roomType: "Mountain Glass Suite",
+    isVerifiedStay: true,
+    photos: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBmLnwLvvmBMo_LEn4HXapXrg4o3CzJ0u_sAQxzu0Mspt-tAeH3n3JYdR4wdMYVuPKJzAhesuhz-p_MuPD6cOkTy9vMnpdGGFhye89muEOb2xfVy_8miZMwKyymfLB6Ku_lf1LnBabW_hMROSUOvHqh9zR0Vnh1YC_6kT5T67zhLwMgugbDlY_yO-PabasywOHuYivaAlvT4n1Dejvbkiv_larDzmnh8eFcKO7HeGRQPz0M7wM8AHct1rXpR4b9bYPAO0lWcIDsvq5wdgY"
+    ]
+  },
+  {
+    id: "rev-2",
+    authorName: "Ananya Roy",
+    rating: 5,
+    text: "Kolkata feels entirely different from the sanctuary of the courtyard suite. Restful, deeply cultural, with excellent home-cooked meals.",
+    date: "2026-06-18",
+    destinationId: "kolkata",
+    roomName: "Courtyard Heritage Suite",
+    roomType: "1920s Colonial Suite",
+    isVerifiedStay: true,
+    photos: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDj444XOzjH9AM-9irTf46WXsmEwmRpctkVYqvk7O2fsKFsdu71suPcdSw2Cn2AJ6HJ3aZ6qhJKtDoUjr8rUNCzszeSCzFIH2MI348s-Y1HED2PWBGpDpTTg3-2dnIieUeuSLZyzO_dqkCNrISQH5Bj41MZ_o_WJO3dUvKLVuC-Zx-zNpanUTF3qH3cLUU1m6YBCFfvub5m4hVSPdbUtuIDwEFkHcFE-ra_Jj139Vo7GyrJonarS_vNVg5nOT9inR4ZUMrvVCiXzLrj"
+    ]
+  },
+  {
+    id: "rev-3",
+    authorName: "Julian & Elena",
+    rating: 5,
+    text: "Sustainable luxury done right! The tiger suite in Sundarban is perched delicately right where the mud flats meet the mangroves. Electric boat safaris were peaceful and highly educational.",
+    date: "2026-06-16",
+    destinationId: "sundarban",
+    roomName: "Gplot Sunset Beach Suite",
+    roomType: "Stilted Mangrove Villa",
+    isVerifiedStay: true,
+    photos: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY"
+    ]
+  },
+  {
+    id: "rev-4",
+    authorName: "Aarav Sharma",
+    rating: 5,
+    text: "The River Edge Cottage at Sundarban was beyond expectations! Watching the morning river mist while drinking fresh coconut water right on our deck.",
+    date: "2026-06-22",
+    destinationId: "sundarban",
+    roomName: "River Edge Cottage",
+    roomType: "Waterfront Stilted Cabin",
+    isVerifiedStay: true,
+    photos: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8"
+    ]
+  }
+];
+
+export const faqsData: FAQ[] = [
+  {
+    id: "faq-1",
+    question: "Is Satrangi safe for solo female and solo travelers?",
+    answer: "Absolutely. All our retreats feature 24/7 resident caretakers, gated private entries, secure door locks, and host families who ensure solo wanderers feel safe, comfortable, and genuinely cared for throughout their journey.",
+    category: "Solo Travel"
+  },
+  {
+    id: "faq-2",
+    question: "Are children and family groups welcome at all locations?",
+    answer: "Yes! We offer connected family suites, extra rollaway beds, kid-friendly mild Bengali meals, and safe guided nature walks in both Lamahatta and Sundarban.",
+    category: "Family Stay"
+  },
+  {
+    id: "faq-3",
+    question: "Can you organize romantic setups like candlelit dinners or anniversary surprises?",
+    answer: "With pleasure! We can arrange private candlelit courtyard dinners in Kolkata, fireside rhododendron teas in Lamahatta, or private sunset boat rides in Sundarban. Simply mention your occasion when contacting us.",
+    category: "Couples"
+  },
+  {
+    id: "faq-4",
+    question: "Do you accommodate pure vegetarian, Jain, or vegan diets?",
+    answer: "Yes! While Bengal is famous for fresh estuarine seafood, our in-house cooks prepare dedicated vegetarian, Jain, and vegan traditional thalis using separate cookware and fresh organic local produce.",
+    category: "Dining"
+  },
+  {
+    id: "faq-5",
+    question: "Is high-speed Wi-Fi available for remote work or workations?",
+    answer: "Yes! All our retreats feature high-speed Starlink / optical fiber Wi-Fi networks (100+ Mbps) and comfortable writing desks, making them ideal for quiet mountain or heritage workations.",
+    category: "Services"
+  },
+  {
+    id: "faq-6",
+    question: "Do you arrange pickups from Kolkata Airport, Bagdogra, or NJP Station?",
+    answer: "Yes, we arrange private, air-conditioned luxury transport directly from Kolkata Airport (CCU), Bagdogra Airport (IXB), or NJP Station straight to our homestays upon request.",
+    category: "Travel"
+  },
+  {
+    id: "faq-7",
+    question: "How can I inquire or reserve a stay?",
+    answer: "You can reach out directly via WhatsApp or phone at +91 98765 43210, or send an email to reservations@satrangihomestay.com with your preferred dates and suite choice.",
+    category: "Inquiries"
+  },
+  {
+    id: "faq-8",
+    question: "Are pets allowed at Satrangi Homestays?",
+    answer: "We are pet-friendly at our Lamahatta mountain retreat and Sundarban eco-lodge in select ground-floor suites with private garden access. Please inform us in advance so we can prepare.",
+    category: "Policies"
+  }
+];
+
+export const settingsData = {
+  brandName: "Satrangi Homestay",
+  tagline: "Where Every Destination Tells A Different Story",
+  whatsappNumber: "+919876543210",
+  contactEmail: "reservations@satrangihomestay.com",
+  phone: "+91 98765 43210"
+};
