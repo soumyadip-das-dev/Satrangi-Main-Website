@@ -9,6 +9,8 @@ export interface Destination {
     lat: number;
     lng: number;
   };
+  instagramUrl?: string;
+  instagramHandle?: string;
 }
 
 export interface Room {
