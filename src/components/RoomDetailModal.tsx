@@ -105,26 +105,27 @@ export default function RoomDetailModal({
   return (
     <div 
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in"
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fade-in"
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200/80 text-left animate-fade-rise"
+        className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92dvh] overflow-y-auto border border-gray-200/80 text-left animate-fade-rise"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 bg-black/60 hover:bg-[#B85A32] text-white p-2.5 rounded-full transition-all cursor-pointer shadow-lg"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-black/60 hover:bg-[#B85A32] text-white p-2 sm:p-2.5 rounded-full transition-all cursor-pointer shadow-lg"
           aria-label="Close modal"
         >
-          <X size={18} />
+          <X size={16} className="sm:hidden" />
+          <X size={18} className="hidden sm:block" />
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           {/* Left Column: Interactive Photo Gallery */}
-          <div className="lg:col-span-7 bg-gray-900 p-6 flex flex-col justify-between relative min-h-[320px] lg:min-h-[500px]">
+          <div className="lg:col-span-7 bg-gray-900 p-4 sm:p-6 flex flex-col justify-between relative min-h-[260px] sm:min-h-[320px] lg:min-h-[500px]">
             {/* Main Active Image Showcase */}
-            <div className="relative w-full h-[280px] sm:h-[360px] rounded-2xl overflow-hidden shadow-xl border border-white/10 group">
+            <div className="relative w-full h-[220px] sm:h-[300px] md:h-[360px] rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-white/10 group">
               <img
                 src={images[activeImgIndex]}
                 alt={`${room.name} view ${activeImgIndex + 1}`}
@@ -137,13 +138,13 @@ export default function RoomDetailModal({
                 <>
                   <button
                     onClick={handlePrevImg}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition cursor-pointer"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
                   >
                     <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={handleNextImg}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition cursor-pointer"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
                   >
                     <ChevronRight size={18} />
                   </button>
@@ -152,7 +153,7 @@ export default function RoomDetailModal({
 
               {/* Photo Counter */}
               {images.length > 1 && (
-                <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-sans font-medium text-white/90 rounded-full border border-white/10">
+                <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-black/60 backdrop-blur-md px-2.5 sm:px-3 py-1 text-[10px] font-sans font-medium text-white/90 rounded-full border border-white/10">
                   {activeImgIndex + 1} / {images.length} Photos
                 </div>
               )}
@@ -160,12 +161,12 @@ export default function RoomDetailModal({
 
             {/* Thumbnail Selector Row */}
             {images.length > 1 && (
-              <div className="flex gap-2.5 mt-4 overflow-x-auto pb-1">
+              <div className="flex gap-2 sm:gap-2.5 mt-3 sm:mt-4 overflow-x-auto pb-1">
                 {images.map((imgUrl, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImgIndex(idx)}
-                    className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                    className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                       idx === activeImgIndex ? "border-[#C5A059] ring-2 ring-[#C5A059]/40 scale-105" : "border-white/20 opacity-60 hover:opacity-100"
                     }`}
                   >
@@ -177,34 +178,34 @@ export default function RoomDetailModal({
           </div>
 
           {/* Right Column: Suite Details, Specs, Reservation Action */}
-          <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-[#FAF8F5]">
+          <div className="lg:col-span-5 p-4 sm:p-6 md:p-8 flex flex-col justify-between bg-[#FAF8F5]">
             <div>
               <div className="flex items-center gap-1.5 text-xs text-[#B85A32] uppercase tracking-widest font-bold mb-1">
                 <MapPin size={13} /> {destination?.name || "Satrangi Sanctuary"}
               </div>
 
-              <h2 className="font-serif text-3xl font-bold text-[#1C352D] mb-2">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C352D] mb-2">
                 {room.name}
               </h2>
 
-              <div className="flex items-baseline gap-2 mb-4 pb-4 border-b border-gray-200">
-                <span className="font-serif text-2xl font-bold text-[#B85A32]">
+              <div className="flex flex-wrap items-baseline gap-2 mb-4 pb-3 sm:pb-4 border-b border-gray-200">
+                <span className="font-serif text-xl sm:text-2xl font-bold text-[#B85A32]">
                   {formatPrice(room.pricePerNight, currency)}
                 </span>
                 <span className="text-xs text-gray-500 font-sans">/ night</span>
                 <span className="text-xs text-gray-400 font-sans ml-auto">Max {room.capacity} Guests</span>
               </div>
 
-              <p className="text-xs text-gray-600 leading-relaxed mb-6 font-sans">
+              <p className="text-xs text-gray-600 leading-relaxed mb-5 sm:mb-6 font-sans">
                 {room.description}
               </p>
 
               {/* Clean Monochrome Amenities Breakdown (No Outer Capsules) */}
-              <div className="mb-6">
-                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-500 mb-3">
+              <div className="mb-5 sm:mb-6">
+                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-500 mb-2.5 sm:mb-3">
                   Included Amenities & Comforts
                 </h4>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 sm:gap-y-2.5">
                   {room.amenities.map((amenity) => {
                     const IconComp = getAmenityIcon(amenity);
                     return (
@@ -221,12 +222,12 @@ export default function RoomDetailModal({
               </div>
 
               {/* Date Selector & Total Calculation */}
-              <div className="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm space-y-3 mb-6">
+              <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-200/80 shadow-sm space-y-3 mb-5 sm:mb-6">
                 <div className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#1C352D] flex items-center gap-1.5">
                   <Calendar size={13} className="text-[#B85A32]" /> Preferred Stay Dates & Guests
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                   <div>
                     <label className="block text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Check-In</label>
                     <input
@@ -271,7 +272,7 @@ export default function RoomDetailModal({
                 </div>
 
                 <div className="p-2.5 rounded-xl border bg-gray-50 border-gray-200 text-xs font-sans flex items-center justify-between">
-                  <span className="text-gray-600 font-medium">{nights} night{nights > 1 ? "s" : ""} for {guestsCount} guest{guestsCount > 1 ? "s" : ""}:</span>
+                  <span className="text-gray-600 font-medium text-[11px] sm:text-xs">{nights} night{nights > 1 ? "s" : ""} for {guestsCount} guest{guestsCount > 1 ? "s" : ""}:</span>
                   <span className="font-serif font-bold text-sm text-[#B85A32]">
                     {formatPrice(totalPrice, currency)}
                   </span>
@@ -288,7 +289,7 @@ export default function RoomDetailModal({
                     onClose();
                     onBookNow(room.destinationId, room.id, checkIn, checkOut, guestsCount);
                   }}
-                  className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3 sm:py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 size={16} />
                   <span>Reserve This Suite</span>
@@ -299,7 +300,7 @@ export default function RoomDetailModal({
                 href={`https://wa.me/919876543210?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-3 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-2.5 sm:py-3 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow flex items-center justify-center gap-2 cursor-pointer"
               >
                 <MessageSquare size={15} />
                 <span>Inquire via WhatsApp</span>
