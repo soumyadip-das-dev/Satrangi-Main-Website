@@ -1,41 +1,58 @@
 import { useState } from "react";
-import { X, Check, Calendar, Users, MapPin, ShieldCheck, ChevronLeft, ChevronRight, Wifi, Coffee, Sprout, Wind, Tv, Sparkles } from "lucide-react";
+import { 
+  X, 
+  MapPin, 
+  ShieldCheck, 
+  ChevronLeft, 
+  ChevronRight, 
+  MessageSquare, 
+  Calendar, 
+  CheckCircle2,
+  Bed,
+  Wifi,
+  Coffee,
+  Wind,
+  Flame,
+  Tv,
+  ShowerHead,
+  Trees,
+  PenTool,
+  Utensils,
+  Sun,
+  Sparkles,
+  Bath,
+  Volume2
+} from "lucide-react";
 import { Room, Destination } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
+import { getFormattedDateString } from "../utils/bookingUtils";
 
 interface RoomDetailModalProps {
   room: Room | null;
   destination?: Destination;
   currency?: Currency;
-  checkIn: string;
-  checkOut: string;
-  bookings: any[];
+  checkIn?: string;
+  checkOut?: string;
+  initialGuestsCount?: number;
   onClose: () => void;
-  onBookNow: (destinationId: string, roomId: string, checkIn: string, checkOut: string) => void;
+  onBookNow?: (destinationId: string, roomId: string, checkIn: string, checkOut: string, guestsCount: number) => void;
 }
-
-const isRoomAvailable = (roomId: string, checkIn: string, checkOut: string, bookings: any[]) => {
-  if (!checkIn || !checkOut) return true;
-  const start = new Date(checkIn);
-  const end = new Date(checkOut);
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
-    return true;
-  }
-  return !bookings.some((b: any) => {
-    if (b.roomId !== roomId || b.status === "cancelled") return false;
-    const bStart = new Date(b.checkIn);
-    const bEnd = new Date(b.checkOut);
-    return start < bEnd && end > bStart;
-  });
-};
 
 const getAmenityIcon = (amenity: string) => {
   const lower = amenity.toLowerCase();
-  if (lower.includes("wifi")) return Wifi;
-  if (lower.includes("coffee") || lower.includes("tea") || lower.includes("breakfast")) return Coffee;
-  if (lower.includes("view") || lower.includes("garden") || lower.includes("terrace")) return Sprout;
-  if (lower.includes("thermostat") || lower.includes("air") || lower.includes("heating")) return Wind;
-  if (lower.includes("tv") || lower.includes("audio") || lower.includes("sound")) return Tv;
+  if (lower.includes("wifi") || lower.includes("starlink")) return Wifi;
+  if (lower.includes("coffee") || lower.includes("espresso") || lower.includes("tea")) return Coffee;
+  if (lower.includes("bed") || lower.includes("linen") || lower.includes("canopy") || lower.includes("daybed")) return Bed;
+  if (lower.includes("balcony") || lower.includes("deck") || lower.includes("terrace") || lower.includes("porch")) return Sun;
+  if (lower.includes("view") || lower.includes("garden") || lower.includes("mud-flat") || lower.includes("forest") || lower.includes("river") || lower.includes("valley") || lower.includes("courtyard")) return Trees;
+  if (lower.includes("shower")) return ShowerHead;
+  if (lower.includes("bath")) return Bath;
+  if (lower.includes("desk") || lower.includes("bureau") || lower.includes("writing")) return PenTool;
+  if (lower.includes("air") || lower.includes("thermostat")) return Wind;
+  if (lower.includes("heating") || lower.includes("hearth") || lower.includes("fireplace")) return Flame;
+  if (lower.includes("tv")) return Tv;
+  if (lower.includes("audio") || lower.includes("sonos") || lower.includes("sound")) return Volume2;
+  if (lower.includes("kitchen") || lower.includes("bar")) return Utensils;
   return Sparkles;
 };
 
@@ -45,15 +62,16 @@ export default function RoomDetailModal({
   currency = "INR",
   checkIn: initialCheckIn,
   checkOut: initialCheckOut,
-  bookings,
+  initialGuestsCount = 2,
   onClose,
   onBookNow
 }: RoomDetailModalProps) {
   if (!room) return null;
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [checkIn, setCheckIn] = useState(initialCheckIn);
-  const [checkOut, setCheckOut] = useState(initialCheckOut);
+  const [checkIn, setCheckIn] = useState(initialCheckIn || getFormattedDateString(0));
+  const [checkOut, setCheckOut] = useState(initialCheckOut || getFormattedDateString(3, initialCheckIn || getFormattedDateString(0)));
+  const [guestsCount, setGuestsCount] = useState<number>(initialGuestsCount || 2);
 
   const images = room.imageUrls && room.imageUrls.length > 0 
     ? room.imageUrls 
@@ -79,7 +97,10 @@ export default function RoomDetailModal({
 
   const nights = getNightsCount();
   const totalPrice = room.pricePerNight * nights;
-  const isAvailable = isRoomAvailable(room.id, checkIn, checkOut, bookings);
+
+  const whatsappMessage = encodeURIComponent(
+    `Hello Satrangi Homestay,\n\nI would like to inquire about reserving:\n- Suite: ${room.name} (${room.type})\n- Destination: ${destination?.name || "Satrangi"}\n- Guests: ${guestsCount} guest(s)\n- Dates: ${checkIn} to ${checkOut} (${nights} night${nights > 1 ? "s" : ""})\n\nPlease share reservation details.`
+  );
 
   return (
     <div 
@@ -129,15 +150,12 @@ export default function RoomDetailModal({
                 </>
               )}
 
-              {/* Suite Badges */}
-              <div className="absolute top-4 left-4 flex gap-2">
-                <span className="bg-[#B85A32] text-white text-[10px] font-sans uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow">
-                  {room.type}
-                </span>
-                <span className="bg-white/90 backdrop-blur text-[#1C352D] text-[10px] font-sans uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow">
-                  {room.sqft} SQFT
-                </span>
-              </div>
+              {/* Photo Counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-sans font-medium text-white/90 rounded-full border border-white/10">
+                  {activeImgIndex + 1} / {images.length} Photos
+                </div>
+              )}
             </div>
 
             {/* Thumbnail Selector Row */}
@@ -158,7 +176,7 @@ export default function RoomDetailModal({
             )}
           </div>
 
-          {/* Right Column: Suite Details, Specs, Live Dates, CTA */}
+          {/* Right Column: Suite Details, Specs, Reservation Action */}
           <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-[#FAF8F5]">
             <div>
               <div className="flex items-center gap-1.5 text-xs text-[#B85A32] uppercase tracking-widest font-bold mb-1">
@@ -181,40 +199,47 @@ export default function RoomDetailModal({
                 {room.description}
               </p>
 
-              {/* Amenity Breakdown */}
+              {/* Clean Monochrome Amenities Breakdown (No Outer Capsules) */}
               <div className="mb-6">
-                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-600 mb-2.5">
-                  Included Amenities & Features
+                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-500 mb-3">
+                  Included Amenities & Comforts
                 </h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
                   {room.amenities.map((amenity) => {
                     const IconComp = getAmenityIcon(amenity);
                     return (
                       <div
                         key={amenity}
-                        className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl text-xs text-gray-700 font-medium border border-gray-200/80 shadow-xs"
+                        className="flex items-center gap-2.5 text-xs text-gray-700 font-medium"
                       >
-                        <IconComp size={14} className="text-[#B85A32] shrink-0" />
-                        <span className="truncate">{amenity}</span>
+                        <IconComp size={15} className="text-gray-900 shrink-0 stroke-[1.8]" />
+                        <span className="leading-snug text-gray-800 font-sans">{amenity}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Instant Live Date Availability Checker */}
+              {/* Date Selector & Total Calculation */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm space-y-3 mb-6">
                 <div className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#1C352D] flex items-center gap-1.5">
-                  <Calendar size={13} className="text-[#B85A32]" /> Verify Real-Time Availability
+                  <Calendar size={13} className="text-[#B85A32]" /> Preferred Stay Dates & Guests
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Check-In</label>
                     <input
                       type="date"
+                      min={getFormattedDateString(0)}
                       value={checkIn}
-                      onChange={(e) => setCheckIn(e.target.value)}
+                      onChange={(e) => {
+                        const newIn = e.target.value;
+                        setCheckIn(newIn);
+                        if (checkOut <= newIn) {
+                          setCheckOut(getFormattedDateString(1, newIn));
+                        }
+                      }}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 font-medium outline-none focus:border-[#B85A32]"
                     />
                   </div>
@@ -222,44 +247,66 @@ export default function RoomDetailModal({
                     <label className="block text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Check-Out</label>
                     <input
                       type="date"
+                      min={getFormattedDateString(1, checkIn)}
                       value={checkOut}
                       onChange={(e) => setCheckOut(e.target.value)}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 font-medium outline-none focus:border-[#B85A32]"
                     />
                   </div>
+                  <div>
+                    <label className="block text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Guests</label>
+                    <select
+                      value={guestsCount}
+                      onChange={(e) => setGuestsCount(Number(e.target.value))}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 font-medium outline-none focus:border-[#B85A32]"
+                    >
+                      <option value={1}>1 Guest</option>
+                      <option value={2}>2 Guests</option>
+                      <option value={3}>3 Guests</option>
+                      <option value={4}>4 Guests</option>
+                      <option value={5}>5 Guests</option>
+                      <option value={6}>6 Guests</option>
+                    </select>
+                  </div>
                 </div>
 
-                {/* Status Badge & Pricing Summary */}
-                <div className={`p-2.5 rounded-xl border text-xs font-sans flex items-center justify-between ${
-                  isAvailable ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-rose-50 border-rose-200 text-rose-900"
-                }`}>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`w-2 h-2 rounded-full ${isAvailable ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
-                    <span className="font-bold">{isAvailable ? "Available" : "Dates Overlapped"}</span>
-                  </div>
-                  <div className="font-serif font-bold text-sm">
-                    {formatPrice(totalPrice, currency)} <span className="text-[10px] font-sans font-normal text-gray-500">({nights} night{nights > 1 ? "s" : ""})</span>
-                  </div>
+                <div className="p-2.5 rounded-xl border bg-gray-50 border-gray-200 text-xs font-sans flex items-center justify-between">
+                  <span className="text-gray-600 font-medium">{nights} night{nights > 1 ? "s" : ""} for {guestsCount} guest{guestsCount > 1 ? "s" : ""}:</span>
+                  <span className="font-serif font-bold text-sm text-[#B85A32]">
+                    {formatPrice(totalPrice, currency)}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Direct Booking Action CTA */}
-            <div className="space-y-2">
-              <button
-                disabled={!isAvailable}
-                onClick={() => {
-                  onBookNow(room.destinationId, room.id, checkIn, checkOut);
-                  onClose();
-                }}
-                className="w-full bg-[#1C352D] disabled:bg-gray-300 hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            {/* Direct Host Reservation & WhatsApp Actions */}
+            <div className="space-y-2.5">
+              {onBookNow && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onBookNow(room.destinationId, room.id, checkIn, checkOut, guestsCount);
+                  }}
+                  className="w-full bg-[#1C352D] hover:bg-[#B85A32] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>Reserve This Suite</span>
+                </button>
+              )}
+
+              <a
+                href={`https://wa.me/919876543210?text=${whatsappMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-3 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all shadow flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Check size={16} />
-                <span>{isAvailable ? "Reserve This Suite Now" : "Unavailable for Selected Dates"}</span>
-              </button>
+                <MessageSquare size={15} />
+                <span>Inquire via WhatsApp</span>
+              </a>
 
               <div className="text-[10px] text-gray-400 font-sans text-center flex items-center justify-center gap-1">
-                <ShieldCheck size={12} className="text-[#B85A32]" /> Includes 0% platform fee direct rate & breakfast.
+                <ShieldCheck size={12} className="text-[#B85A32]" /> Direct host reservation guarantee with 0% booking fee.
               </div>
             </div>
           </div>
