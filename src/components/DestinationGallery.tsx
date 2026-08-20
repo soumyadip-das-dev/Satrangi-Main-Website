@@ -152,15 +152,15 @@ export default function DestinationGallery({ destinationId, destinationName }: D
   };
 
   return (
-    <section id={`gallery-sec-${destinationId}`} className="py-24 bg-[#FDFBF7] border-t border-gray-100">
-      <div className="max-w-5xl mx-auto px-6">
+    <section id={`gallery-sec-${destinationId}`} className="py-12 sm:py-20 bg-[#FDFBF7] border-t border-gray-100">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         
         {/* Header Block */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <span className="text-xs uppercase tracking-[0.3em] text-[#A45D3B] font-bold block mb-2">
             VISUAL CHRONICLES
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#2D463E] italic font-bold">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-[#2D463E] italic font-bold">
             The {destinationName} Gallery
           </h2>
           <p className="text-xs text-gray-500 mt-1 max-w-md">
@@ -169,7 +169,7 @@ export default function DestinationGallery({ destinationId, destinationName }: D
         </div>
 
         {/* Masonry / Responsive Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           <AnimatePresence mode="popLayout">
             {images.map((img) => (
               <motion.div
@@ -194,11 +194,11 @@ export default function DestinationGallery({ destinationId, destinationName }: D
                 </div>
 
                 {/* Content Overlay */}
-                <div className="relative p-5 z-10 text-white transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                <div className="relative p-3.5 sm:p-5 z-10 text-white transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
                   <span className="text-[8px] uppercase tracking-widest bg-[#A45D3B] text-[#FDFBF7] px-2 py-0.5 font-bold mb-2 inline-block">
                     {img.category}
                   </span>
-                  <h4 className="font-serif text-base font-bold tracking-wide text-[#FDFBF7] flex items-center justify-between gap-1">
+                  <h4 className="font-serif text-sm sm:text-base font-bold tracking-wide text-[#FDFBF7] flex items-center justify-between gap-1">
                     {img.alt}
                     <Maximize2 size={13} className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[#C5A059]" />
                   </h4>
@@ -212,8 +212,8 @@ export default function DestinationGallery({ destinationId, destinationName }: D
         </div>
 
         {/* Embedded Prompt */}
-        <div className="mt-8 flex items-center justify-center gap-2 bg-[#FAF7F2] border border-gray-150 py-3.5 px-6 rounded-xs">
-          <Camera size={13} className="text-[#A45D3B]" />
+        <div className="mt-8 flex items-center justify-center gap-2 bg-[#FAF7F2] border border-gray-150 py-3.5 px-4 sm:px-6 rounded-xs text-center">
+          <Camera size={13} className="text-[#A45D3B] shrink-0" />
           <span className="text-[10px] text-gray-500 font-sans tracking-wide">
             Are you a photographer? Tag <strong className="text-[#2D463E] font-semibold">#SatrangiStays</strong> to be featured on our dynamic travel journal.
           </span>
@@ -228,13 +228,13 @@ export default function DestinationGallery({ destinationId, destinationName }: D
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#1A2421]/95 z-[250] flex flex-col justify-between p-6 select-none"
+            className="fixed inset-0 bg-[#1A2421]/95 z-[250] flex flex-col justify-between p-3 sm:p-6 select-none"
             onClick={() => setLightboxIndex(null)}
           >
             {/* Header controls */}
             <div className="flex items-center justify-between text-white w-full max-w-6xl mx-auto z-10">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#C5A059] block">
+                <span className="text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-bold text-[#C5A059] block">
                   {destinationName} Live Feed
                 </span>
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
@@ -243,27 +243,27 @@ export default function DestinationGallery({ destinationId, destinationName }: D
               {/* Close Button */}
               <button
                 onClick={() => setLightboxIndex(null)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-[#FDFBF7] transition-all hover:scale-105 cursor-pointer focus:outline-none"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-[#FDFBF7] transition-all hover:scale-105 cursor-pointer focus:outline-none"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Main Stage Image Slide viewer */}
-            <div className="relative flex items-center justify-center flex-1 max-w-5xl w-full mx-auto my-6">
+            <div className="relative flex items-center justify-center flex-1 max-w-5xl w-full mx-auto my-3 sm:my-6">
               {/* Prev Slide Control */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handlePrevLightbox();
                 }}
-                className="absolute left-2 sm:left-4 w-12 h-12 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white hover:bg-[#A45D3B] hover:border-[#A45D3B] transition-all duration-300 cursor-pointer focus:outline-none z-10"
+                className="absolute left-1 sm:left-4 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 border border-white/10 text-white hover:bg-[#A45D3B] hover:border-[#A45D3B] transition-all duration-300 cursor-pointer focus:outline-none z-10"
               >
-                <ChevronLeft size={22} />
+                <ChevronLeft size={20} />
               </button>
 
               {/* Slider Image Screen */}
-              <div className="w-full h-full max-h-[60vh] sm:max-h-[70vh] flex items-center justify-center p-4">
+              <div className="w-full h-full max-h-[55vh] sm:max-h-[70vh] flex items-center justify-center p-2 sm:p-4">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={lightboxIndex}
@@ -286,22 +286,22 @@ export default function DestinationGallery({ destinationId, destinationName }: D
                   e.stopPropagation();
                   handleNextLightbox();
                 }}
-                className="absolute right-2 sm:right-4 w-12 h-12 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white hover:bg-[#A45D3B] hover:border-[#A45D3B] transition-all duration-300 cursor-pointer focus:outline-none z-10"
+                className="absolute right-1 sm:right-4 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 border border-white/10 text-white hover:bg-[#A45D3B] hover:border-[#A45D3B] transition-all duration-300 cursor-pointer focus:outline-none z-10"
               >
-                <ChevronRight size={22} />
+                <ChevronRight size={20} />
               </button>
             </div>
 
             {/* Footer Captions */}
-            <div className="w-full max-w-4xl mx-auto text-center text-[#FDFBF7] z-10 pb-4" onClick={(e) => e.stopPropagation()}>
-              <div className="inline-block bg-[#111816]/75 border border-white/10 backdrop-blur-md rounded-md p-5 px-8 max-w-xl mx-auto shadow-2xl">
-                <span className="text-[9px] uppercase tracking-widest font-extrabold text-[#C5A059] bg-[#C5A059]/15 px-3 py-1 rounded-sm mb-2.5 inline-block">
+            <div className="w-full max-w-4xl mx-auto text-center text-[#FDFBF7] z-10 pb-2 sm:pb-4" onClick={(e) => e.stopPropagation()}>
+              <div className="inline-block bg-[#111816]/75 border border-white/10 backdrop-blur-md rounded-xl sm:rounded-md p-3.5 sm:p-5 px-4 sm:px-8 max-w-xl mx-auto shadow-2xl">
+                <span className="text-[9px] uppercase tracking-widest font-extrabold text-[#C5A059] bg-[#C5A059]/15 px-2.5 sm:px-3 py-1 rounded-sm mb-1.5 sm:mb-2.5 inline-block">
                   {images[lightboxIndex].category} • Slide {lightboxIndex + 1} of {images.length}
                 </span>
-                <h3 className="font-serif text-lg font-bold text-[#FDFBF7]">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-[#FDFBF7]">
                   {images[lightboxIndex].alt}
                 </h3>
-                <p className="text-xs text-gray-400 mt-2 font-light leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-gray-400 mt-1 sm:mt-2 font-light leading-relaxed">
                   {images[lightboxIndex].description}
                 </p>
               </div>
