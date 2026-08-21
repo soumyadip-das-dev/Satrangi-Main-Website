@@ -284,15 +284,24 @@ export default function HomePage({
                 >
                   {/* Image Column */}
                   <div className={`lg:col-span-6 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 group">
-                      <div className="aspect-[4/3] w-full overflow-hidden">
-                        <img
-                          src={journey.image}
-                          alt={journey.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
+                    <div className="relative group">
+                      {/* Deep Bottom Ambient Drop Shadow */}
+                      <div className="absolute inset-4 translate-y-6 sm:translate-y-8 bg-black/40 rounded-[2.5rem] blur-2xl opacity-75 group-hover:opacity-100 group-hover:translate-y-10 group-hover:scale-105 transition-all duration-700 pointer-events-none" />
+
+                      {/* Warm Tone Ambient Glow Layer */}
+                      <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-tr from-[#1C352D]/35 via-[#B85A32]/25 to-black/20 rounded-[2.5rem] blur-xl opacity-80 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                      {/* Main Image Container */}
+                      <div className="relative rounded-3xl overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35),0_12px_24px_-8px_rgba(0,0,0,0.25)] border border-gray-200/80 bg-stone-100">
+                        <div className="aspect-[4/3] w-full overflow-hidden">
+                          <img
+                            src={journey.image}
+                            alt={journey.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
                     </div>
                   </div>
 

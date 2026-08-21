@@ -2,7 +2,7 @@ import React from "react";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 animate-fade-in text-left space-y-10 sm:space-y-16">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 animate-fade-in text-left space-y-12 sm:space-y-16">
       <div className="text-center">
         <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold italic text-[#2D463E]">
           The Story of Satrangi
@@ -10,16 +10,37 @@ export default function AboutPage() {
         <div className="w-16 h-0.5 bg-[#A45D3B] mx-auto mt-4" />
       </div>
 
-      <div className="bg-white border border-gray-150 p-5 sm:p-8 md:p-12 space-y-5 sm:space-y-6 rounded-2xl">
-        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#2D463E] leading-snug">
-          "Where Every Destination Tells A Different Story"
-        </h3>
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-          Satrangi Homestay began with a simple, core directive: to offer direct, high-end escapes inside historically relevant regions of West Bengal that celebrate localized cultures rather than replicating sanitized urban motel formats.
-        </p>
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-          From our flagship cedar suites perched above mountain cloud lines in Lamahatta, to the stilted eco-lodges navigating tidal marsh waters in the Sundarbans, and the carefully conserved 1920s townhouse details of Kolkata—each property works with ancestral local designers, cooks, and materials.
-        </p>
+      {/* Story & Home Sweet Home 2-Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Left: Story Text */}
+        <div className="lg:col-span-7 space-y-5 text-left">
+          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2D463E] leading-snug tracking-tight">
+            "Where Every Destination Tells A Different Story"
+          </h3>
+          <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-light">
+            Satrangi Homestay began with a simple, core directive: to offer direct, high-end escapes inside historically relevant regions of West Bengal that celebrate localized cultures rather than replicating sanitized urban motel formats.
+          </p>
+          <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-light">
+            From our flagship cedar suites perched above mountain cloud lines in Lamahatta, to the stilted eco-lodges navigating tidal marsh waters in the Sundarbans, and the carefully conserved 1920s townhouse details of Kolkata—each property works with ancestral local designers, cooks, and materials.
+          </p>
+          <div className="border-l-2 border-[#A45D3B] pl-4 py-1 italic font-serif text-sm sm:text-base text-gray-600">
+            “Hospitality rooted in ancestral soil, crafted for the mindful traveler.”
+          </div>
+        </div>
+
+        {/* Right: Home Sweet Home Design */}
+        <div className="lg:col-span-5 flex justify-center items-center">
+          <div className="relative group p-4 sm:p-6 w-full max-w-sm sm:max-w-md flex justify-center">
+            {/* Ambient Warm Tone Backdrop Glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#2D463E]/15 via-[#A45D3B]/20 to-transparent rounded-full blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+            <img
+              src="/home_sweet_home.png"
+              alt="Home Sweet Home"
+              className="relative w-60 sm:w-72 md:w-80 lg:w-88 h-auto object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-sm"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Meet Your Host Section */}
