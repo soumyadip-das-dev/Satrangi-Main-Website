@@ -22,6 +22,7 @@ import SuitePhotoCarousel from "../components/SuitePhotoCarousel";
 import DestinationGallery from "../components/DestinationGallery";
 import ReviewCard from "../components/ReviewCard";
 import ReviewSubmission from "../components/ReviewSubmission";
+import Destination3DArt from "../components/Destination3DArt";
 
 interface DestinationPageProps {
   destinationId: "kolkata" | "sundarban" | "lamahatta";
@@ -252,18 +253,6 @@ export default function DestinationPage({
           {/* Luxury Multi-Stop Vignette Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/50 backdrop-blur-[0.5px]" />
 
-          {/* Top Quick Breadcrumb */}
-          <div className="relative z-10 w-full flex justify-between items-center text-white/90">
-            <button
-              onClick={() => onNavigate("home")}
-              className="text-xs uppercase tracking-[0.25em] font-medium flex items-center gap-2 hover:text-[#C5A059] transition-colors cursor-pointer bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
-            >
-              ← Back to Overview
-            </button>
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-semibold text-[#E6C587] bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-[#C5A059]/40 hidden sm:inline-block">
-              Satrangi Homestay Atelier
-            </span>
-          </div>
 
           {/* Center Hero Typography */}
           <div className="relative z-10 max-w-3xl mx-auto text-center my-auto py-8 sm:py-12">
@@ -299,22 +288,31 @@ export default function DestinationPage({
               </button>
             </div>
           </div>
-
-          {/* Bottom Micro Badges */}
-          <div className="relative z-10 w-full flex flex-wrap justify-center sm:justify-between items-center gap-3 text-white/80 text-[11px] font-light border-t border-white/15 pt-4">
-            <span className="flex items-center gap-1.5">
-              <MapPin size={13} className="text-[#E6C587]" /> {config.statValue}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={13} className="text-[#E6C587]" /> 100% Direct Booking Guarantee
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Coffee size={13} className="text-[#E6C587]" /> Complimentary Gourmet Breakfast
-            </span>
-          </div>
         </div>
       </section>
 
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION: 3D SEGMENTED RIBBON ART POSTER (MATCHING REFERENCE)
+      ────────────────────────────────────────────────────────────── */}
+      <Destination3DArt
+        destinationId={destinationId}
+        title={destinationId.toUpperCase()}
+        subtitle={
+          destinationId === "kolkata"
+            ? "1920s Colonial Elegance • Crimson Verandahs & Heritage Courtyards"
+            : destinationId === "lamahatta"
+            ? "5,700 FT Alpine Sanctuary • Whispering Pines & Kanchenjunga Dawn"
+            : "Estuarine Eco-Sanctuary • Golden Mangrove Horizons & Silent Waters"
+        }
+        tagline={
+          destinationId === "kolkata"
+            ? "HISTORIC BENGAL ATELIER"
+            : destinationId === "lamahatta"
+            ? "EASTERN HIMALAYAN RETREAT"
+            : "UNTOUCHED BENGAL DELTA"
+        }
+        imageSrc={config.heroImg}
+      />
 
       {/* ─────────────────────────────────────────────────────────────
           SECTION 2: "ABOUT [DESTINATION]" WITH DIAMOND EMBLEM & FACADE
