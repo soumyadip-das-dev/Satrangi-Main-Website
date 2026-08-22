@@ -128,7 +128,7 @@ export default function App() {
         {currentView === "gallery" && <GalleryPage gallery={gallery} />}
 
         {/* VIEW: ABOUT */}
-        {currentView === "about" && <AboutPage />}
+        {currentView === "about" && <AboutPage onNavigate={handleNavigate} />}
 
         {/* VIEW: CONTACT */}
         {currentView === "contact" && <ContactPage faqs={faqs} />}
