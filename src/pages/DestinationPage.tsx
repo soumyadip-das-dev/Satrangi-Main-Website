@@ -1,8 +1,23 @@
-import React from "react";
-import { Check, Calendar, Sprout, Wifi, Coffee, MapPin, Sparkles, ShieldCheck, ArrowRight, Compass, TreePine, Landmark, Instagram } from "lucide-react";
+import React, { useState } from "react";
+import { 
+  Check, 
+  MapPin, 
+  Sparkles, 
+  ShieldCheck, 
+  ArrowRight, 
+  Coffee, 
+  Compass, 
+  Utensils, 
+  TreePine, 
+  Landmark, 
+  Instagram, 
+  Star, 
+  Heart,
+  ChevronRight,
+  Eye
+} from "lucide-react";
 import { Destination, Room, Experience, Review, Booking } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
-import { isRoomAvailable, getTotalNights } from "../utils/bookingUtils";
 import SuitePhotoCarousel from "../components/SuitePhotoCarousel";
 import DestinationGallery from "../components/DestinationGallery";
 import ReviewCard from "../components/ReviewCard";
@@ -49,6 +64,8 @@ export default function DestinationPage({
   const destRooms = rooms.filter((r) => r.destinationId === destinationId);
   const destExperiences = experiences.filter((e) => e.destinationId === destinationId);
 
+  const [activeGalleryPreview, setActiveGalleryPreview] = useState<string | null>(null);
+
   const getSortedReviews = () => {
     const filtered = reviews.filter((r) => r.destinationId === destinationId);
     if (reviewsSortBy === "highest") {
@@ -62,333 +79,783 @@ export default function DestinationPage({
 
   const sortedReviews = getSortedReviews();
 
-  const getHeroConfig = () => {
+  // Curated Content Configuration matching the Boutique Luxury Layout
+  const getConfig = () => {
     switch (destinationId) {
       case "kolkata":
         return {
-          title: "Kolkata - The City of Joy",
-          subtitle: "Experience the vibrant soul of The City of Joy. Indulge in boutique luxury at our 1920s heritage townhouse—where colonial grandeur, authentic Bengali cuisine, and bespoke cultural tours deliver an unforgettable getaway.",
+          heroHeadline: "Exceptional Heritage in a Timeless Setting",
+          heroTagline: "Boutique, luxury heritage sanctuary tailored to every individual",
           heroImg: "/kolkata_hero.png",
-          storyImages: [
-            "/kolkata_hero.png",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAte6SOFbSFkWTjz_KIGB56z3MardGLApjqH6JnOuzSHMVRPLbquOWZuK38PcfGcholgWvYz0z0uA6qJdxfgkn04VeB3cBn6Xl1CNFeq6WQ4Ax7K9ACWkw8FAMZ794rYo-vLcZK3OGvVQq3BwZV80a2PUOBeTVV9XXqE_WF58Ld4y7l7liuaF7NG-Z9GR--EPEBtT_sL9LG1kfe-h_ztZoVHJ_yLSSv0XJkCXUDEiTpMfTOJAGHSqTRjO34s2H9KklZYyCa-atnnj79",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48"
-          ],
+          aboutTitle: "About Satrangi Kolkata",
+          aboutLead: "At Satrangi Kolkata, we provide a refined welcoming environment where comfort, dignity, and colonial elegance come together.",
+          aboutParagraph1: "Our boutique townhouse approach ensures every traveler receives personalized attention, creating a true sense of home in a luxurious setting.",
+          aboutParagraph2: "We are dedicated to celebrating authentic Bengal heritage—from hand-polished crimson red oxide verandahs to quiet courtyard morning teas, offering peace of mind to both solo explorers and cherished families.",
+          diamondImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He",
+          facadeImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48",
           statLabel: "Historic Heart",
           statValue: "1920s Heritage Townhouse",
-          highlights: ["Courtyard Library", "Chef Masterclass", "Red-Oxide Verandah", "Victoria Memorial Nearby"]
+          servicesHeadline: "Unwavering Commitment to Your Care & Comfort",
+          services: [
+            {
+              title: "Heritage Sanctuaries",
+              description: "Restored 1920s high-ceiling suites with authentic teak beds and serene private balconies.",
+              icon: Landmark,
+            },
+            {
+              title: "Courtyard Gastronomy",
+              description: "Artisanal homestyle Bengali thalis, slow-cooked mustard infusions, and morning brew tastings.",
+              icon: Utensils,
+            },
+            {
+              title: "Curated Cultural Trails",
+              description: "Intimate guided walks through vintage book streets, clay potter colonies, and Victoria landmarks.",
+              icon: Compass,
+            }
+          ],
+          galleryTitle: "Discover Our Beautiful Sanctuaries",
+          gallerySubtitle: "An intimate photo journey through Kolkata's colonial grace",
+          galleryMontage: [
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He", label: "Grand Suite Sanctuary" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4", label: "Courtyard Dining" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48", label: "Tropical Courtyard" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJeq_vj0KDUtJPIB7PTq-tylX6gWOLzTqaJlBtt9LK8HAh8VHrmqx-pnWFv14J_CNJLOXtWy6cgt5RHFfW4QWSYO1gtxXajpLH0quglHZTNI3a4rY7bCvtBBD_6GOuMPYDa024ftNuqGx5x6W0zM8p72QNgPOOu1SHRonQY2RCwC7Qv5v1RLyXVPh_k3eOCm8qNFoB1pgjLAOoYIDrBN6H5YjbsJ3DYVuwXqXepWn0bs2EZb8JNtvHk-OZaXxbcdj2Yb54ovIGO3RIA", label: "Red Oxide Lounge" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAte6SOFbSFkWTjz_KIGB56z3MardGLApjqH6JnOuzSHMVRPLbquOWZuK38PcfGcholgWvYz0z0uA6qJdxfgkn04VeB3cBn6Xl1CNFeq6WQ4Ax7K9ACWkw8FAMZ794rYo-vLcZK3OGvVQq3BwZV80a2PUOBeTVV9XXqE_WF58Ld4y7l7liuaF7NG-Z9GR--EPEBtT_sL9LG1kfe-h_ztZoVHJ_yLSSv0XJkCXUDEiTpMfTOJAGHSqTRjO34s2H9KklZYyCa-atnnj79", label: "Townhouse Reading Room" },
+          ],
+          diningTitle: "Dining with Heritage & Quality",
+          diningDesc: "We believe that dining is an essential part of warm hospitality. Our courtyard kitchen thoughtfully prepares meals using the finest local ingredients—featuring heirloom mustard fish, roasted lentils, aromatic Gobindobhog rice, and classical artisanal sweets served under the open sky.",
+          diningImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4",
+          livingSpacesLead: "Comfortable Living Spaces",
+          livingSpacesSub: "Private, high-ceiling suites with classic furniture and serene balconies",
+          ctaHeadline: "Seeking the Ideal Heritage Retreat?",
+          ctaSub: "Connect with our hosts directly for personalized itineraries, private transfers, and bespoke dining.",
         };
+
       case "sundarban":
         return {
-          title: "Sundarban - The Bengal Delta",
-          subtitle: "Step into the wild majesty of The Bengal Delta. Enjoy world-class eco-luxury on G-Plot Island with private river boat safaris, breathtaking estuary sunsets, and premium homestay comfort.",
+          heroHeadline: "Untamed Delta Majesty in Pure Eco-Comfort",
+          heroTagline: "Sustainable, secluded island retreat on scenic G-Plot shorelines",
           heroImg: "/sundarban_hero.png",
-          storyImages: [
-            "/sundarban_hero.png",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAsO-sTzou4Xlz-ymI800L2QQntaM1hpNvJXG0dut7_cNOqU_kLuKrxYUQ63L7h0mXVf8RYiTK6HdM4V0EjbalPn2K9BiBXPzEc-QvVbrA9hLamSIBEQQfes4J6LE5uQ4eOOZDungRqkJkvAg0CrqdpAanR3LM3LZvBDRHlI_5d_SOjPUANPDAqw8ETULWSsQiruY4-rn6oCQgQDZf8KF-_jXbk3BRnOERIg680fZP7juW2B8ZbJzMlrSRp7u8-LhxNihDwRjT1TlfF"
-          ],
+          aboutTitle: "About Satrangi Sundarban",
+          aboutLead: "Satrangi Sundarban is a secluded estuarine eco-lodge offering authentic tranquility where dense mangrove forests embrace the Bay of Bengal.",
+          aboutParagraph1: "Our boutique island philosophy pairs peaceful stilted luxury with thrilling wildlife encounters, letting guests safely immerse in nature's greatest delta.",
+          aboutParagraph2: "From silent wooden boat safaris seeking Gangetic dolphins to peaceful red-crab beach strolls and freshly caught river feasts, we deliver unforgettable island hospitality.",
+          diamondImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY",
+          facadeImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac",
           statLabel: "Ecosystem",
           statValue: "G-Plot Island Mangrove Coast",
-          highlights: ["Private Boat Safaris", "Stilted River Villas", "Red Crab Beach Walk", "Estuarine Dining"]
+          servicesHeadline: "Unwavering Commitment to Nature & Comfort",
+          services: [
+            {
+              title: "Stilted River Chalets",
+              description: "Bamboo architecture with unobstructed water views, cooling river breezes, and private sunset decks.",
+              icon: TreePine,
+            },
+            {
+              title: "Silent Mangrove Cruises",
+              description: "Traditional wooden country boats cruising serene estuaries with seasoned local wildlife trackers.",
+              icon: Compass,
+            },
+            {
+              title: "Fresh Estuary Feasts",
+              description: "Daily catch from local fishermen—giant river prawns, bhetki, and organic island vegetables.",
+              icon: Utensils,
+            }
+          ],
+          galleryTitle: "Discover Our Delta Island Sanctuaries",
+          gallerySubtitle: "Glimpses of river mist, mangrove creeks, and golden sunset estuaries",
+          galleryMontage: [
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac", label: "Stilted River Chalet" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY", label: "Sunset Boat Safari" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8", label: "Mangrove Wildlife Track" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAsO-sTzou4Xlz-ymI800L2QQntaM1hpNvJXG0dut7_cNOqU_kLuKrxYUQ63L7h0mXVf8RYiTK6HdM4V0EjbalPn2K9BiBXPzEc-QvVbrA9hLamSIBEQQfes4J6LE5uQ4eOOZDungRqkJkvAg0CrqdpAanR3LM3LZvBDRHlI_5d_SOjPUANPDAqw8ETULWSsQiruY4-rn6oCQgQDZf8KF-_jXbk3BRnOERIg680fZP7juW2B8ZbJzMlrSRp7u8-LhxNihDwRjT1TlfF", label: "Pristine Estuary Beach" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac", label: "Waterside Dining Deck" },
+          ],
+          diningTitle: "Dining with Coastal Heritage & Freshness",
+          diningDesc: "Experience the rich culinary soul of the Sundarban delta. Savor fresh river fish prepared with cold-pressed mustard oil, sweet island coconut curries, crisp country vegetables, and evening teas as the river tides gently turn.",
+          diningImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuAqaoTmsJEgDonzKh4JUOZ3B8yD57jjCa5X56PHoUppLWjslQOecPRtdx-S5yBHcpueoc8SRSEtd2D6oZ9qFr-Ai5c7-tXHjHS3WF0c7iYNkvdIgRthjMW2pdiKu9UOx3paiLGsk3i16qE7q0saWW-zZGr3IqoEvsCIq6QXclc1EuMZiOTYoOpVtYXScT6y_9G3u9WqXSQaXN6MG3ec0mCVB1rOkhCDG7fiyHFbfV6ZWRsb7SobsuN1VfSBQ9bwi1GZZOEIemHroVeUQA8",
+          livingSpacesLead: "Comfortable Living Spaces",
+          livingSpacesSub: "Boutique eco-suites designed for peaceful relaxation along the water's edge",
+          ctaHeadline: "Planning Your Delta Wildlife Adventure?",
+          ctaSub: "Reserve early to secure private safari boats and the finest stilted estuary-facing chalets.",
         };
+
       case "lamahatta":
       default:
         return {
-          title: "Lamahatta - Hidden Gem of Darjeeling",
-          subtitle: "Discover the enchanting serenity of Darjeeling's best-kept secret. Stay in luxury mountain villas 5,700 FT above the clouds with direct Kanchenjunga views and cozy hearth fire decks.",
+          heroHeadline: "Exceptional Serenity in an Alpine Setting",
+          heroTagline: "Boutique, luxury mountain haven 5,700 FT above the clouds",
           heroImg: "/lamahatta_hero.png",
-          storyImages: [
-            "/lamahatta_hero.png",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCoustqL1tEEtYmNh0CMBCDP2Cnz6L55i1uNsPB70IvKiz1RM4606YphO_ly5IaOmzabV3MP1OUWsgGyxuR9vsoY-U6xgbl2_kI8ppgXRfVwS77PbbBeGbBvZIsHPYqdaDkyGkaHUxaDLyAX9qt0HPgpc1EUCVQvHzDU0zq9OcDXZATa5P6ImUbCgW3rzEW_kT4FBsl1f6k44x80bvgb0e5jS2BIz3yhBNGUjPvsZzTibhhLGlXpsj_6iGExNs6gu1uclR-EFvtln2ET8k",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCl1Ad2B8af1S63zU9w336ggC4LQ4FK0-SpaR5bpJBnLPiJdZvVdJL8R3qUML5hJOGgxAfD9rXjNtIGwAtTFW3_AGADm0s_Sen0KOhklv4K7iCK54gzfGHSRaCWaKEYGLZcPVcG4CNBmZHnNJqpRVT8taDKlQBgGMhYCvUP9FaOF8Z4GK0lZgSd2aeSxecNqYQ0RZDy-fBXuLlU8tqm8xJwtMbvguB3EFZ3hu-qIVnElWsdD_yKLQ6vRKVMWVkfnz439MYL4o_dqcGzC00",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCEJV4sZuLSjd7dODAg4Xpz0tkCTY6VTi1r7g4CAtUiaIMCRMRSAqOSU50Go35fHs9ydmw-6mas1q8ogTi5OQv_N06gUDWG6rBUrE80LXK3QXwu05XllxVEA7t6txV0OT1pthX9ffPC1Zf46aichtO7KHD-MnwDolmmYgugM0XUWxhzKFuxsO6C9tONovyPWyaQTy-6yi2ezA1m4UIlohN6YxXzPWuSxfssIxn94QERavAIZOgNTLi_yT8Qy7WpCufhrTpoQRWuqCYj"
-          ],
+          aboutTitle: "About Satrangi Lamahatta",
+          aboutLead: "Perched at 5,700 feet amidst towering pine forests, Satrangi Lamahatta provides a peaceful haven of warmth and Himalayan grace.",
+          aboutParagraph1: "Designed for couples, honeymoons, and peaceful family holidays, our boutique alpine chalets feature unobstructed Kanchenjunga panoramas and cedar fireplaces.",
+          aboutParagraph2: "Relax with underfloor heating, savor single-estate organic Darjeeling teas, and wander serene Sherpa forest trails away from crowded tourist centers.",
+          diamondImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuCoustqL1tEEtYmNh0CMBCDP2Cnz6L55i1uNsPB70IvKiz1RM4606YphO_ly5IaOmzabV3MP1OUWsgGyxuR9vsoY-U6xgbl2_kI8ppgXRfVwS77PbbBeGbBvZIsHPYqdaDkyGkaHUxaDLyAX9qt0HPgpc1EUCVQvHzDU0zq9OcDXZATa5P6ImUbCgW3rzEW_kT4FBsl1f6k44x80bvgb0e5jS2BIz3yhBNGUjPvsZzTibhhLGlXpsj_6iGExNs6gu1uclR-EFvtln2ET8k",
+          facadeImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0",
           statLabel: "Altitude",
           statValue: "5,700 FT Alpine Ridge",
-          highlights: ["Kanchenjunga Views", "Cedar Wood Hearth", "Sherpa Guided Treks", "Organic Tea Tastings"]
+          servicesHeadline: "Unwavering Commitment to Your Mountain Retreat",
+          services: [
+            {
+              title: "Alpine Chalets & Hearth",
+              description: "Private cedar wood fireplaces, underfloor heating, and expansive valley view decks.",
+              icon: Landmark,
+            },
+            {
+              title: "Kanchenjunga Panoramas",
+              description: "270-degree mountain views right from your private terrace and master bedroom suite.",
+              icon: Compass,
+            },
+            {
+              title: "Organic Tea Tastings",
+              description: "Exclusive single-estate Darjeeling tastings paired with fireside evening bonfires.",
+              icon: Coffee,
+            }
+          ],
+          galleryTitle: "Discover Our Himalayan Sanctuaries",
+          gallerySubtitle: "Whispering pine forests, mist-shrouded peaks, and cozy fireside retreats",
+          galleryMontage: [
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDNxu5fjp3EpBL0-wxfTnuJnjcZ29umAwQkZEFgLZQHOZ713GhPT4qw5yhndGcj41KOG55vs8fC72yKiifHdpOGoBlsDw5jTjfR9KG1tOwfJWGfJIHvqq6ZKUAwr8fvHmQaXul2P1I_x1QrduMesKUCvGgKdTrmJrWiKc_yP26Du7T1L6Njv9vkA1kukK_mwzl4iZKSSC7u9uxBeCEk7Msy3N5rWA0Y0eSwI_CG8lDyY1supnelM_IRdIpFvXw51sEXEwlvYPIcKqXd2w4", label: "Pine Attic Suite" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0", label: "Himalayan Sunrise" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuCoustqL1tEEtYmNh0CMBCDP2Cnz6L55i1uNsPB70IvKiz1RM4606YphO_ly5IaOmzabV3MP1OUWsgGyxuR9vsoY-U6xgbl2_kI8ppgXRfVwS77PbbBeGbBvZIsHPYqdaDkyGkaHUxaDLyAX9qt0HPgpc1EUCVQvHzDU0zq9OcDXZATa5P6ImUbCgW3rzEW_kT4FBsl1f6k44x80bvgb0e5jS2BIz3yhBNGUjPvsZzTibhhLGlXpsj_6iGExNs6gu1uclR-EFvtln2ET8k", label: "Pine Cone Bonfire" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuCEJV4sZuLSjd7dODAg4Xpz0tkCTY6VTi1r7g4CAtUiaIMCRMRSAqOSU50Go35fHs9ydmw-6mas1q8ogTi5OQv_N06gUDWG6rBUrE80LXK3QXwu05XllxVEA7t6txV0OT1pthX9ffPC1Zf46aichtO7KHD-MnwDolmmYgugM0XUWxhzKFuxsO6C9tONovyPWyaQTy-6yi2ezA1m4UIlohN6YxXzPWuSxfssIxn94QERavAIZOgNTLi_yT8Qy7WpCufhrTpoQRWuqCYj", label: "Tea Estate Walk" },
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuCl1Ad2B8af1S63zU9w336ggC4LQ4FK0-SpaR5bpJBnLPiJdZvVdJL8R3qUML5hJOGgxAfD9rXjNtIGwAtTFW3_AGADm0s_Sen0KOhklv4K7iCK54gzfGHSRaCWaKEYGLZcPVcG4CNBmZHnNJqpRVT8taDKlQBgGMhYCvUP9FaOF8Z4GK0lZgSd2aeSxecNqYQ0RZDy-fBXuLlU8tqm8xJwtMbvguB3EFZ3hu-qIVnElWsdD_yKLQ6vRKVMWVkfnz439MYL4o_dqcGzC00", label: "Valley Villa Vista" },
+          ],
+          diningTitle: "Dining with Mountain Warmth & Quality",
+          diningDesc: "Indulge in nourishing Himalayan comfort food prepared over gentle wood fire. Savor steaming organic soups, handcrafted momos, wild mushroom delicacies, and artisanal rhododendron cordials by the hearth.",
+          diningImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuCEJV4sZuLSjd7dODAg4Xpz0tkCTY6VTi1r7g4CAtUiaIMCRMRSAqOSU50Go35fHs9ydmw-6mas1q8ogTi5OQv_N06gUDWG6rBUrE80LXK3QXwu05XllxVEA7t6txV0OT1pthX9ffPC1Zf46aichtO7KHD-MnwDolmmYgugM0XUWxhzKFuxsO6C9tONovyPWyaQTy-6yi2ezA1m4UIlohN6YxXzPWuSxfssIxn94QERavAIZOgNTLi_yT8Qy7WpCufhrTpoQRWuqCYj",
+          livingSpacesLead: "Comfortable Living Spaces",
+          livingSpacesSub: "Cozy timber suites with private hearths and sweeping mountain views",
+          ctaHeadline: "Seeking the Ideal Himalayan Escape?",
+          ctaSub: "Reserve directly with our local Sherpa team for tailored mountain treks and private fireside dinners.",
         };
     }
   };
 
-  const heroConfig = getHeroConfig();
+  const config = getConfig();
 
   return (
-    <div className="animate-fade-in text-left">
-      {/* Hero Showcase Section */}
-      <section className="relative min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] w-full bg-[#1C352D] flex flex-col justify-between p-4 sm:p-8 lg:p-12 overflow-hidden">
-        {/* Full Cover Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
-          style={{ backgroundImage: `url(${heroConfig.heroImg})` }}
-        />
-        {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1C352D] via-[#1C352D]/60 to-black/40" />
+    <div className="animate-fade-in bg-[#FAF7F2] text-[#1C352D] font-sans antialiased overflow-x-hidden selection:bg-[#C5A059]/30">
+      
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 1: HERO WITH ARCHED/CURVED FRAME & GOLD ACCENTS
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative pt-6 sm:pt-10 pb-12 sm:pb-16 px-3 sm:px-6 max-w-[1400px] mx-auto">
+        <div className="relative rounded-t-3xl sm:rounded-t-[40px] rounded-b-[40px] sm:rounded-b-[80px] lg:rounded-b-[100px] overflow-hidden min-h-[540px] sm:min-h-[640px] lg:min-h-[700px] flex flex-col justify-between p-6 sm:p-12 lg:p-16 shadow-2xl border-b-2 border-[#C5A059]/40">
+          
+          {/* Background Cover Image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
+            style={{ backgroundImage: `url(${config.heroImg})` }}
+          />
 
-        {/* Top Quick Nav */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex justify-end items-center pt-2 sm:pt-4">
-          <button
-            onClick={() => onNavigate("home")}
-            className="text-white/80 hover:text-white text-xs uppercase tracking-widest font-sans font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            ← All Destinations
-          </button>
-        </div>
+          {/* Luxury Multi-Stop Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/50 backdrop-blur-[0.5px]" />
 
-        {/* Center Main Hero Typography */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full py-6 sm:py-10">
-          <div className="max-w-3xl">
-            <span className="text-[#C5A059] text-[11px] sm:text-sm font-sans uppercase tracking-[0.2em] sm:tracking-[0.3em] font-semibold block mb-2 sm:mb-3">
-              {destination?.tagline}
+          {/* Top Quick Breadcrumb */}
+          <div className="relative z-10 w-full flex justify-between items-center text-white/90">
+            <button
+              onClick={() => onNavigate("home")}
+              className="text-xs uppercase tracking-[0.25em] font-medium flex items-center gap-2 hover:text-[#C5A059] transition-colors cursor-pointer bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+            >
+              ← Back to Overview
+            </button>
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-semibold text-[#E6C587] bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-[#C5A059]/40 hidden sm:inline-block">
+              Satrangi Homestay Atelier
             </span>
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 italic leading-tight">
-              {heroConfig.title}
-            </h1>
-            <p className="font-sans text-xs sm:text-sm md:text-base text-gray-200 font-light max-w-2xl leading-relaxed">
-              {heroConfig.subtitle}
-            </p>
           </div>
-        </div>
 
-        {/* Standard Luxury Bottom Hero Glass Bar */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full mt-4 sm:mt-6">
-          <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-center shadow-2xl">
-            {/* Segment 1: Setting & Location */}
-            <div className="flex items-center gap-3 text-white">
-              <div className="p-2.5 bg-white/10 border border-white/15 rounded-xl text-[#E6C587] shrink-0">
-                <MapPin size={18} />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] uppercase tracking-widest text-[#E6C587] font-bold">
-                  {heroConfig.statLabel}
-                </p>
-                <p className="font-serif text-xs sm:text-sm font-semibold text-white tracking-wide">
-                  {heroConfig.statValue}
-                </p>
-              </div>
-            </div>
+          {/* Center Hero Typography */}
+          <div className="relative z-10 max-w-3xl mx-auto text-center my-auto py-8 sm:py-12">
+            <span className="text-[#E6C587] text-[11px] sm:text-xs font-sans uppercase tracking-[0.35em] font-semibold block mb-3 drop-shadow-sm">
+              {destination?.tagline || config.heroTagline}
+            </span>
+            
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-white mb-5 sm:mb-6 tracking-tight leading-tight drop-shadow-md">
+              {config.heroHeadline}
+            </h1>
 
-            {/* Segment 2: Host Guarantee */}
-            <div className="hidden sm:flex items-center gap-3 text-white sm:border-l sm:border-white/15 sm:pl-3 lg:pl-4">
-              <div className="p-2.5 bg-white/10 border border-white/15 rounded-xl text-[#E6C587] shrink-0">
-                <ShieldCheck size={18} />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] uppercase tracking-widest text-[#E6C587] font-bold">
-                  Direct Host Perks
-                </p>
-                <p className="text-xs text-white/90 font-medium">
-                  0% Fee • Daily Breakfast
-                </p>
-              </div>
-            </div>
+            <p className="font-sans text-xs sm:text-sm md:text-base text-gray-200 font-light max-w-xl mx-auto leading-relaxed mb-8 drop-shadow-sm">
+              {config.heroTagline}
+            </p>
 
-            {/* Segment 3: Inventory / Rates */}
-            <div className="hidden lg:flex items-center gap-3 text-white lg:border-l lg:border-white/15 lg:pl-4">
-              <div className="p-2.5 bg-white/10 border border-white/15 rounded-xl text-[#E6C587] shrink-0">
-                <Sparkles size={18} />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] uppercase tracking-widest text-[#E6C587] font-bold">
-                  Suites Available
-                </p>
-                <p className="text-xs text-white/90 font-medium">
-                  {destRooms.length} Curated Sanctuaries
-                </p>
-              </div>
-            </div>
-
-            {/* Segment 4: Actions */}
-            <div className="flex items-center gap-2 sm:gap-2.5 sm:col-span-2 lg:col-span-1 justify-end sm:border-t sm:border-white/15 lg:border-t-0 lg:border-l lg:border-white/15 pt-2 sm:pt-3 lg:pt-0 lg:pl-4">
+            {/* Dual Pill CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => onNavigate("booking", destinationId)}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+              >
+                Make an Enquiry
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   document.getElementById("suites-section")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/25 px-3 sm:px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 text-center cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/40 transition-all duration-300 cursor-pointer"
               >
-                View Suites
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onNavigate("booking", destinationId)}
-                className="flex-1 bg-[#B85A32] hover:bg-[#A4502A] text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer text-center"
-              >
-                <span>Reserve</span>
+                Explore Suites
               </button>
             </div>
+          </div>
+
+          {/* Bottom Micro Badges */}
+          <div className="relative z-10 w-full flex flex-wrap justify-center sm:justify-between items-center gap-3 text-white/80 text-[11px] font-light border-t border-white/15 pt-4">
+            <span className="flex items-center gap-1.5">
+              <MapPin size={13} className="text-[#E6C587]" /> {config.statValue}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-[#E6C587]" /> 100% Direct Booking Guarantee
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Coffee size={13} className="text-[#E6C587]" /> Complimentary Gourmet Breakfast
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Property Story Section */}
-      <section className="py-12 sm:py-20 max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 items-center">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-[#B85A32] font-bold block mb-2 sm:mb-3">
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 2: "ABOUT [DESTINATION]" WITH DIAMOND EMBLEM & FACADE
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative py-16 sm:py-24 max-w-6xl mx-auto px-4 sm:px-6 overflow-hidden">
+        
+        {/* Soft Background Watermark */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center pointer-events-none select-none text-[55px] sm:text-[90px] lg:text-[130px] font-serif font-extralight text-[#1C352D]/[0.035] whitespace-nowrap tracking-wider">
+          About {destination?.name.split(" ")[0]}
+        </div>
+
+        {/* Narrative & Diamond Showcase */}
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center mb-16 sm:mb-20">
+          
+          {/* Left Narrative Column */}
+          <div className="lg:col-span-7 space-y-5 text-left">
+            <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block">
               {destination?.theme || "CURATED SANCTUARY"}
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1C352D] mb-4 sm:mb-6">
-              {destination?.name || "Sanctuary Overview"}
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4 sm:mb-6 font-light">
-              {destination?.propertyStory}
-            </p>
-            <div className="space-y-2 mt-4">
-              {destination?.highlights.map((h, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
-                  <Check size={14} className="text-[#B85A32] shrink-0" /> <span>{h}</span>
-                </div>
-              ))}
-            </div>
 
-            {destination?.instagramUrl && (
-              <div className="pt-5 border-t border-gray-150 mt-5">
-                <a
-                  href={destination.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#1C352D] text-[#1C352D] hover:text-white border border-gray-200 transition-all duration-300 shadow-xs hover:shadow-md group cursor-pointer"
-                >
-                  <Instagram size={17} className="text-[#E1306C] group-hover:scale-110 transition-transform" />
-                  <div className="text-left">
-                    <div className="text-[10px] text-gray-500 group-hover:text-gray-300 font-sans uppercase tracking-wider font-bold">
-                      Follow {destination.name} Stories
-                    </div>
-                    <div className="text-xs font-mono font-bold text-[#B85A32] group-hover:text-[#E6C587]">
-                      {destination.instagramHandle || "@satrangihomestay"}
-                    </div>
-                  </div>
-                </a>
-              </div>
-            )}
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C352D] tracking-tight leading-tight">
+              {config.aboutTitle}
+            </h2>
+
+            <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-normal">
+              {config.aboutLead}
+            </p>
+
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              {config.aboutParagraph1}
+            </p>
+
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              {config.aboutParagraph2}
+            </p>
+
+            <div className="pt-3">
+              <button
+                type="button"
+                onClick={() => onNavigate("about")}
+                className="px-7 py-3 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              >
+                Learn More About
+              </button>
+            </div>
           </div>
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-200 bg-gray-100">
-            <SuitePhotoCarousel
-              suiteId={`story-${destinationId}`}
-              images={heroConfig.storyImages}
-              suiteName={`${destination?.name} Property Story`}
-              heightClass="h-64 sm:h-80 md:h-[380px]"
-            />
+
+          {/* Right Diamond Image Column */}
+          <div className="lg:col-span-5 flex justify-center py-6 sm:py-8">
+            <div className="relative">
+              {/* Outer Golden Glow Border */}
+              <div className="w-56 h-56 sm:w-68 sm:h-68 rotate-45 rounded-3xl border-2 border-[#C5A059]/80 shadow-2xl p-2 bg-[#FAF7F2]/80 backdrop-blur-sm relative overflow-hidden group">
+                <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                  <img
+                    src={config.diamondImg}
+                    alt={destination?.name}
+                    className="w-full h-full object-cover -rotate-45 scale-145 group-hover:scale-160 transition-transform duration-700"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Diamond Crest / Emblem */}
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rotate-45 bg-[#FAF7F2] border-2 border-[#C5A059] flex items-center justify-center shadow-lg rounded-lg z-20">
+                <Sparkles size={16} className="-rotate-45 text-[#C5A059]" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Panoramic Property Facade Showcase */}
+        <div className="relative rounded-3xl sm:rounded-[36px] overflow-hidden border border-[#E8DFD3] shadow-xl group">
+          <img
+            src={config.facadeImg}
+            alt={`${destination?.name} Estate Facade`}
+            className="w-full h-64 sm:h-96 lg:h-[460px] object-cover group-hover:scale-105 transition-transform duration-1000"
+          />
+          {/* Subtle bottom fade to blend with canvas */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF7F2]/70 via-transparent to-transparent pointer-events-none" />
+          
+          <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl border border-white/60 shadow-md">
+            <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold">The Grounds & Facade</p>
+            <p className="text-xs font-serif font-bold text-[#1C352D]">{destination?.name}</p>
           </div>
         </div>
       </section>
 
-      {/* Live Calendar Availability & Room Collection */}
-      <section id="suites-section" className="py-12 sm:py-16 bg-white border-y border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1C352D] mb-6 text-center italic">
-            {destination?.name} Suite Collection
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 3: CURATED SERVICES ("UNWAVERING COMMITMENT TO YOUR CARE")
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative py-16 sm:py-24 bg-[#F5EFEB]/70 border-y border-[#E8DFD3]/80">
+        
+        {/* Soft Background Watermark */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center pointer-events-none select-none text-[60px] sm:text-[100px] lg:text-[140px] font-serif font-extralight text-[#1C352D]/[0.03] whitespace-nowrap tracking-widest">
+          Experiences
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          
+          <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block mb-2">
+            SIGNATURE SERVICES
+          </span>
+
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C352D] mb-12 sm:mb-16 tracking-tight max-w-2xl mx-auto leading-tight">
+            {config.servicesHeadline}
           </h2>
 
-          {/* Rooms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {destRooms.map((room) => {
+          {/* 3 Luxury Service Cards with Gold Corner Brackets */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 text-center">
+            {config.services.map((srv, idx) => {
+              const IconComp = srv.icon;
               return (
-                <div key={room.id} className="border border-gray-200/80 rounded-2xl bg-white overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                <div
+                  key={idx}
+                  className="relative bg-white/95 backdrop-blur-sm border border-[#E8DFD3] rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
+                >
+                  {/* Decorative Gold Corner Brackets */}
+                  <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-[#C5A059]/50 pointer-events-none group-hover:border-[#C5A059] transition-colors" />
+                  <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-[#C5A059]/50 pointer-events-none group-hover:border-[#C5A059] transition-colors" />
+                  <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-[#C5A059]/50 pointer-events-none group-hover:border-[#C5A059] transition-colors" />
+                  <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-[#C5A059]/50 pointer-events-none group-hover:border-[#C5A059] transition-colors" />
+
                   <div>
-                    <SuitePhotoCarousel
-                      suiteId={room.id}
-                      suiteName={room.name}
-                      images={room.imageUrls}
-                      altText={room.name}
-                      heightClass="h-64"
-                    />
-                    <div className="p-6">
-                      <div className="flex justify-between items-baseline mb-2">
-                        <h3 className="font-serif text-xl font-bold text-[#1C352D]">{room.name}</h3>
-                        <span className="font-serif text-lg font-bold text-[#B85A32]">
-                          {formatPrice(room.pricePerNight, currency)}{" "}
-                          <span className="text-[10px] text-gray-400 font-sans font-normal">/night</span>
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">
-                        {room.sqft} SQFT • Max {room.capacity} Guests • {room.type}
-                      </p>
-
-                      <p className="text-xs text-gray-600 leading-relaxed mb-6 font-sans">
-                        {room.description}
-                      </p>
+                    {/* Icon in gold-bordered circle */}
+                    <div className="w-14 h-14 mx-auto rounded-full border border-[#C5A059]/40 bg-[#FAF7F2] flex items-center justify-center mb-6 group-hover:bg-[#C5A059] group-hover:text-white transition-colors duration-300 text-[#C5A059]">
+                      <IconComp size={24} />
                     </div>
-                  </div>
 
-                  <div className="p-6 pt-0">
-                    <button
-                      onClick={() => {
-                        if (onSelectRoomModal) {
-                          onSelectRoomModal(room);
-                        } else {
-                          onNavigate("booking", destinationId);
-                        }
-                      }}
-                      className="w-full py-3 rounded-xl text-xs uppercase font-sans tracking-widest font-bold transition-all cursor-pointer bg-[#1C352D] hover:bg-[#B85A32] text-white shadow-md flex items-center justify-center text-center"
-                    >
-                      <span>Reserve</span>
-                    </button>
+                    <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#1C352D] mb-3 group-hover:text-[#B85A32] transition-colors">
+                      {srv.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+                      {srv.description}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate("experiences")}
+            className="px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+          >
+            View Our Experiences
+          </button>
         </div>
       </section>
 
-      {/* Destination Gallery */}
-      <DestinationGallery destinationId={destinationId} destinationName={destination?.name || ""} />
 
-      {/* Reviews & Guest Diaries Section */}
-      <section className="py-12 sm:py-16 bg-[#FAF8F5] border-y border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-10">
-            <span className="text-xs uppercase tracking-[0.3em] text-[#B85A32] font-bold block mb-2">
-              GUEST STORIES
-            </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C352D] italic">
-              {destination?.name} Guest Diaries
-            </h3>
-            <div className="w-12 h-0.5 bg-[#B85A32] mx-auto mt-3" />
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 4: PHOTO DISCOVERY MONTAGE ("DISCOVER OUR BEAUTIFUL SANCTUARIES")
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block mb-2">
+          CURATED GALLERY
+        </span>
+
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C352D] mb-2 tracking-tight">
+          {config.galleryTitle}
+        </h2>
+
+        {/* Delicate Dot Divider */}
+        <div className="flex items-center justify-center gap-1.5 my-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059]/40" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#C5A059]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059]/40" />
+        </div>
+
+        <p className="text-xs sm:text-sm text-gray-600 font-light max-w-md mx-auto mb-10 sm:mb-12">
+          {config.gallerySubtitle}
+        </p>
+
+        {/* 5-Image Asymmetric Luxury Editorial Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-10">
+          
+          {/* Main Large Portrait (Left) */}
+          <div 
+            onClick={() => setActiveGalleryPreview(config.galleryMontage[0].url)}
+            className="md:col-span-4 h-72 sm:h-96 md:h-[480px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-md border border-[#E8DFD3]"
+          >
+            <img
+              src={config.galleryMontage[0].url}
+              alt={config.galleryMontage[0].label}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+              <span className="text-white text-xs font-serif italic tracking-wide">{config.galleryMontage[0].label}</span>
+            </div>
           </div>
 
-          {/* Sort selector */}
-          <div className="flex justify-end mb-6 items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Sort stories:</span>
-            <select
-              value={reviewsSortBy}
-              onChange={(e) => setReviewsSortBy(e.target.value)}
-              className="bg-white border border-gray-200 rounded-lg text-xs text-gray-700 px-3 py-1.5 focus:border-[#B85A32] outline-none font-sans font-medium"
+          {/* Middle Stack (2 Landscape items) */}
+          <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6">
+            <div 
+              onClick={() => setActiveGalleryPreview(config.galleryMontage[1].url)}
+              className="h-44 sm:h-56 md:h-[228px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-md border border-[#E8DFD3]"
             >
-              <option value="latest">Latest First</option>
-              <option value="highest">Highest Rated</option>
-              <option value="lowest">Lowest Rated</option>
-            </select>
+              <img
+                src={config.galleryMontage[1].url}
+                alt={config.galleryMontage[1].label}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                <span className="text-white text-xs font-serif italic tracking-wide">{config.galleryMontage[1].label}</span>
+              </div>
+            </div>
+
+            <div 
+              onClick={() => setActiveGalleryPreview(config.galleryMontage[2].url)}
+              className="h-44 sm:h-56 md:h-[228px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-md border border-[#E8DFD3]"
+            >
+              <img
+                src={config.galleryMontage[2].url}
+                alt={config.galleryMontage[2].label}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                <span className="text-white text-xs font-serif italic tracking-wide">{config.galleryMontage[2].label}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Reviews list */}
+          {/* Right Stack (2 items or 1 portrait + landscape) */}
+          <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6">
+            <div 
+              onClick={() => setActiveGalleryPreview(config.galleryMontage[3].url)}
+              className="h-44 sm:h-56 md:h-[228px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-md border border-[#E8DFD3]"
+            >
+              <img
+                src={config.galleryMontage[3].url}
+                alt={config.galleryMontage[3].label}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                <span className="text-white text-xs font-serif italic tracking-wide">{config.galleryMontage[3].label}</span>
+              </div>
+            </div>
+
+            <div 
+              onClick={() => setActiveGalleryPreview(config.galleryMontage[4].url)}
+              className="h-44 sm:h-56 md:h-[228px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-md border border-[#E8DFD3]"
+            >
+              <img
+                src={config.galleryMontage[4].url}
+                alt={config.galleryMontage[4].label}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                <span className="text-white text-xs font-serif italic tracking-wide">{config.galleryMontage[4].label}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigate("gallery")}
+          className="px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+        >
+          View Full Gallery
+        </button>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 5: DINING & GASTRONOMY FEATURE ("DINING WITH CARE & QUALITY")
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 bg-[#F5EFEB]/50 border-t border-[#E8DFD3]/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="relative rounded-3xl overflow-hidden border border-[#E8DFD3] shadow-xl grid grid-cols-1 lg:grid-cols-12 items-center bg-white">
+            
+            {/* Dining Photography */}
+            <div className="lg:col-span-7 h-72 sm:h-96 lg:h-[480px] relative overflow-hidden">
+              <img
+                src={config.diningImg}
+                alt="Dining with Quality & Heritage"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent lg:hidden" />
+            </div>
+
+            {/* Overlapping Floating Card with Gold Corner Marks */}
+            <div className="lg:col-span-5 p-8 sm:p-12 relative bg-white flex flex-col justify-center text-left">
+              
+              {/* Decorative Corner Marks */}
+              <div className="absolute top-4 left-4 w-3 h-3 border-t-2 border-l-2 border-[#C5A059]/60 pointer-events-none" />
+              <div className="absolute top-4 right-4 w-3 h-3 border-t-2 border-r-2 border-[#C5A059]/60 pointer-events-none" />
+              <div className="absolute bottom-4 left-4 w-3 h-3 border-b-2 border-l-2 border-[#C5A059]/60 pointer-events-none" />
+              <div className="absolute bottom-4 right-4 w-3 h-3 border-b-2 border-r-2 border-[#C5A059]/60 pointer-events-none" />
+
+              <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block mb-2">
+                AUTHENTIC CULINARY
+              </span>
+
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1C352D] mb-4 tracking-tight leading-tight">
+                {config.diningTitle}
+              </h2>
+
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light mb-6">
+                {config.diningDesc}
+              </p>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => onNavigate("experiences")}
+                  className="px-7 py-3 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                >
+                  Dining Experiences
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 6: SUITES & PRIVATE LIVING ("COMFORTABLE LIVING SPACES")
+      ────────────────────────────────────────────────────────────── */}
+      <section id="suites-section" className="py-16 sm:py-24 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block mb-2">
+          ACCOMMODATION
+        </span>
+
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C352D] mb-3 tracking-tight">
+          {config.livingSpacesLead}
+        </h2>
+
+        <p className="text-xs sm:text-sm text-gray-600 font-light max-w-lg mx-auto mb-12 sm:mb-16">
+          {config.livingSpacesSub}
+        </p>
+
+        {/* Room Collection Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {destRooms.map((room) => {
+            return (
+              <div
+                key={room.id}
+                className="relative bg-white rounded-2xl sm:rounded-3xl border border-[#E8DFD3] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-left group"
+              >
+                <div>
+                  {/* Photo Carousel Header */}
+                  <SuitePhotoCarousel
+                    suiteId={room.id}
+                    suiteName={room.name}
+                    images={room.imageUrls}
+                    altText={room.name}
+                    heightClass="h-60 sm:h-68"
+                  />
+
+                  {/* Room Details */}
+                  <div className="p-6 sm:p-7">
+                    <div className="flex justify-between items-baseline mb-2">
+                      <h3 className="font-serif text-xl font-normal text-[#1C352D] group-hover:text-[#B85A32] transition-colors">
+                        {room.name}
+                      </h3>
+                      <span className="font-serif text-lg font-bold text-[#B85A32]">
+                        {formatPrice(room.pricePerNight, currency)}{" "}
+                        <span className="text-[10px] text-gray-400 font-sans font-normal">/night</span>
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-[#C5A059] uppercase tracking-wider font-bold mb-3">
+                      {room.sqft} SQFT • Max {room.capacity} Guests • {room.type}
+                    </p>
+
+                    <p className="text-xs text-gray-600 leading-relaxed font-light mb-5 line-clamp-3">
+                      {room.description}
+                    </p>
+
+                    {/* Amenities tags */}
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {room.amenities.slice(0, 3).map((am, i) => (
+                        <span key={i} className="text-[10px] bg-[#FAF7F2] text-gray-700 px-2.5 py-1 rounded-md border border-[#E8DFD3]/60">
+                          {am}
+                        </span>
+                      ))}
+                      {room.amenities.length > 3 && (
+                        <span className="text-[10px] text-gray-400 self-center">
+                          +{room.amenities.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Action */}
+                <div className="p-6 sm:p-7 pt-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onSelectRoomModal) {
+                        onSelectRoomModal(room);
+                      } else {
+                        onNavigate("booking", destinationId);
+                      }
+                    }}
+                    className="w-full py-3 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#1C352D] hover:bg-[#C5A059] text-white transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-center flex items-center justify-center gap-2"
+                  >
+                    <span>Reserve Direct</span>
+                    <ArrowRight size={13} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 7: GUEST TESTIMONIALS & REVIEWS ("WHAT OUR GUESTS SAY")
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 bg-[#F5EFEB]/70 border-t border-[#E8DFD3]/80">
+        
+        {/* Soft Background Watermark */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center pointer-events-none select-none text-[60px] sm:text-[100px] lg:text-[140px] font-serif font-extralight text-[#1C352D]/[0.03] whitespace-nowrap tracking-widest">
+          Testimonials
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-14">
+            <span className="text-[11px] uppercase tracking-[0.3em] text-[#C5A059] font-bold block mb-2">
+              AUTHENTIC REVIEWS
+            </span>
+
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C352D] tracking-tight">
+              What Our Guests Say
+            </h2>
+
+            <div className="flex items-center justify-center gap-1 my-3 text-[#C5A059]">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={15} fill="#C5A059" stroke="#C5A059" />
+              ))}
+            </div>
+          </div>
+
+          {/* Reviews Sort & Submit Bar */}
+          <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#E8DFD3]">
+            <p className="text-xs text-gray-600 font-medium">
+              Showing <strong className="text-gray-900">{sortedReviews.length}</strong> verified guest stories
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider text-gray-500 font-bold hidden sm:inline">Sort:</span>
+              <select
+                value={reviewsSortBy}
+                onChange={(e) => setReviewsSortBy(e.target.value)}
+                className="bg-white border border-[#E8DFD3] rounded-lg text-xs text-gray-700 px-3 py-1.5 focus:border-[#C5A059] outline-none font-sans font-medium"
+              >
+                <option value="latest">Latest First</option>
+                <option value="highest">Highest Rated</option>
+                <option value="lowest">Lowest Rated</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Reviews Cards List */}
           {sortedReviews.length === 0 ? (
-            <div className="text-center py-10 sm:py-12 bg-white border border-gray-200 rounded-2xl text-xs text-gray-400 font-mono mb-10 sm:mb-12">
-              No guest diaries compiled yet for {destination?.name}. Be the first to tell yours!
+            <div className="text-center py-12 bg-white border border-[#E8DFD3] rounded-2xl text-xs text-gray-400 font-sans mb-12">
+              No guest diaries compiled yet for {destination?.name}. Be the first to share your journey!
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-10 sm:mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {sortedReviews.map((rev) => (
                 <ReviewCard key={rev.id} review={rev} />
               ))}
             </div>
           )}
 
-          {/* Submit Review */}
+          {/* Submit Review Drawer/Form */}
           <ReviewSubmission
             destinationId={destinationId}
             onReviewSubmitted={onReviewSubmitted}
           />
         </div>
       </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 8: CLOSING INVITATION BANNER ("LOOKING FOR THE RIGHT RETREAT?")
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative py-20 sm:py-28 px-4 sm:px-6 bg-[#1C352D] text-white overflow-hidden text-center">
+        {/* Background Subtle Silhouette */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-25 scale-105"
+          style={{ backgroundImage: `url(${config.facadeImg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C352D] via-[#1C352D]/85 to-[#1C352D]/90" />
+
+        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+          <span className="text-[11px] uppercase tracking-[0.35em] text-[#E6C587] font-semibold block">
+            RESERVE YOUR STAY
+          </span>
+
+          <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-white leading-tight">
+            {config.ctaHeadline}
+          </h2>
+
+          <p className="text-xs sm:text-sm md:text-base text-gray-300 font-light max-w-xl mx-auto leading-relaxed">
+            {config.ctaSub}
+          </p>
+
+          <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button
+              type="button"
+              onClick={() => onNavigate("booking", destinationId)}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-[#C5A059] hover:bg-[#B85A32] text-white shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer"
+            >
+              Check Availability & Rates
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate("contact")}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-xs font-sans uppercase tracking-[0.2em] font-bold bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm transition-all duration-300 cursor-pointer"
+            >
+              Contact Concierge
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Lightbox Modal for Photo Click */}
+      {activeGalleryPreview && (
+        <div
+          onClick={() => setActiveGalleryPreview(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-fade-in cursor-pointer"
+        >
+          <div className="relative max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
+            <img
+              src={activeGalleryPreview}
+              alt="Gallery Preview"
+              className="w-full h-full object-contain max-h-[80vh]"
+            />
+            <p className="text-center text-xs text-white/70 py-2 font-mono">Click anywhere to close</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
