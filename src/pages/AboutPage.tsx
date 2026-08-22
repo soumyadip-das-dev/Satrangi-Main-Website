@@ -1,90 +1,409 @@
 import React from "react";
+import { 
+  Leaf, 
+  CheckCircle2, 
+  ShieldCheck, 
+  TreePine, 
+  Users, 
+  Sparkles, 
+  ArrowRight, 
+  Compass, 
+  Coffee, 
+  Landmark, 
+  Heart,
+  MapPin
+} from "lucide-react";
 
-export default function AboutPage() {
+interface AboutPageProps {
+  onNavigate?: (view: string, subParam?: any) => void;
+}
+
+export default function AboutPage({ onNavigate }: AboutPageProps) {
+  const handleNav = (view: string, subParam?: any) => {
+    if (onNavigate) {
+      onNavigate(view, subParam);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 animate-fade-in text-left space-y-12 sm:space-y-16">
-      <div className="text-center">
-        <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold italic text-[#2D463E]">
-          The Story of Satrangi
-        </h1>
-        <div className="w-16 h-0.5 bg-[#A45D3B] mx-auto mt-4" />
-      </div>
+    <div className="animate-fade-in bg-[#F9FAF8] text-[#1C352D] font-sans antialiased overflow-x-hidden">
+      
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 1: HERO HEADER (VILLAGEX STYLE)
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative min-h-[320px] sm:min-h-[400px] lg:min-h-[460px] flex flex-col justify-center items-center text-center px-4 sm:px-6 overflow-hidden">
+        {/* Lush Greenery Cover Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
+          style={{ backgroundImage: `url('/lamahatta_hero.png')` }}
+        />
+        {/* Emerald Green / Forest Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1C352D]/85 via-[#1C352D]/75 to-[#1C352D]/90" />
 
-      {/* Story & Home Sweet Home 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        {/* Left: Story Text */}
-        <div className="lg:col-span-7 space-y-5 text-left">
-          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2D463E] leading-snug tracking-tight">
-            "Where Every Destination Tells A Different Story"
-          </h3>
-          <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-light">
-            Satrangi Homestay began with a simple, core directive: to offer direct, high-end escapes inside historically relevant regions of West Bengal that celebrate localized cultures rather than replicating sanitized urban motel formats.
+        <div className="relative z-10 max-w-3xl mx-auto space-y-3 sm:space-y-4 pt-12 sm:pt-16">
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
+            About Us
+          </h1>
+
+          <p className="text-xs sm:text-sm md:text-base text-gray-200 font-light max-w-xl mx-auto leading-relaxed">
+            Discover the authentic soul, sustainable eco-sanctuaries, and generational warmth of Satrangi Homestays across Bengal.
           </p>
-          <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-light">
-            From our flagship cedar suites perched above mountain cloud lines in Lamahatta, to the stilted eco-lodges navigating tidal marsh waters in the Sundarbans, and the carefully conserved 1920s townhouse details of Kolkata—each property works with ancestral local designers, cooks, and materials.
-          </p>
-          <div className="border-l-2 border-[#A45D3B] pl-4 py-1 italic font-serif text-sm sm:text-base text-gray-600">
-            “Hospitality rooted in ancestral soil, crafted for the mindful traveler.”
+
+          {/* Breadcrumb Navigation */}
+          <div className="pt-2 flex items-center justify-center gap-2 text-xs sm:text-sm text-emerald-300 font-medium">
+            <button
+              onClick={() => handleNav("home")}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Home
+            </button>
+            <span className="text-emerald-400 font-bold">&gt;&gt;</span>
+            <span className="text-white font-semibold">About Us</span>
           </div>
         </div>
+      </section>
 
-        {/* Right: Home Sweet Home Design */}
-        <div className="lg:col-span-5 flex justify-center items-center">
-          <div className="relative group p-4 sm:p-6 w-full max-w-sm sm:max-w-md flex justify-center">
-            {/* Ambient Warm Tone Backdrop Glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#2D463E]/15 via-[#A45D3B]/20 to-transparent rounded-full blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-            <img
-              src="/home_sweet_home.png"
-              alt="Home Sweet Home"
-              className="relative w-60 sm:w-72 md:w-80 lg:w-88 h-auto object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-sm"
-            />
-          </div>
-        </div>
-      </div>
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 2: 3-COLUMN MAIN STORY SHOWCASE (A PARADISE SANCTUARY)
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 items-center">
+          
+          {/* LEFT COLUMN: ABOUT INTRO & 4 STAT COUNTERS */}
+          <div className="lg:col-span-4 space-y-6 text-left">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#2F6B4F] font-bold block">
+              About Satrangi
+            </span>
 
-      {/* Meet Your Host Section */}
-      <div className="space-y-6 sm:space-y-8 pt-2 sm:pt-4">
-        <div className="text-center">
-          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2D463E]">Meet Your Host</h3>
-          <div className="w-12 h-0.5 bg-[#A45D3B] mx-auto mt-3" />
-        </div>
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#1C352D] leading-tight">
+              A Paradise of Living Sanctuaries
+            </h2>
 
-        <div className="max-w-xl mx-auto">
-          {/* Single Host Card */}
-          <div className="bg-white border border-gray-200 p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-xl transition-shadow text-left">
-            <div className="flex items-center gap-4 mb-5 sm:mb-6">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#2D463E]/10 rounded-2xl flex items-center justify-center text-[#2D463E] shrink-0">
-                <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" />
-                </svg>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              Satrangi began with a simple directive: to curate peaceful retreats across West Bengal that honor authentic regional cultures, ancestral architecture, and pristine natural serenity.
+            </p>
+
+            {/* 4 Stat Counters (2x2 Grid) */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
+              <div className="space-y-1">
+                <div className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2F6B4F]">
+                  10,000+
+                </div>
+                <div className="text-[11px] text-gray-500 font-medium leading-tight">
+                  Happy Travelers Welcomed
+                </div>
               </div>
-              <div>
-                <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C352D]">Satrangi Host & Founder</h4>
-                <span className="text-[11px] sm:text-xs text-[#B85A32] font-mono uppercase tracking-wider font-bold block mt-0.5">
-                  Founder & Primary Curator
+
+              <div className="space-y-1">
+                <div className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2F6B4F]">
+                  98%
+                </div>
+                <div className="text-[11px] text-gray-500 font-medium leading-tight">
+                  Direct Guest Satisfaction
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2F6B4F]">
+                  Top 10
+                </div>
+                <div className="text-[11px] text-gray-500 font-medium leading-tight">
+                  Heritage Retreats in Bengal
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2F6B4F]">
+                  3
+                </div>
+                <div className="text-[11px] text-gray-500 font-medium leading-tight">
+                  Curated Sanctuaries
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => handleNav("kolkata")}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1C352D] hover:bg-[#2F6B4F] text-white text-xs uppercase tracking-widest font-bold shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              >
+                <Leaf size={14} className="text-emerald-400" />
+                <span>Explore Sanctuaries</span>
+              </button>
+            </div>
+          </div>
+
+
+          {/* CENTER COLUMN: STAGGERED PHOTO MONTAGE WITH FLOATING BADGE */}
+          <div className="lg:col-span-4 flex flex-col items-center gap-3 sm:gap-4 relative py-4">
+            
+            {/* Top Image */}
+            <div className="w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF1N3PRu1GVI9D91FATGEol1YMngISQMmuHMpTk84xzr_Mt0Kwn3BSeJ4Rx4Xp-AtIBtEHwZ68eytDzPwanDbhsHs2u7VihIlA6gutQT457IhcxPSoXvQhX3ZLon0IgzVRGMiEE5JtEbrKFZpIB9ahz5Kgl9fBNvBN2zPpJvm4anIwSQEpo0winW5iGWLH-LNv__Nc6WAmkzwVtuyijxcJ4Px_3b4C1KSsqfNAuIljRm5xlphfEDzUzlgqc9IQjUhDWWEP9R2WZwKyIM4"
+                alt="Satrangi Courtyard Dining"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+
+            {/* Middle Image with Overlapping Forest Green Badge */}
+            <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0"
+                alt="Satrangi Himalayan Sanctuary"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
+              
+              {/* Overlapping Emerald Badge */}
+              <div className="absolute top-1/2 right-2 -translate-y-1/2 bg-[#1C352D]/95 backdrop-blur-md text-white p-3.5 sm:p-4 rounded-2xl border border-emerald-500/30 shadow-xl flex items-center gap-2.5 max-w-[170px] sm:max-w-[190px]">
+                <div className="w-8 h-8 rounded-xl bg-[#2F6B4F] flex items-center justify-center text-emerald-300 shrink-0">
+                  <Leaf size={16} />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Tradition</p>
+                  <p className="text-xs font-serif font-bold text-white leading-tight">Embrace the Soul of Bengal</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Image */}
+            <div className="w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKxjEPOMmQ0a6cL1ITnl07z35ebEnXXmxjaqHzz4ppg1ig38uDvITIwbDc-ej5Cz4hI0Anmpwwd5qQb1CEdbqljCg6Cq08itkm3_S-LpupZt13sdFGoxgRJ979NBcUbsTbnkjk5EY1AHGiPa9brMd70x5MjXugCJIrSMDyY5dY5fTwKCo6JsVYxmYVw5cbnSmB_iFhW9B-ewvVYNOxswpDQZ-nttpChU-Pv1Uxnpoj8yFHiCEBpsR8kds8oIHmND3IZwNRbGA_ZbE-Dac"
+                alt="Satrangi Estuary Lodge"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+          </div>
+
+
+          {/* RIGHT COLUMN: CULTURE, CHARM & BULLET HIGHLIGHTS */}
+          <div className="lg:col-span-4 space-y-6 text-left">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C352D] leading-snug">
+              Authentic Culture and Charm, Where Beauty Knows No Bounds
+            </h2>
+
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              We replace sterile hotel corridors with authentic cultural discovery. Whether savoring slow-cooked Bengali thalis, watching Kanchenjunga dawn breaks, or cruising mangrove waterways, each stay reconnects you with nature.
+            </p>
+
+            {/* 4 Feature Bullet Points */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 size={16} className="text-[#2F6B4F] shrink-0 mt-0.5" />
+                <span className="text-xs text-gray-800 font-medium">
+                  <strong>Fresh Air & Pure Nature:</strong> Pine groves at 5,700 FT & untouched coastal deltas.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 size={16} className="text-[#2F6B4F] shrink-0 mt-0.5" />
+                <span className="text-xs text-gray-800 font-medium">
+                  <strong>Peaceful & Secluded:</strong> Private chalets, verandahs, and peaceful courtyard libraries.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 size={16} className="text-[#2F6B4F] shrink-0 mt-0.5" />
+                <span className="text-xs text-gray-800 font-medium">
+                  <strong>Rich Regional Culture:</strong> Restored 1920s red oxide floors & indigenous arts.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 size={16} className="text-[#2F6B4F] shrink-0 mt-0.5" />
+                <span className="text-xs text-gray-800 font-medium">
+                  <strong>Far from City Chaos:</strong> Restful sanctuaries crafted for mindful relaxation.
                 </span>
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light italic mb-5 sm:mb-6">
-              "Satrangi is a labor of love dedicated to preserving the authentic spirit of Bengal hospitality across Kolkata, Sundarban, and Lamahatta. Every guest is welcomed like family, with personalized care, curated local experiences, and peaceful comfort."
-            </p>
+            <div className="pt-2 border-t border-gray-200/80">
+              <p className="text-[10px] text-gray-400 font-mono">
+                * 100% Direct host verified homestays • ** Authentic Bengal Eco-hospitality
+              </p>
+            </div>
+          </div>
 
-            <div className="border-t border-gray-100 pt-4 flex flex-wrap gap-2.5 sm:gap-4 text-[11px] sm:text-xs font-mono">
-              <div className="bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-150">
-                <span className="font-bold text-[#1C352D]">Locations:</span> Kolkata • Sundarban • Lamahatta
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 3: MID-PAGE CINEMATIC CALLOUT BANNER
+      ────────────────────────────────────────────────────────────── */}
+      <section className="relative py-20 sm:py-28 px-4 sm:px-6 bg-[#1C352D] text-white overflow-hidden text-center">
+        {/* Full-Cover Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-35 transition-transform duration-1000 scale-105"
+          style={{ backgroundImage: `url('/sundarban_hero.png')` }}
+        />
+        {/* Dark Emerald Gradient Veil */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1C352D]/90 via-[#1C352D]/80 to-[#1C352D]/90" />
+
+        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+          <span className="text-xs uppercase tracking-[0.3em] text-emerald-400 font-bold block">
+            Discover Satrangi
+          </span>
+
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+            Endless beauty, natural charm
+          </h2>
+
+          <p className="text-xs sm:text-sm md:text-base text-gray-200 font-light max-w-xl mx-auto leading-relaxed">
+            Where every morning mist, estuarine breeze, and colonial courtyard welcomes you home to authentic Bengal serenity.
+          </p>
+
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={() => handleNav("gallery")}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C352D] hover:bg-[#2F6B4F] hover:text-white text-xs uppercase tracking-widest font-bold shadow-xl transition-all duration-300 cursor-pointer"
+            >
+              <Compass size={14} />
+              <span>Discover More</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 4: "WHY SATRANGI" (PERFECT DESTINATION FOR PEACEFUL VACATION)
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center">
+          
+          {/* LEFT: 2 STAGGERED PHOTOS & OVERLAPPING PILLARS CARD */}
+          <div className="lg:col-span-6 relative">
+            <div className="grid grid-cols-12 gap-4 items-end">
+              
+              {/* Top/Left Photo */}
+              <div className="col-span-5 h-44 sm:h-56 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiJErL1NVsuFluLGmpkq_nb7AffVDvOyIm8pfr0dJVAEhu0QujGYI9LSR3xcJYfG0TpSVb3a_dXM9disYdO6UL52Rc9M60FpQnzH6dOlnshJCr7Gm_s2xgqEKYf85Mh_4Syu7ECBgMK6zUq5isZsis-t3SgK8_y5oZ9Y3To12rcIjUs-9dGJB4fZk-Lm_9PQFbs5HyqjBr1r3bvLiIAPG44_gdMRPIbJnEgkgeBtJwW6iDwUsdD3GucBCpzetUEtuA0oCvOfKB18He"
+                  alt="Satrangi Heritage Suite"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
               </div>
-              <div className="bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-150">
-                <span className="font-bold text-[#1C352D]">Languages:</span> English, Bengali, Hindi
+
+              {/* Bottom/Right Main Photo */}
+              <div className="col-span-7 h-64 sm:h-80 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48"
+                  alt="Satrangi Tropical Grounds"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
               </div>
-              <div className="bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-150">
-                <span className="font-bold text-[#1C352D]">Expertise:</span> Regional Heritage & Eco-Hospitality
+            </div>
+
+            {/* Overlapping Floating Dual Pillar Card */}
+            <div className="mt-4 sm:mt-6 bg-white border border-gray-200/90 rounded-2xl p-5 sm:p-6 shadow-xl grid grid-cols-2 gap-4 text-left">
+              <div className="border-r border-gray-150 pr-4">
+                <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C352D] mb-1">
+                  Serenity
+                </h4>
+                <p className="text-[11px] sm:text-xs text-gray-600 font-light leading-relaxed">
+                  Immerse in peaceful stillness amidst nature, heritage, and quiet morning tea rituals.
+                </p>
+              </div>
+
+              <div className="pl-1">
+                <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C352D] mb-1">
+                  Tranquility
+                </h4>
+                <p className="text-[11px] sm:text-xs text-gray-600 font-light leading-relaxed">
+                  Every suite crafted for deep restorative rest, underfloor warmth, and scenic balconies.
+                </p>
               </div>
             </div>
           </div>
+
+
+          {/* RIGHT: WHY SATRANGI & 3 GREEN BADGE ROWS */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#2F6B4F] font-bold block">
+              Why Satrangi
+            </span>
+
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#1C352D] leading-tight">
+              Perfect Destination for Peaceful Vacation
+            </h2>
+
+            <div className="space-y-5 pt-2">
+              
+              {/* Row 1: Affordable Luxury */}
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-150 shadow-xs hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-[#2F6B4F] flex items-center justify-center text-white shrink-0">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h4 className="font-serif text-base font-bold text-[#1C352D] mb-1">
+                    Affordable Luxury & Direct Guarantee
+                  </h4>
+                  <p className="text-xs text-gray-600 font-light leading-relaxed">
+                    Transparent rates with 0% platform surcharge, complimentary breakfast, and direct host perks.
+                  </p>
+                </div>
+              </div>
+
+              {/* Row 2: Nature Destination */}
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-150 shadow-xs hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-[#2F6B4F] flex items-center justify-center text-white shrink-0">
+                  <TreePine size={20} />
+                </div>
+                <div>
+                  <h4 className="font-serif text-base font-bold text-[#1C352D] mb-1">
+                    Pristine Nature & Heritage Locations
+                  </h4>
+                  <p className="text-xs text-gray-600 font-light leading-relaxed">
+                    Kolkata's 1920s townhouse, Sundarban's estuarine eco-lodge, and Lamahatta's 5,700 FT alpine chalets.
+                  </p>
+                </div>
+              </div>
+
+              {/* Row 3: Friendly Community */}
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-150 shadow-xs hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-[#2F6B4F] flex items-center justify-center text-white shrink-0">
+                  <Users size={20} />
+                </div>
+                <div>
+                  <h4 className="font-serif text-base font-bold text-[#1C352D] mb-1">
+                    Generational Homestay Hospitality
+                  </h4>
+                  <p className="text-xs text-gray-600 font-light leading-relaxed">
+                    Dedicated local families, Sherpa trekking guides, and chefs who treat every guest like family.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => handleNav("contact")}
+                className="px-6 py-3 rounded-full bg-[#1C352D] hover:bg-[#2F6B4F] text-white text-xs uppercase tracking-widest font-bold shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              >
+                Contact Concierge
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNav("booking")}
+                className="px-6 py-3 rounded-full bg-white border border-gray-300 hover:border-[#1C352D] text-[#1C352D] text-xs uppercase tracking-widest font-bold shadow-xs transition-all duration-300 cursor-pointer"
+              >
+                Book Your Stay
+              </button>
+            </div>
+          </div>
+
         </div>
-      </div>
+      </section>
+
     </div>
   );
 }
