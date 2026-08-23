@@ -62,19 +62,25 @@ export default function HomePage({
       ────────────────────────────────────────────────────────────── */}
       <div className="bg-[#FAF7F2] rounded-[24px] sm:rounded-[36px] lg:rounded-[44px] overflow-hidden shadow-2xl max-w-[1440px] mx-auto border border-[#E5DEC9]">
         
-        {/* SVG Clip Path Definitions for Torn Deckle Edges */}
+        {/* SVG Clip Path Definitions & Watercolor Ink Bleed Distortion Filters */}
         <svg className="absolute w-0 h-0 overflow-hidden pointer-events-none" aria-hidden="true">
           <defs>
+            {/* Organic Watercolor Ink Distortion Filter matching reference painting bleed */}
+            <filter id="watercolor-distort" x="-25%" y="-25%" width="150%" height="150%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="5" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="34" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            </filter>
+
             <clipPath id="torn-deckle-1" clipPathUnits="objectBoundingBox">
-              <path d="M 0.03,0.08 C 0.12,0.03 0.22,0.07 0.35,0.02 C 0.48,0.06 0.62,0.01 0.78,0.05 C 0.88,0.02 0.95,0.07 0.97,0.18 C 0.99,0.28 0.94,0.42 0.98,0.58 C 0.93,0.72 0.97,0.85 0.91,0.94 C 0.79,0.98 0.65,0.92 0.52,0.97 C 0.38,0.93 0.24,0.98 0.11,0.93 C 0.03,0.88 0.05,0.76 0.02,0.62 C 0.06,0.48 0.01,0.32 0.04,0.19 C 0.01,0.12 0.02,0.09 0.03,0.08 Z" />
+              <path d="M 0.05,0.08 C 0.15,0.01 0.28,0.09 0.42,0.01 C 0.58,0.06 0.72,0.01 0.88,0.06 C 0.96,0.02 0.99,0.12 0.96,0.25 C 0.99,0.42 0.93,0.58 0.98,0.75 C 0.92,0.88 0.96,0.96 0.85,0.95 C 0.71,0.99 0.55,0.92 0.41,0.98 C 0.26,0.93 0.12,0.98 0.04,0.91 C 0.01,0.82 0.06,0.68 0.01,0.52 C 0.05,0.38 0.01,0.22 0.05,0.11 Z" />
             </clipPath>
 
             <clipPath id="torn-deckle-2" clipPathUnits="objectBoundingBox">
-              <path d="M 0.06,0.04 C 0.22,0.02 0.45,0.06 0.68,0.01 C 0.82,0.04 0.94,0.09 0.96,0.22 C 0.93,0.38 0.98,0.55 0.94,0.72 C 0.97,0.86 0.89,0.96 0.74,0.93 C 0.58,0.98 0.41,0.92 0.25,0.97 C 0.12,0.93 0.04,0.84 0.05,0.69 C 0.01,0.54 0.06,0.38 0.02,0.22 C 0.05,0.11 0.03,0.06 0.06,0.04 Z" />
+              <path d="M 0.08,0.04 C 0.24,0.01 0.48,0.08 0.71,0.02 C 0.86,0.06 0.97,0.11 0.94,0.26 C 0.98,0.41 0.92,0.59 0.97,0.76 C 0.92,0.89 0.84,0.98 0.69,0.95 C 0.52,0.99 0.35,0.92 0.18,0.97 C 0.07,0.91 0.02,0.81 0.04,0.65 C 0.01,0.49 0.05,0.32 0.01,0.18 Z" />
             </clipPath>
 
             <clipPath id="torn-deckle-3" clipPathUnits="objectBoundingBox">
-              <path d="M 0.04,0.07 C 0.16,0.02 0.38,0.05 0.62,0.01 C 0.81,0.04 0.93,0.08 0.96,0.24 C 0.94,0.42 0.97,0.61 0.93,0.78 C 0.96,0.89 0.86,0.97 0.69,0.94 C 0.52,0.98 0.36,0.93 0.19,0.97 C 0.07,0.92 0.03,0.81 0.05,0.65 C 0.02,0.49 0.05,0.33 0.02,0.18 C 0.04,0.1 0.02,0.08 0.04,0.07 Z" />
+              <path d="M 0.04,0.06 C 0.19,0.01 0.42,0.07 0.65,0.02 C 0.82,0.05 0.96,0.09 0.94,0.25 C 0.98,0.44 0.93,0.62 0.97,0.81 C 0.94,0.91 0.82,0.97 0.66,0.94 C 0.48,0.98 0.32,0.93 0.15,0.97 C 0.05,0.91 0.02,0.78 0.04,0.62 C 0.01,0.46 0.04,0.29 0.01,0.15 Z" />
             </clipPath>
           </defs>
         </svg>
@@ -247,7 +253,7 @@ export default function HomePage({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Left Column: Authentic Polaroid Photo with Washi Tape & Flowers */}
-            <div className="lg:col-span-5 relative flex justify-center">
+            <div className="lg:col-span-5 relative flex justify-center order-2 lg:order-1">
               <div className="relative group">
                 
                 {/* Washi Tape at Top */}
@@ -282,7 +288,7 @@ export default function HomePage({
             </div>
 
             {/* Right Column: Editorial Narrative & Host Philosophy */}
-            <div className="lg:col-span-7 text-left lg:pl-4 relative">
+            <div className="lg:col-span-7 text-left lg:pl-4 relative order-1 lg:order-2">
               
               {/* Pine Needle Sprig Illustration in Top Right */}
               <div className="absolute -top-10 right-0 w-24 h-24 opacity-60 pointer-events-none select-none hidden sm:block">
@@ -407,19 +413,30 @@ export default function HomePage({
               
               {/* Route 01: Lamahatta */}
               <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center text-left">
-                <div className="lg:col-span-6 relative">
+                <div className="lg:col-span-6 relative order-2 lg:order-1">
                   <div className="relative max-w-md mx-auto lg:max-w-none group">
                     <div 
                       className="absolute inset-0 bg-[#DECA9E]/80 rounded-2xl transform rotate-1 scale-105 filter blur-[1px] transition-transform duration-700 group-hover:rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-1)", WebkitClipPath: "url(#torn-deckle-1)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-1)", 
+                        WebkitClipPath: "url(#torn-deckle-1)"
+                      }}
                     />
                     <div 
                       className="absolute inset-0 bg-[#C8B282]/45 rounded-2xl transform -rotate-1 scale-103 transition-transform duration-700 group-hover:-rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-1)", WebkitClipPath: "url(#torn-deckle-1)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-1)", 
+                        WebkitClipPath: "url(#torn-deckle-1)"
+                      }}
                     />
                     <div 
                       className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] bg-[#141C19]"
-                      style={{ clipPath: "url(#torn-deckle-1)", WebkitClipPath: "url(#torn-deckle-1)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-1)", 
+                        WebkitClipPath: "url(#torn-deckle-1)",
+                        maskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)",
+                        WebkitMaskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)"
+                      }}
                     >
                       <img
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0"
@@ -431,7 +448,7 @@ export default function HomePage({
                   </div>
                 </div>
 
-                <div className="lg:col-span-6 relative lg:pl-4">
+                <div className="lg:col-span-6 relative lg:pl-4 order-1 lg:order-2">
                   <div className="relative">
                     <div className="absolute -top-10 sm:-top-16 -left-2 sm:-left-6 font-['Alex_Brush',cursive] text-6xl sm:text-8xl lg:text-9xl text-[#DEB868]/35 pointer-events-none select-none tracking-normal leading-none z-0">
                       Lamahatta
@@ -467,7 +484,7 @@ export default function HomePage({
 
               {/* Route 02: Sundarban */}
               <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center text-left">
-                <div className="lg:col-span-6 lg:order-1 relative lg:pr-4">
+                <div className="lg:col-span-6 lg:order-1 relative lg:pr-4 order-1">
                   <div className="relative">
                     <div className="absolute -top-10 sm:-top-16 -left-2 sm:-left-6 font-['Alex_Brush',cursive] text-6xl sm:text-8xl lg:text-9xl text-[#DEB868]/35 pointer-events-none select-none tracking-normal leading-none z-0">
                       Sundarban
@@ -500,19 +517,30 @@ export default function HomePage({
                   </div>
                 </div>
 
-                <div className="lg:col-span-6 lg:order-2 relative">
+                <div className="lg:col-span-6 lg:order-2 relative order-2">
                   <div className="relative max-w-md mx-auto lg:max-w-none group">
                     <div 
                       className="absolute inset-0 bg-[#DECA9E]/80 rounded-2xl transform -rotate-1 scale-105 filter blur-[1px] transition-transform duration-700 group-hover:-rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-2)", WebkitClipPath: "url(#torn-deckle-2)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-2)", 
+                        WebkitClipPath: "url(#torn-deckle-2)"
+                      }}
                     />
                     <div 
                       className="absolute inset-0 bg-[#C8B282]/45 rounded-2xl transform rotate-1 scale-103 transition-transform duration-700 group-hover:rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-2)", WebkitClipPath: "url(#torn-deckle-2)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-2)", 
+                        WebkitClipPath: "url(#torn-deckle-2)"
+                      }}
                     />
                     <div 
                       className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] bg-[#141C19]"
-                      style={{ clipPath: "url(#torn-deckle-2)", WebkitClipPath: "url(#torn-deckle-2)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-2)", 
+                        WebkitClipPath: "url(#torn-deckle-2)",
+                        maskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)",
+                        WebkitMaskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)"
+                      }}
                     >
                       <img
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaYjy4e-XXFwdkagOoZsOEZkvT0V0piUX4M26-qP7uhiSca4muFrt42zavFFrNFiwrAxDnFlN8LLvbrUurlfDbK5s8Bb59J8Yy95kyAx0Eii7Ft-bg_tY1keeToWqrJlbuE0toY_YFwwB4HwIYwFZa2pt8_uL5pwNcAuFmHNLyW7ndRnGpJC5G0MVyYyn4KBS8PdBUSusvErNpb9zXUSizNvuOe_x2fWsvntUD5B8_J0zDSoQyXa9EXwR7IT8hfw8soEaOlhLwhEcdcaY"
@@ -527,19 +555,30 @@ export default function HomePage({
 
               {/* Route 03: Kolkata */}
               <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center text-left">
-                <div className="lg:col-span-6 relative">
+                <div className="lg:col-span-6 relative order-2 lg:order-1">
                   <div className="relative max-w-md mx-auto lg:max-w-none group">
                     <div 
                       className="absolute inset-0 bg-[#DECA9E]/80 rounded-2xl transform rotate-1 scale-105 filter blur-[1px] transition-transform duration-700 group-hover:rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-3)", WebkitClipPath: "url(#torn-deckle-3)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-3)", 
+                        WebkitClipPath: "url(#torn-deckle-3)"
+                      }}
                     />
                     <div 
                       className="absolute inset-0 bg-[#C8B282]/45 rounded-2xl transform -rotate-1 scale-103 transition-transform duration-700 group-hover:-rotate-2 pointer-events-none"
-                      style={{ clipPath: "url(#torn-deckle-3)", WebkitClipPath: "url(#torn-deckle-3)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-3)", 
+                        WebkitClipPath: "url(#torn-deckle-3)"
+                      }}
                     />
                     <div 
                       className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] bg-[#141C19]"
-                      style={{ clipPath: "url(#torn-deckle-3)", WebkitClipPath: "url(#torn-deckle-3)" }}
+                      style={{ 
+                        clipPath: "url(#torn-deckle-3)", 
+                        WebkitClipPath: "url(#torn-deckle-3)",
+                        maskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)",
+                        WebkitMaskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0) 100%)"
+                      }}
                     >
                       <img
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnzKOH3iNF2rtJp50aMwTUPfE6LBIKwBUk29LG1GsW5nI-Wnt035Nv3LKXlVnOaWWfLsZrutatdm9RRaKk4PjlZ2GHbmdsN5dUSyisa4-p2xQR8smK8hbIvkovo7gJcPKnPOsuPlwnXSgAAWVS9vpTnqDo_CYbRwMGZrMvQ8sNfHfEPbfkU7UgUQOSwJBWRhxFViwFHBe5Z4aldltBhV4xNeY0jEQNJ2XLBdi6Eifx_VbZPesRVTQvbdPBhLTTTPRlYq5RxPGzg48"
@@ -551,7 +590,7 @@ export default function HomePage({
                   </div>
                 </div>
 
-                <div className="lg:col-span-6 relative lg:pl-4">
+                <div className="lg:col-span-6 relative lg:pl-4 order-1 lg:order-2">
                   <div className="relative">
                     <div className="absolute -top-10 sm:-top-16 -left-2 sm:-left-6 font-['Alex_Brush',cursive] text-6xl sm:text-8xl lg:text-9xl text-[#DEB868]/35 pointer-events-none select-none tracking-normal leading-none z-0">
                       Kolkata
