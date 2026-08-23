@@ -382,21 +382,6 @@ export default function DestinationPage({
           </div>
         </div>
 
-        {/* Panoramic Property Facade Showcase */}
-        <div className="relative rounded-3xl sm:rounded-[36px] overflow-hidden border border-[#E8DFD3] shadow-xl group">
-          <img
-            src={config.facadeImg}
-            alt={`${destination?.name} Estate Facade`}
-            className="w-full h-64 sm:h-96 lg:h-[460px] object-cover group-hover:scale-105 transition-transform duration-1000"
-          />
-          {/* Subtle bottom fade to blend with canvas */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF7F2]/70 via-transparent to-transparent pointer-events-none" />
-          
-          <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl border border-white/60 shadow-md">
-            <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold">The Grounds & Facade</p>
-            <p className="text-xs font-serif font-bold text-[#1C352D]">{destination?.name}</p>
-          </div>
-        </div>
       </section>
 
 
@@ -784,12 +769,6 @@ export default function DestinationPage({
               ))}
             </div>
           )}
-
-          {/* Submit Review Drawer/Form */}
-          <ReviewSubmission
-            destinationId={destinationId}
-            onReviewSubmitted={onReviewSubmitted}
-          />
         </div>
       </section>
 
