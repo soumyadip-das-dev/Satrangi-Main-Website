@@ -3,14 +3,15 @@ import { Star, CheckCircle, ShieldCheck, Loader2, Send, Camera, Key, X, Upload }
 import { Review } from "../types";
 
 interface ReviewSubmissionProps {
-  destinationId: string;
-  onReviewSubmitted: (newReview: Review) => void;
+  destinationId?: string;
+  onReviewSubmitted?: (newReview: Review) => void;
 }
 
 export default function ReviewSubmission({
   destinationId,
   onReviewSubmitted,
 }: ReviewSubmissionProps) {
+  const [selectedDestId, setSelectedDestId] = useState<string>(destinationId || "kolkata");
   const [rating, setRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [authorName, setAuthorName] = useState<string>("");
@@ -46,7 +47,8 @@ export default function ReviewSubmission({
     ],
   };
 
-  const availableRooms = roomPresets[destinationId] || roomPresets["lamahatta"];
+  const currentDest = destinationId || selectedDestId;
+  const availableRooms = roomPresets[currentDest] || roomPresets["kolkata"];
 
   // File Upload Handler (reads files as base64 data URLs)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +127,7 @@ export default function ReviewSubmission({
           authorName,
           rating,
           text: commentText,
-          destinationId,
+          destinationId: currentDest,
           roomName: matchedRoom.name,
           roomType: matchedRoom.type,
           photos: photos.length > 0 ? photos : undefined,
@@ -135,7 +137,7 @@ export default function ReviewSubmission({
 
       if (!response.ok) throw new Error("Failed to submit review.");
       const newReview = await response.json();
-      onReviewSubmitted(newReview);
+      if (onReviewSubmitted) onReviewSubmitted(newReview);
       setSuccess(true);
       setAuthorName("");
       setCommentText("");
@@ -204,6 +206,24 @@ export default function ReviewSubmission({
               {hoverRating || rating} out of 5 stars
             </span>
           </div>
+
+          {/* Destination Selector (If opened from general About Page) */}
+          {!destinationId && (
+            <div className="mb-3">
+              <label className="block text-[10px] uppercase font-bold text-gray-600 tracking-wider mb-1">
+                Select Sanctuary *
+              </label>
+              <select
+                value={selectedDestId}
+                onChange={(e) => setSelectedDestId(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-[#1C352D] font-semibold"
+              >
+                <option value="kolkata">Satrangi Kolkata • Heritage Townhouse</option>
+                <option value="sundarban">Satrangi Sundarban • Estuary Lodge</option>
+                <option value="lamahatta">Satrangi Lamahatta • Alpine Sanctuary</option>
+              </select>
+            </div>
+          )}
 
           {/* Name & Suite 2-Column Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
