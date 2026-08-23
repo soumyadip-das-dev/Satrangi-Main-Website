@@ -13,6 +13,7 @@ import {
   Heart,
   MapPin
 } from "lucide-react";
+import ReviewSubmission from "../components/ReviewSubmission";
 
 interface AboutPageProps {
   onNavigate?: (view: string, subParam?: any) => void;
@@ -125,16 +126,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               </div>
             </div>
 
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => handleNav("kolkata")}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1C352D] hover:bg-[#2F6B4F] text-white text-xs uppercase tracking-widest font-bold shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
-              >
-                <Leaf size={14} className="text-emerald-400" />
-                <span>Explore Sanctuaries</span>
-              </button>
-            </div>
+
           </div>
 
 
@@ -150,23 +142,17 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               />
             </div>
 
-            {/* Middle Image with Overlapping Forest Green Badge */}
-            <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+            {/* Middle Image with "Home sweet Home" Cursive Overlay */}
+            <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden shadow-md border border-gray-200 group">
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWhzEiAu-fkjC0NgmgIUPTFihWx0mHcqWI0hHW-EX-IDpcdyKCINRjMFuFJUK9lO5Vmfz1cF31rDvFgpmqQG6rR5CStyat8Z3wIJgEn_6g_nI-d-0SdQPayjDMsDpaGzVfdYUwdU17sFNB_dqk7D1Hk7LuniZNnaMqxlG9OsQWbfPabij4A0mxJLyE-H3uQN7S7GsCJxkwpJryjypBSxfhAmyumPBvPJXJDZa9y2zr-evpmrbhSOgU6izo91asyc_A5IecbRraWWpLqn0"
                 alt="Satrangi Himalayan Sanctuary"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.85]"
               />
-              
-              {/* Overlapping Emerald Badge */}
-              <div className="absolute top-1/2 right-2 -translate-y-1/2 bg-[#1C352D]/95 backdrop-blur-md text-white p-3.5 sm:p-4 rounded-2xl border border-emerald-500/30 shadow-xl flex items-center gap-2.5 max-w-[170px] sm:max-w-[190px]">
-                <div className="w-8 h-8 rounded-xl bg-[#2F6B4F] flex items-center justify-center text-emerald-300 shrink-0">
-                  <Leaf size={16} />
-                </div>
-                <div className="text-left">
-                  <p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Tradition</p>
-                  <p className="text-xs font-serif font-bold text-white leading-tight">Embrace the Soul of Bengal</p>
-                </div>
+              <div className="absolute inset-0 bg-black/25 flex items-center justify-center p-4">
+                <span className="font-['Alex_Brush',cursive] text-4xl sm:text-5xl lg:text-6xl text-[#FAF7F2] drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)] select-none">
+                  Home sweet Home
+                </span>
               </div>
             </div>
 
@@ -401,6 +387,16 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             </div>
           </div>
 
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 5: GUEST FEEDBACK FORM (RELOCATED FROM DESTINATION PAGES)
+      ────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 bg-[#F5EFEB]/60 border-t border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <ReviewSubmission />
         </div>
       </section>
 
