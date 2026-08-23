@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Compass, Menu, X, Landmark, TreePine, Map, Image, Info, PhoneCall, ShieldCheck, ChevronDown } from "lucide-react";
 import { Currency } from "../utils/currency";
@@ -9,9 +10,9 @@ interface HeaderProps {
   onCurrencyChange?: (currency: Currency) => void;
 }
 
-export default function Header({ 
-  currentView, 
-  onNavigate, 
+export default function Header({
+  currentView,
+  onNavigate,
 }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [destinationsOpen, setDestinationsOpen] = useState(false);
@@ -97,11 +98,10 @@ export default function Header({
               onNavigate("home");
               setDestinationsOpen(false);
             }}
-            className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 relative ${
-              currentView === "home"
-                ? "text-[#B85A32]"
-                : "text-gray-600 hover:text-[#1C352D]"
-            }`}
+            className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 relative ${currentView === "home"
+              ? "text-[#B85A32]"
+              : "text-gray-600 hover:text-[#1C352D]"
+              }`}
           >
             Home
             {currentView === "home" && (
@@ -114,11 +114,10 @@ export default function Header({
             <button
               onClick={() => setDestinationsOpen(!destinationsOpen)}
               onMouseEnter={() => setDestinationsOpen(true)}
-              className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 flex items-center gap-1 relative ${
-                isDestinationActive
-                  ? "text-[#B85A32]"
-                  : "text-gray-600 hover:text-[#1C352D]"
-              }`}
+              className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 flex items-center gap-1 relative ${isDestinationActive
+                ? "text-[#B85A32]"
+                : "text-gray-600 hover:text-[#1C352D]"
+                }`}
             >
               <span>Destinations</span>
               <ChevronDown size={14} className={`transition-transform duration-200 ${destinationsOpen ? "rotate-180 text-[#B85A32]" : ""}`} />
@@ -129,7 +128,7 @@ export default function Header({
 
             {/* Dropdown Menu Popup */}
             {destinationsOpen && (
-              <div 
+              <div
                 onMouseLeave={() => setDestinationsOpen(false)}
                 className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-xl border border-gray-200/80 rounded-2xl shadow-2xl p-2.5 z-50 animate-fade-in text-left"
               >
@@ -146,11 +145,10 @@ export default function Header({
                         onNavigate(dest.view);
                         setDestinationsOpen(false);
                       }}
-                      className={`w-full flex items-start gap-3 p-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? "bg-[#1C352D]/10 text-[#B85A32]"
-                          : "hover:bg-gray-50 text-gray-700 hover:text-[#1C352D]"
-                      }`}
+                      className={`w-full flex items-start gap-3 p-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${isActive
+                        ? "bg-[#1C352D]/10 text-[#B85A32]"
+                        : "hover:bg-gray-50 text-gray-700 hover:text-[#1C352D]"
+                        }`}
                     >
                       <div className={`p-2 rounded-lg mt-0.5 ${isActive ? "bg-[#B85A32] text-white" : "bg-gray-100 text-[#1C352D]"}`}>
                         <Icon size={15} />
@@ -181,11 +179,10 @@ export default function Header({
                   onNavigate(item.view);
                   setDestinationsOpen(false);
                 }}
-                className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 relative ${
-                  isActive
-                    ? "text-[#B85A32]"
-                    : "text-gray-600 hover:text-[#1C352D]"
-                }`}
+                className={`font-sans text-xs font-semibold uppercase tracking-wider pb-1 cursor-pointer transition-all duration-200 relative ${isActive
+                  ? "text-[#B85A32]"
+                  : "text-gray-600 hover:text-[#1C352D]"
+                  }`}
               >
                 {item.label}
                 {isActive && (
@@ -235,9 +232,8 @@ export default function Header({
                   onNavigate("home");
                   setMobileOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl mb-3 text-left transition-all ${
-                  currentView === "home" ? "bg-[#1C352D]/10 text-[#B85A32] font-semibold" : "text-gray-700 hover:bg-gray-50"
-                }`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl mb-3 text-left transition-all ${currentView === "home" ? "bg-[#1C352D]/10 text-[#B85A32] font-semibold" : "text-gray-700 hover:bg-gray-50"
+                  }`}
               >
                 <Compass size={18} className={currentView === "home" ? "text-[#B85A32]" : "text-gray-400"} />
                 <span className="text-sm font-sans font-medium">Home</span>
@@ -259,11 +255,10 @@ export default function Header({
                           onNavigate(dest.view);
                           setMobileOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-all ${
-                          isActive
-                            ? "bg-white text-[#B85A32] font-bold shadow-xs border border-gray-200"
-                            : "text-gray-700 hover:bg-white/70"
-                        }`}
+                        className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-all ${isActive
+                          ? "bg-white text-[#B85A32] font-bold shadow-xs border border-gray-200"
+                          : "text-gray-700 hover:bg-white/70"
+                          }`}
                       >
                         <Icon size={16} className={isActive ? "text-[#B85A32]" : "text-[#1C352D]"} />
                         <div>
@@ -288,11 +283,10 @@ export default function Header({
                         onNavigate(item.view);
                         setMobileOpen(false);
                       }}
-                      className={`flex items-center gap-2.5 p-3 rounded-xl text-left transition-all ${
-                        isActive
-                          ? "bg-[#1C352D]/10 text-[#B85A32] font-semibold"
-                          : "text-gray-700 hover:bg-gray-50 bg-white border border-gray-100"
-                      }`}
+                      className={`flex items-center gap-2.5 p-3 rounded-xl text-left transition-all ${isActive
+                        ? "bg-[#1C352D]/10 text-[#B85A32] font-semibold"
+                        : "text-gray-700 hover:bg-gray-50 bg-white border border-gray-100"
+                        }`}
                     >
                       <Icon size={16} className={isActive ? "text-[#B85A32]" : "text-gray-400"} />
                       <span className="text-xs font-sans font-medium">{item.label}</span>
