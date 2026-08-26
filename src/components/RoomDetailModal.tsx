@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   X, 
   MapPin, 
   ShieldCheck, 
   ChevronLeft, 
   ChevronRight, 
+  ChevronDown,
   MessageSquare, 
   Calendar, 
   CheckCircle2,
@@ -21,7 +22,10 @@ import {
   Sun,
   Sparkles,
   Bath,
-  Volume2
+  Volume2,
+  Plus,
+  Minus,
+  Users
 } from "lucide-react";
 import { Room, Destination } from "../types";
 import { Currency, formatPrice } from "../utils/currency";
@@ -71,7 +75,22 @@ export default function RoomDetailModal({
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [checkIn, setCheckIn] = useState(initialCheckIn || getFormattedDateString(0));
   const [checkOut, setCheckOut] = useState(initialCheckOut || getFormattedDateString(3, initialCheckIn || getFormattedDateString(0)));
-  const [guestsCount, setGuestsCount] = useState<number>(initialGuestsCount || 2);
+  const [adultsCount, setAdultsCount] = useState<number>(() => initialGuestsCount ? Math.max(1, initialGuestsCount) : 2);
+  const [childrenCount, setChildrenCount] = useState<number>(0);
+  const [isGuestMenuOpen, setIsGuestMenuOpen] = useState(false);
+  const guestMenuRef = useRef<HTMLDivElement>(null);
+
+  const guestsCount = adultsCount + childrenCount;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (guestMenuRef.current && !guestMenuRef.current.contains(event.target as Node)) {
+        setIsGuestMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const images = room.imageUrls && room.imageUrls.length > 0 
     ? room.imageUrls 
@@ -254,20 +273,102 @@ export default function RoomDetailModal({
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 font-medium outline-none focus:border-[#B85A32]"
                     />
                   </div>
-                  <div>
+                  <div className="relative" ref={guestMenuRef}>
                     <label className="block text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Guests</label>
-                    <select
-                      value={guestsCount}
-                      onChange={(e) => setGuestsCount(Number(e.target.value))}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 font-medium outline-none focus:border-[#B85A32]"
+                    <button
+                      type="button"
+                      onClick={() => setIsGuestMenuOpen(!isGuestMenuOpen)}
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 flex items-center justify-between min-h-[34px] shadow-2xs hover:border-[#B85A32] text-left cursor-pointer transition-colors"
                     >
-                      <option value={1}>1 Guest</option>
-                      <option value={2}>2 Guests</option>
-                      <option value={3}>3 Guests</option>
-                      <option value={4}>4 Guests</option>
-                      <option value={5}>5 Guests</option>
-                      <option value={6}>6 Guests</option>
-                    </select>
+                      <span className="text-xs font-semibold text-gray-800 leading-tight">
+                        {adultsCount} {adultsCount === 1 ? "Adult" : "Adults"}
+                        {childrenCount > 0 ? `, ${childrenCount} Ch.` : ""}
+                      </span>
+                      <ChevronDown
+                        size={13}
+                        className={`text-gray-400 transition-transform duration-200 ${isGuestMenuOpen ? "rotate-180 text-[#B85A32]" : ""}`}
+                      />
+                    </button>
+
+                    {/* Guest Menu Popup (matching reference) */}
+                    {isGuestMenuOpen && (
+                      <div className="absolute top-full right-0 sm:left-auto sm:w-72 mt-1.5 bg-white rounded-2xl shadow-2xl border border-gray-200 p-3.5 z-50 animate-fade-in text-left">
+                        <div className="space-y-3.5">
+                          {/* Row 1: Adults */}
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-xs sm:text-sm font-medium text-gray-900 block">Adults</span>
+                              <span className="text-[10px] text-gray-500 font-normal">Ages 13+</span>
+                            </div>
+                            <div className="flex items-center justify-between border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-2xs w-28">
+                              <button
+                                type="button"
+                                onClick={() => setAdultsCount(Math.max(1, adultsCount - 1))}
+                                disabled={adultsCount <= 1}
+                                aria-label="Decrease adults"
+                                className="w-6 h-6 flex items-center justify-center text-blue-600 hover:text-blue-800 disabled:text-gray-300 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="text-xs font-semibold text-gray-900 select-none">
+                                {adultsCount}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setAdultsCount(adultsCount + 1)}
+                                aria-label="Increase adults"
+                                className="w-6 h-6 flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer transition-colors"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Row 2: Children */}
+                          <div className="flex items-center justify-between pt-2.5 border-t border-gray-100">
+                            <div>
+                              <span className="text-xs sm:text-sm font-medium text-gray-900 block">Children</span>
+                              <span className="text-[10px] text-gray-500 font-normal">Ages 0 to 12</span>
+                            </div>
+                            <div className="flex items-center justify-between border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-2xs w-28">
+                              <button
+                                type="button"
+                                onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                                disabled={childrenCount <= 0}
+                                aria-label="Decrease children"
+                                className="w-6 h-6 flex items-center justify-center text-blue-600 hover:text-blue-800 disabled:text-gray-300 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="text-xs font-semibold text-gray-900 select-none">
+                                {childrenCount}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setChildrenCount(childrenCount + 1)}
+                                aria-label="Increase children"
+                                className="w-6 h-6 flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer transition-colors"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between">
+                            <span className="text-[11px] text-gray-500">
+                              Total: <strong className="text-gray-900 font-semibold">{guestsCount} {guestsCount === 1 ? "Guest" : "Guests"}</strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setIsGuestMenuOpen(false)}
+                              className="bg-[#1C352D] hover:bg-[#B85A32] text-white text-[11px] font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer"
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
