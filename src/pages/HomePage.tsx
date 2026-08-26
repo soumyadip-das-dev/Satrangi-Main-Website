@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { 
   ArrowRight, 
   MapPin, 
@@ -15,6 +15,7 @@ import {
   TreePine,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   X,
   PhoneCall,
   MessageSquare
@@ -54,6 +55,76 @@ export default function HomePage({
   onNavigate,
   onSelectRoomModal,
 }: HomePageProps) {
+  // ── Hero Carousel State ──
+  const heroSlides = [
+    {
+      image: "/hero_campfire_retreat.jpg",
+      headline: <>Your Retreat <br />by the River</>,
+      subtitle: "Rental of cozy eco-villas and luxury safari tents across Bengal's pristine wilderness",
+    },
+    {
+      image: "/sundarban_hero.png",
+      headline: <>Wild & <br />Wonderful</>,
+      subtitle: "Luxury overwater cottages in the heart of the Sundarbans mangrove wilderness",
+    },
+    {
+      image: "/lamahatta_hero.png",
+      headline: <>Above the <br />Clouds</>,
+      subtitle: "Mountain retreats with Kanchenjunga views, fireside evenings & misty mornings",
+    },
+    {
+      image: "/kolkata_hero.png",
+      headline: <>Heritage &<br />Grandeur</>,
+      subtitle: "Stay in colonial-era mansions amid Kolkata's timeless art-deco elegance",
+    },
+  ];
+
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [isHeroPaused, setIsHeroPaused] = useState(false);
+  const heroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const heroNext = useCallback(() => {
+    setHeroIndex((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
+  }, [heroSlides.length]);
+
+  const heroPrev = useCallback(() => {
+    setHeroIndex((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
+  }, [heroSlides.length]);
+
+  useEffect(() => {
+    if (isHeroPaused) return;
+    heroIntervalRef.current = setInterval(heroNext, 6000);
+    return () => {
+      if (heroIntervalRef.current) clearInterval(heroIntervalRef.current);
+    };
+  }, [isHeroPaused, heroNext]);
+
+  // ── Quick Booking Bar Guest Menu State ──
+  const [isHomeGuestMenuOpen, setIsHomeGuestMenuOpen] = useState(false);
+  const [homeAdults, setHomeAdults] = useState(() => Math.max(1, guestsCountSelect));
+  const [homeChildren, setHomeChildren] = useState(0);
+  const homeGuestMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (homeGuestMenuRef.current && !homeGuestMenuRef.current.contains(event.target as Node)) {
+        setIsHomeGuestMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const updateHomeAdults = (val: number) => {
+    setHomeAdults(val);
+    if (setGuestsCountSelect) setGuestsCountSelect(val + homeChildren);
+  };
+
+  const updateHomeChildren = (val: number) => {
+    setHomeChildren(val);
+    if (setGuestsCountSelect) setGuestsCountSelect(homeAdults + val);
+  };
+
   return (
     <div className="bg-[#2D4536] min-h-screen p-2 sm:p-4 lg:p-6 font-sans antialiased text-[#1C352D] selection:bg-[#2B3E32]/20">
       
@@ -90,59 +161,116 @@ export default function HomePage({
         ────────────────────────────────────────────────────────────── */}
         <section className="relative pt-4 sm:pt-6 pb-12 sm:pb-20 px-3 sm:px-6 max-w-[1360px] mx-auto">
           
-          {/* Illustrated Nature Canvas Container */}
-          <div className="relative w-full min-h-[520px] sm:min-h-[620px] lg:min-h-[700px] rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-xl border border-[#DCD5C9] bg-[#FAF7F2] flex items-center justify-center">
-            
-            {/* Background Botanical Watercolor Illustration */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center sm:bg-bottom"
-              style={{ backgroundImage: "url('/glamping_hero_illustrated.jpg')" }}
-            />
-            
-            {/* Subtle Atmospheric Top Light Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/15 pointer-events-none" />
+          {/* Hero Carousel Container */}
+          <div
+            className="relative w-full min-h-[520px] sm:min-h-[620px] lg:min-h-[700px] rounded-[24px] sm:rounded-[36px] overflow-hidden shadow-xl border border-[#DCD5C9] bg-[#1C352D]"
+            onMouseEnter={() => setIsHeroPaused(true)}
+            onMouseLeave={() => setIsHeroPaused(false)}
+          >
+            {/* Carousel Background Slides with Crossfade */}
+            {heroSlides.map((slide, i) => (
+              <div
+                key={i}
+                className="absolute inset-0 transition-opacity duration-[1200ms] ease-in-out bg-cover bg-center sm:bg-bottom"
+                style={{
+                  backgroundImage: `url('${slide.image}')`,
+                  opacity: i === heroIndex ? 1 : 0,
+                  zIndex: i === heroIndex ? 1 : 0,
+                }}
+              />
+            ))}
+
+            {/* Cinematic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/30 pointer-events-none z-[2]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 pointer-events-none z-[2]" />
 
             {/* Flying Birds Decorative Accent in Sky */}
-            <div className="absolute top-8 left-8 sm:top-12 sm:left-14 opacity-70 pointer-events-none select-none">
+            <div className="absolute top-8 left-8 sm:top-12 sm:left-14 opacity-70 pointer-events-none select-none z-[3]">
               <svg width="60" height="30" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 10,25 Q 25,10 40,25 Q 55,10 70,25" stroke="#1E2F25" strokeWidth="2.5" strokeLinecap="round" />
-                <path d="M 45,38 Q 55,28 65,38 Q 75,28 85,38" stroke="#1E2F25" strokeWidth="2" strokeLinecap="round" />
+                <path d="M 10,25 Q 25,10 40,25 Q 55,10 70,25" stroke="#FAF6ED" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M 45,38 Q 55,28 65,38 Q 75,28 85,38" stroke="#FAF6ED" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
 
+            {/* Slide Counter Badge */}
+            <div className="absolute top-5 right-5 sm:top-7 sm:right-7 bg-black/40 backdrop-blur-lg px-3.5 py-1.5 rounded-full text-[11px] font-sans font-medium text-white/90 border border-white/15 z-10 select-none pointer-events-none tracking-wide">
+              {heroIndex + 1} / {heroSlides.length}
+            </div>
+
+            {/* Navigation Arrows */}
+            <button
+              type="button"
+              onClick={heroPrev}
+              aria-label="Previous slide"
+              className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-lg border border-white/20 flex items-center justify-center text-white transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={heroNext}
+              aria-label="Next slide"
+              className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-lg border border-white/20 flex items-center justify-center text-white transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              <ChevronRight size={20} />
+            </button>
+
+            {/* Dot Indicators */}
+            <div className="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 z-10">
+              {heroSlides.map((_, dotIdx) => (
+                <button
+                  key={dotIdx}
+                  onClick={() => setHeroIndex(dotIdx)}
+                  className={`rounded-full transition-all duration-500 cursor-pointer ${
+                    dotIdx === heroIndex
+                      ? "w-8 h-2.5 bg-[#C49B55] shadow-[0_0_12px_rgba(196,155,85,0.5)]"
+                      : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                  aria-label={`Go to slide ${dotIdx + 1}`}
+                />
+              ))}
+            </div>
+
             {/* ══════════════════════════════════════════════════════════
-                CENTER SCALLOPED EMERALD GREEN BADGE (MATCHING REFERENCE)
+                CENTER SCALLOPED EMERALD GREEN BADGE
             ══════════════════════════════════════════════════════════ */}
-            <div className="relative z-20 max-w-sm sm:max-w-md mx-4 text-center">
-              <div className="relative bg-[#274E39]/95 backdrop-blur-md text-white p-7 sm:p-10 rounded-[28px] sm:rounded-[36px] shadow-[0_20px_60px_rgba(20,40,28,0.4)] border-2 border-[#528A6B]/50">
-                
-                {/* Delicate Scalloped Dashed Border */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-[22px] sm:rounded-[30px] border border-dashed border-[#A4CBB4]/40 pointer-events-none" />
+            <div className="absolute inset-0 z-[5] flex items-center justify-center">
+              <div className="relative max-w-sm sm:max-w-md mx-4 text-center">
+                <div className="relative bg-[#274E39]/92 backdrop-blur-xl text-white p-7 sm:p-10 rounded-[28px] sm:rounded-[36px] shadow-[0_20px_60px_rgba(20,40,28,0.5)] border-2 border-[#528A6B]/50">
+                  
+                  {/* Delicate Scalloped Dashed Border */}
+                  <div className="absolute inset-2 sm:inset-2.5 rounded-[22px] sm:rounded-[30px] border border-dashed border-[#A4CBB4]/40 pointer-events-none" />
 
-                {/* Grand Serif Headline */}
-                <h1 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-normal text-[#FAF6ED] uppercase tracking-tight leading-[1.1] mb-3 sm:mb-4 drop-shadow-sm">
-                  Your Retreat <br />
-                  by the River
-                </h1>
+                  {/* Grand Serif Headline — animates per slide */}
+                  <h1
+                    key={heroIndex}
+                    className="font-serif text-2xl sm:text-4xl lg:text-5xl font-normal text-[#FAF6ED] uppercase tracking-tight leading-[1.1] mb-3 sm:mb-4 drop-shadow-sm animate-[fadeSlideUp_0.8s_ease-out]"
+                  >
+                    {heroSlides[heroIndex].headline}
+                  </h1>
 
-                {/* Refined Subtitle */}
-                <p className="font-sans text-xs sm:text-sm text-[#E2EBE5] font-light leading-relaxed max-w-xs mx-auto">
-                  Rental of cozy eco-villas and luxury safari tents across Bengal's pristine wilderness
-                </p>
+                  {/* Refined Subtitle */}
+                  <p
+                    key={`sub-${heroIndex}`}
+                    className="font-sans text-xs sm:text-sm text-[#E2EBE5] font-light leading-relaxed max-w-xs mx-auto animate-[fadeSlideUp_0.8s_ease-out_0.15s_both]"
+                  >
+                    {heroSlides[heroIndex].subtitle}
+                  </p>
 
-                {/* Botanical Blue Wildflower Accent at Corner */}
-                <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 w-12 h-12 sm:w-14 sm:h-14 pointer-events-none select-none">
-                  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="14" fill="#3B82F6" />
-                    <circle cx="35" cy="40" r="10" fill="#60A5FA" />
-                    <circle cx="65" cy="40" r="10" fill="#60A5FA" />
-                    <circle cx="40" cy="65" r="10" fill="#2563EB" />
-                    <circle cx="60" cy="65" r="10" fill="#2563EB" />
-                    <circle cx="50" cy="50" r="6" fill="#FBBF24" />
-                    <path d="M 50,75 Q 40,95 25,98" stroke="#15803D" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
+                  {/* Botanical Blue Wildflower Accent at Corner */}
+                  <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 w-12 h-12 sm:w-14 sm:h-14 pointer-events-none select-none">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="50" cy="50" r="14" fill="#3B82F6" />
+                      <circle cx="35" cy="40" r="10" fill="#60A5FA" />
+                      <circle cx="65" cy="40" r="10" fill="#60A5FA" />
+                      <circle cx="40" cy="65" r="10" fill="#2563EB" />
+                      <circle cx="60" cy="65" r="10" fill="#2563EB" />
+                      <circle cx="50" cy="50" r="6" fill="#FBBF24" />
+                      <path d="M 50,75 Q 40,95 25,98" stroke="#15803D" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                  </div>
+
                 </div>
-
               </div>
             </div>
 
@@ -188,44 +316,107 @@ export default function HomePage({
                 />
               </div>
 
-              {/* Field 3: Number of Guests Stepper Pill */}
-              <div className="bg-white rounded-xl sm:rounded-full px-4 py-2 sm:py-2.5 shadow-xs border border-gray-200/80 flex items-center justify-between">
-                <div>
-                  <label className="block text-[9px] text-gray-500 uppercase tracking-wider font-semibold text-left">
-                    Guests
-                  </label>
-                  <span className="text-xs sm:text-[13px] font-semibold text-gray-900">
-                    {guestsCountSelect} {guestsCountSelect === 1 ? "guest" : "guests"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (setGuestsCountSelect && guestsCountSelect > 1) {
-                        setGuestsCountSelect(guestsCountSelect - 1);
-                      }
-                    }}
-                    disabled={guestsCountSelect <= 1}
-                    aria-label="Decrease guests"
-                    className="w-5 h-5 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    <Minus size={11} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (setGuestsCountSelect && guestsCountSelect < 10) {
-                        setGuestsCountSelect(guestsCountSelect + 1);
-                      }
-                    }}
-                    disabled={guestsCountSelect >= 10}
-                    aria-label="Increase guests"
-                    className="w-5 h-5 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    <Plus size={11} />
-                  </button>
-                </div>
+              {/* Field 3: Number of Guests Pill with Dropdown Menu */}
+              <div className="relative" ref={homeGuestMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsHomeGuestMenuOpen(!isHomeGuestMenuOpen)}
+                  className="w-full bg-white rounded-xl sm:rounded-full px-4 py-2 sm:py-2.5 shadow-xs border border-gray-200/80 flex items-center justify-between text-left cursor-pointer hover:border-[#274E39]/40 transition-colors"
+                >
+                  <div>
+                    <label className="block text-[9px] text-gray-500 uppercase tracking-wider font-semibold text-left">
+                      Guests
+                    </label>
+                    <span className="text-xs sm:text-[13px] font-semibold text-gray-900 leading-tight">
+                      {homeAdults} {homeAdults === 1 ? "Adult" : "Adults"}
+                      {homeChildren > 0 ? `, ${homeChildren} ${homeChildren === 1 ? "Child" : "Children"}` : ""}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    size={14}
+                    className={`text-gray-400 transition-transform duration-200 ${isHomeGuestMenuOpen ? "rotate-180 text-[#274E39]" : ""}`}
+                  />
+                </button>
+
+                {/* Guest Menu Popup (matching reference) */}
+                {isHomeGuestMenuOpen && (
+                  <div className="absolute top-full left-0 right-0 sm:right-auto sm:w-80 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 z-50 animate-fade-in text-left">
+                    <div className="space-y-4">
+                      {/* Row 1: Adults */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-medium text-gray-900 block">Adults</span>
+                          <span className="text-[11px] text-gray-500 font-normal">Ages 13 or above</span>
+                        </div>
+                        <div className="flex items-center justify-between border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-2xs w-32">
+                          <button
+                            type="button"
+                            onClick={() => updateHomeAdults(Math.max(1, homeAdults - 1))}
+                            disabled={homeAdults <= 1}
+                            aria-label="Decrease adults"
+                            className="w-7 h-7 flex items-center justify-center text-blue-600 hover:text-blue-800 disabled:text-gray-300 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                          >
+                            <Minus size={15} />
+                          </button>
+                          <span className="text-sm font-semibold text-gray-900 select-none">
+                            {homeAdults}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateHomeAdults(homeAdults + 1)}
+                            aria-label="Increase adults"
+                            className="w-7 h-7 flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer transition-colors"
+                          >
+                            <Plus size={15} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Row 2: Children */}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div>
+                          <span className="text-sm font-medium text-gray-900 block">Children</span>
+                          <span className="text-[11px] text-gray-500 font-normal">Ages 0 to 12</span>
+                        </div>
+                        <div className="flex items-center justify-between border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-2xs w-32">
+                          <button
+                            type="button"
+                            onClick={() => updateHomeChildren(Math.max(0, homeChildren - 1))}
+                            disabled={homeChildren <= 0}
+                            aria-label="Decrease children"
+                            className="w-7 h-7 flex items-center justify-center text-blue-600 hover:text-blue-800 disabled:text-gray-300 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                          >
+                            <Minus size={15} />
+                          </button>
+                          <span className="text-sm font-semibold text-gray-900 select-none">
+                            {homeChildren}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateHomeChildren(homeChildren + 1)}
+                            aria-label="Increase children"
+                            className="w-7 h-7 flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer transition-colors"
+                          >
+                            <Plus size={15} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <span className="text-xs text-gray-500">
+                          Total: <strong className="text-gray-900 font-semibold">{homeAdults + homeChildren} {homeAdults + homeChildren === 1 ? "Guest" : "Guests"}</strong>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setIsHomeGuestMenuOpen(false)}
+                          className="bg-[#274E39] hover:bg-[#1E3A2B] text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Field 4: Primary Action Button */}
